@@ -5,11 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Fanter Search | Browse Freely</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
@@ -43,12 +39,9 @@
       transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
     }
 
-    .main-content.has-iframe {
-      justify-content: flex-start;
-      padding-top: 20px;
-    }
+    .main-content.has-iframe { justify-content: flex-start; padding-top: 20px; }
 
-    /* Theme Toggle */
+    /* Theme Toggle - Bottom Left */
     .theme-toggle {
       position: fixed;
       bottom: 24px;
@@ -132,18 +125,14 @@
       color: #1a2e1a;
     }
 
-    body.dark .search-wrapper input {
-      color: #e0e0e0;
-    }
+    body.dark .search-wrapper input { color: #e0e0e0; }
 
     .search-wrapper input::placeholder {
       color: #a3c2a3;
       font-style: italic;
     }
 
-    body.dark .search-wrapper input::placeholder {
-      color: #6a7a6a;
-    }
+    body.dark .search-wrapper input::placeholder { color: #6a7a6a; }
 
     .search-wrapper button {
       background: #4a6e4a;
@@ -240,10 +229,7 @@
       color: #1a2e1a;
     }
 
-    .quicklink-item:hover {
-      background: rgba(255, 255, 255, 0.1);
-    }
-
+    .quicklink-item:hover { background: rgba(255, 255, 255, 0.1); }
     body.light .quicklink-item:hover { background: #f4fbf4; }
 
     .quicklink-icon {
@@ -373,9 +359,7 @@
       animation: spin 0.8s linear infinite;
     }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     /* Bypass method selector */
     .bypass-selector {
@@ -426,14 +410,14 @@
   <div class="bypass-selector">
     <span>🔓 Bypass method: </span>
     <select id="bypassMethod">
+      <option value="blank">about:blank</option>
       <option value="popup">JavaScript Popup</option>
       <option value="data">data: URL</option>
-      <option value="blank">about:blank</option>
       <option value="direct">Direct Tab</option>
     </select>
   </div>
 
-  <!-- Dropdown Menu (Right side) -->
+  <!-- Dropdown Menu -->
   <div class="dropdown-container">
     <div class="dropdown-trigger" id="dropdownTrigger">
       <span>⚡ Quick Links</span>
@@ -469,7 +453,7 @@
 
   <script>
     // ============================================================
-    // FANTER SEARCH — MULTIPLE BYPASS METHODS
+    // FANTER SEARCH — TRUE about:blank BYPASS
     // ============================================================
     
     const canvas = document.getElementById('bgCanvas');
@@ -628,7 +612,7 @@
     }
 
     // ============================================================
-    // MULTIPLE BYPASS METHODS
+    // TRUE about:blank BYPASS - stays as about:blank
     // ============================================================
     function showToast(msg) {
       const toast = document.createElement('div');
@@ -648,54 +632,121 @@
       setTimeout(() => toast.remove(), 3000);
     }
 
+    // TRUE about:blank method - creates a sandboxed about:blank window
+    function openAboutBlank(url) {
+      // Create a new about:blank window
+      const blankWindow = window.open('about:blank', '_blank');
+      
+      if (!blankWindow) {
+        alert('Popup blocked! Please allow popups for this site.');
+        return;
+      }
+      
+      // Write content to the about:blank window
+      blankWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Fanter Proxy - ${url}</title>
+          <style>
+            body {
+              margin: 0;
+              padding: 0;
+              height: 100vh;
+              overflow: hidden;
+            }
+            iframe {
+              width: 100%;
+              height: 100%;
+              border: none;
+            }
+            .loading {
+              position: fixed;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              text-align: center;
+              font-family: monospace;
+              color: #4a6e4a;
+            }
+            .spinner {
+              width: 40px;
+              height: 40px;
+              border: 3px solid #4a6e4a;
+              border-top-color: transparent;
+              border-radius: 50%;
+              animation: spin 0.8s linear infinite;
+              margin: 0 auto 15px;
+            }
+            @keyframes spin { to { transform: rotate(360deg); } }
+          </style>
+        </head>
+        <body>
+          <div class="loading">
+            <div class="spinner"></div>
+            <p>Loading ${url}...</p>
+          </div>
+          <iframe id="proxyFrame" src="${url}" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals allow-top-navigation"></iframe>
+          <script>
+            // Hide loading when iframe loads
+            const iframe = document.getElementById('proxyFrame');
+            const loading = document.querySelector('.loading');
+            iframe.onload = () => { loading.style.display = 'none'; };
+            // Fallback: if iframe fails, show direct link
+            setTimeout(() => {
+              if (loading.style.display !== 'none') {
+                loading.innerHTML = '<p>Loading taking too long. <a href="${url}" target="_blank">Click here</a> to open directly.</p>';
+              }
+            }, 8000);
+          <\/script>
+        </body>
+        </html>
+      `);
+      
+      showToast('🔓 Opened in about:blank sandbox!');
+    }
+
+    // JavaScript Popup method
+    function openPopup(url) {
+      const popup = window.open('', '_blank');
+      if (!popup) { alert('Popup blocked! Allow popups for this site.'); return; }
+      popup.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head><title>Fanter Proxy</title></head>
+        <body>
+          <script>window.location.href="${url}";<\/script>
+        </body>
+        </html>
+      `);
+      showToast('🔓 Opened with JavaScript Popup method');
+    }
+
+    // data: URL method
+    function openDataUrl(url) {
+      const redirectHtml = `<!DOCTYPE html><html><head><title>Fanter Proxy</title></head><body><script>window.location.href="${url}";<\/script></body></html>`;
+      const dataUrl = 'data:text/html,' + encodeURIComponent(redirectHtml);
+      window.open(dataUrl, '_blank');
+      showToast('🔓 Opened with data: URL method');
+    }
+
+    // Direct method
+    function openDirect(url) {
+      window.open(url, '_blank');
+      showToast('🔓 Opened in new tab (direct)');
+    }
+
     function openBypass() {
       let url = currentUrl;
       if (!url) url = formatUrl(searchInput.value);
       const method = bypassMethodSelect.value;
       
       switch(method) {
-        case 'popup':
-          // Method 1: JavaScript popup redirect
-          const popup = window.open('', '_blank');
-          if (!popup) { alert('Popup blocked! Allow popups for this site.'); return; }
-          popup.document.write(`
-            <!DOCTYPE html>
-            <html>
-            <head><title>Fanter Proxy</title></head>
-            <body>
-              <script>window.location.href="${url}";<\/script>
-            </body>
-            </html>
-          `);
-          showToast('🔓 Opened with JavaScript Popup method');
-          break;
-          
-        case 'data':
-          // Method 2: data: URL
-          const redirectHtml = `<!DOCTYPE html><html><head><title>Fanter Proxy</title></head><body><script>window.location.href="${url}";<\/script></body></html>`;
-          const dataUrl = 'data:text/html,' + encodeURIComponent(redirectHtml);
-          window.open(dataUrl, '_blank');
-          showToast('🔓 Opened with data: URL method');
-          break;
-          
-        case 'blank':
-          // Method 3: about:blank
-          const blankWin = window.open('about:blank', '_blank');
-          blankWin.document.write(`
-            <!DOCTYPE html>
-            <html>
-            <head><title>Fanter Proxy</title><meta http-equiv="refresh" content="0; url=${url}"></head>
-            <body><script>window.location.href="${url}";<\/script></body>
-            </html>
-          `);
-          showToast('🔓 Opened with about:blank method');
-          break;
-          
-        case 'direct':
-          // Method 4: Direct tab
-          window.open(url, '_blank');
-          showToast('🔓 Opened in new tab (direct)');
-          break;
+        case 'blank': openAboutBlank(url); break;
+        case 'popup': openPopup(url); break;
+        case 'data': openDataUrl(url); break;
+        case 'direct': openDirect(url); break;
+        default: openAboutBlank(url);
       }
     }
 
@@ -747,7 +798,7 @@
     initTheme();
     const last = localStorage.getItem('fanterLastUrl');
     if (last) searchInput.value = last;
-    console.log('🔥 Fanter Search ready — Multiple bypass methods available!');
+    console.log('🔥 Fanter Search ready — ');
   </script>
 </body>
 </html>
