@@ -18,6 +18,7 @@
       min-height: 100vh;
       transition: background 0.2s ease;
       overflow-x: hidden;
+      position: relative;
     }
 
     body.light {
@@ -35,7 +36,7 @@
       color: #d0c0e0;
     }
 
-    /* background canvas for dots and lines */
+    /* background canvas - fixed full screen */
     #bgCanvas {
       position: fixed;
       top: 0;
@@ -44,6 +45,7 @@
       height: 100%;
       z-index: 0;
       pointer-events: none;
+      display: block;
     }
 
     .container {
@@ -52,6 +54,7 @@
       max-width: 1200px;
       margin: 0 auto;
       padding: 20px;
+      min-height: 100vh;
     }
 
     /* status bar */
@@ -77,61 +80,63 @@
     .slow { background: #fbbf24; }
     .offline { background: #ef4444; }
 
-    /* right side buttons */
+    /* right side buttons container */
     .right-buttons {
       position: fixed;
       right: 20px;
       top: 20px;
       display: flex;
       flex-direction: column;
+      align-items: flex-end;
       gap: 10px;
       z-index: 100;
     }
 
     .round-btn {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      background: rgba(30, 30, 35, 0.9);
+      width: 90px;
+      height: 36px;
+      border-radius: 30px;
+      background: rgba(30, 30, 35, 0.95);
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.1);
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 18px;
+      font-size: 13px;
+      font-weight: 500;
       transition: all 0.2s ease;
       color: #e0e0e0;
       position: relative;
     }
 
     body.light .round-btn {
-      background: rgba(220, 220, 220, 0.9);
+      background: rgba(220, 220, 220, 0.95);
       border-color: rgba(0, 0, 0, 0.1);
       color: #1a1a1a;
     }
 
     .round-btn:hover {
-      transform: scale(1.05);
+      transform: scale(1.02);
       background: #4a6e4a;
       color: white;
     }
 
-    /* dropdown menus with smooth animation */
+    /* dropdown menus with push animation */
     .dropdown {
       position: absolute;
       right: 0;
-      top: 50px;
+      top: 42px;
       background: #1e1e1e;
       border-radius: 16px;
       padding: 8px;
-      min-width: 220px;
+      min-width: 200px;
       opacity: 0;
       visibility: hidden;
       transform: translateY(-10px);
-      transition: all 0.25s ease;
+      transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
       border: 1px solid rgba(255, 255, 255, 0.1);
-      z-index: 101;
+      z-index: 99;
       pointer-events: none;
     }
 
@@ -146,6 +151,12 @@
       visibility: visible;
       transform: translateY(0);
       pointer-events: auto;
+    }
+
+    /* push effect - buttons move down when dropdown open */
+    .right-buttons.shifted {
+      transform: translateY(180px);
+      transition: transform 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
     }
 
     .dropdown-item {
@@ -164,26 +175,26 @@
     }
 
     .dropdown-icon {
-      width: 24px;
-      height: 24px;
+      width: 22px;
+      height: 22px;
       object-fit: contain;
       border-radius: 4px;
     }
 
-    /* help panel with smooth animation */
+    /* help panel */
     .help-panel {
       position: fixed;
-      right: 80px;
-      top: 20px;
-      width: 300px;
+      right: 20px;
+      top: 180px;
+      width: 280px;
       background: #1e1e1e;
       border-radius: 20px;
       padding: 18px;
       opacity: 0;
       visibility: hidden;
-      transform: translateX(-10px);
-      transition: all 0.25s ease;
-      z-index: 99;
+      transform: translateX(20px);
+      transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      z-index: 98;
       border: 1px solid rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(10px);
       pointer-events: none;
@@ -236,14 +247,21 @@
     /* search section */
     .search-section {
       text-align: center;
-      margin-top: 25vh;
-      transform: translateY(-50%);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
       transition: all 0.4s ease;
     }
 
     .search-section.has-iframe {
-      margin-top: 20px;
+      position: relative;
+      top: 0;
+      left: 0;
       transform: none;
+      margin-top: 40px;
+      margin-bottom: 30px;
     }
 
     .title {
@@ -257,8 +275,9 @@
     }
 
     .search-box {
-      max-width: 650px;
+      max-width: 600px;
       margin: 0 auto;
+      padding: 0 20px;
     }
 
     .search-wrapper {
@@ -307,7 +326,8 @@
 
     /* iframe area */
     .iframe-area {
-      margin-top: 30px;
+      max-width: 1200px;
+      margin: 0 auto 30px;
       border-radius: 20px;
       overflow: hidden;
       background: #1e1e1e;
@@ -338,6 +358,8 @@
       padding: 10px 16px;
       background: #252525;
       border-bottom: 1px solid #333;
+      flex-wrap: wrap;
+      gap: 8px;
     }
 
     body.light .iframe-header {
@@ -358,12 +380,13 @@
     .iframe-buttons {
       display: flex;
       gap: 6px;
+      flex-wrap: wrap;
     }
 
     .iframe-btn {
       background: none;
       border: none;
-      padding: 4px 10px;
+      padding: 5px 12px;
       border-radius: 20px;
       cursor: pointer;
       color: #888;
@@ -530,9 +553,9 @@
 
     @media (max-width: 768px) {
       .title { font-size: 32px; }
-      .help-panel { width: 260px; right: 70px; }
-      .search-section { margin-top: 20vh; }
+      .help-panel { width: 260px; right: 20px; top: 200px; }
       .search-box { max-width: 90%; }
+      .round-btn { width: 75px; font-size: 11px; }
     }
   </style>
 </head>
@@ -549,14 +572,14 @@
     </div>
 
     <!-- right side buttons -->
-    <div class="right-buttons">
-      <div class="round-btn" id="quickLinksBtn">QL</div>
-      <div class="round-btn" id="helpBtn">❓</div>
-      <div class="round-btn" id="historyBtn">📜</div>
-      <div class="round-btn" id="panicBtn">😱</div>
+    <div class="right-buttons" id="rightButtons">
+      <div class="round-btn" id="quickLinksBtn">quick linx</div>
+      <div class="round-btn" id="helpBtn">help</div>
+      <div class="round-btn" id="historyBtn">history</div>
+      <div class="round-btn" id="panicBtn">panic</div>
     </div>
 
-    <!-- quick links dropdown with images -->
+    <!-- quick links dropdown -->
     <div class="dropdown" id="quickDropdown">
       <div class="dropdown-item" data-url="youtube.com">
         <img class="dropdown-icon" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdYYtpbk4xqsn2XvBocnTZjLJH2vsbPhYbRQ&s" onerror="this.style.display='none'">
@@ -594,7 +617,7 @@
         <div class="help-title">keyboard shortcuts</div>
         <div class="help-item"><span>focus search</span><span class="help-key">ctrl + k</span></div>
         <div class="help-item"><span>show history</span><span class="help-key">ctrl + h</span></div>
-        <div class="help-item"><span>panic page</span><span class="help-key">` (backtick)</span></div>
+        <div class="help-item"><span>panic mode</span><span class="help-key">` (backtick)</span></div>
       </div>
       <div class="help-section">
         <div class="help-title">features</div>
@@ -653,14 +676,15 @@
 
   <script>
     // ============================================================
-    // fanter search - clean & minimal with about:blank
+    // fanter search - fully fixed
     // ============================================================
     
-    // background canvas for dots and lines
+    // background canvas - fixed full screen
     const canvas = document.getElementById('bgCanvas');
     const ctx = canvas.getContext('2d');
     let points = [];
     let time = 0;
+    let animationId;
     
     function initPoints() {
       const width = window.innerWidth;
@@ -668,14 +692,14 @@
       canvas.width = width;
       canvas.height = height;
       
-      const cols = Math.floor(width / 70);
-      const rows = Math.floor(height / 70);
+      const cols = Math.floor(width / 80);
+      const rows = Math.floor(height / 80);
       points = [];
       for (let i = 0; i <= cols; i++) {
         for (let j = 0; j <= rows; j++) {
           points.push({
-            baseX: i * 70,
-            baseY: j * 70,
+            baseX: i * 80,
+            baseY: j * 80,
             offsetX: 0,
             offsetY: 0,
             phaseX: Math.random() * Math.PI * 2,
@@ -692,15 +716,13 @@
       ctx.fillStyle = isDark ? '#0a0a0a' : '#f5f5f5';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
-      // update point positions for smooth movement
       for (let p of points) {
         p.offsetX = Math.sin(time * 0.0015 * p.speed + p.phaseX) * 10;
         p.offsetY = Math.cos(time * 0.0015 * p.speed * 0.7 + p.phaseY) * 10;
       }
       
-      // draw lines between nearby points
       ctx.beginPath();
-      ctx.strokeStyle = isDark ? 'rgba(100, 100, 100, 0.2)' : 'rgba(120, 120, 120, 0.15)';
+      ctx.strokeStyle = isDark ? 'rgba(100, 100, 100, 0.2)' : 'rgba(80, 80, 80, 0.15)';
       ctx.lineWidth = 1;
       
       for (let i = 0; i < points.length; i++) {
@@ -716,7 +738,6 @@
         }
       }
       
-      // draw dots
       ctx.fillStyle = isDark ? 'rgba(160, 160, 160, 0.25)' : 'rgba(80, 80, 80, 0.2)';
       for (let p of points) {
         ctx.beginPath();
@@ -725,7 +746,7 @@
       }
       
       time++;
-      requestAnimationFrame(drawBackground);
+      animationId = requestAnimationFrame(drawBackground);
     }
     
     window.addEventListener('resize', () => {
@@ -735,11 +756,13 @@
     initPoints();
     drawBackground();
     
-    // proxy urls
+    // proxy urls with timeout
     const PROXY_URL = 'https://fanter-search-proxy.onrender.com/proxy?url=';
-    const FALLBACK_PROXIES = ['https://corsproxy.io/?url=', 'https://cors-anywhere.herokuapp.com/'];
+    const FALLBACK_PROXIES = [
+      'https://corsproxy.io/?url=',
+      'https://cors-anywhere.herokuapp.com/'
+    ];
     
-    // panic page url (science facts)
     const PANIC_URL = 'https://www.sciencekids.co.nz/sciencefacts/top10.html';
     
     // state
@@ -747,6 +770,7 @@
     let textMode = false;
     let history = JSON.parse(localStorage.getItem('fanterHistory') || '[]');
     let currentTheme = localStorage.getItem('fanterTheme') || 'dark';
+    let activeDropdown = null;
     
     // dom elements
     const searchInput = document.getElementById('searchInput');
@@ -765,6 +789,7 @@
     const historyList = document.getElementById('historyList');
     const quickDropdown = document.getElementById('quickDropdown');
     const helpPanel = document.getElementById('helpPanel');
+    const rightButtons = document.getElementById('rightButtons');
     
     // helpers
     function showToast(msg) {
@@ -808,7 +833,6 @@
       }
     }
     
-    // about:blank bypass feature
     function openAboutBlank(url) {
       const blankWindow = window.open('about:blank', '_blank');
       if (!blankWindow) {
@@ -819,64 +843,34 @@
       blankWindow.document.write(`
         <!DOCTYPE html>
         <html>
-        <head>
-          <title>fanter proxy</title>
-          <style>
-            body {
-              margin: 0;
-              padding: 0;
-              height: 100vh;
-              overflow: hidden;
-              font-family: monospace;
-            }
-            iframe {
-              width: 100%;
-              height: 100%;
-              border: none;
-            }
-            .loading {
-              position: fixed;
-              top: 50%;
-              left: 50%;
-              transform: translate(-50%, -50%);
-              text-align: center;
-              color: #4a6e4a;
-            }
-            .spinner {
-              width: 30px;
-              height: 30px;
-              border: 2px solid #4a6e4a;
-              border-top-color: transparent;
-              border-radius: 50%;
-              animation: spin 0.6s linear infinite;
-              margin: 0 auto 10px;
-            }
-            @keyframes spin { to { transform: rotate(360deg); } }
-          </style>
+        <head><title>fanter proxy</title>
+        <style>
+          body{margin:0;padding:0;height:100vh;overflow:hidden;font-family:monospace;}
+          iframe{width:100%;height:100%;border:none;}
+          .loading{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:#4a6e4a;}
+          .spinner{width:30px;height:30px;border:2px solid #4a6e4a;border-top-color:transparent;border-radius:50%;animation:spin 0.6s linear infinite;margin:0 auto 10px;}
+          @keyframes spin{to{transform:rotate(360deg);}}
+        </style>
         </head>
         <body>
-          <div class="loading">
-            <div class="spinner"></div>
-            <div>loading ${url}...</div>
-          </div>
+          <div class="loading"><div class="spinner"></div><div>loading ${url}...</div></div>
           <iframe src="${url}" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals allow-top-navigation"></iframe>
-          <script>
-            const iframe = document.querySelector('iframe');
-            const loading = document.querySelector('.loading');
-            iframe.onload = () => { loading.style.display = 'none'; };
-          <\/script>
+          <script>document.querySelector('iframe').onload=()=>{document.querySelector('.loading').style.display='none';};<\/script>
         </body>
         </html>
       `);
-      
       showToast('opened in about:blank tab');
     }
     
     async function loadViaProxy(url) {
       const encoded = encodeURIComponent(url);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
+      
       for (let proxy of [PROXY_URL, ...FALLBACK_PROXIES]) {
         try {
-          const res = await fetch(proxy + encoded);
+          const res = await fetch(proxy + encoded, { signal: controller.signal });
+          clearTimeout(timeoutId);
           if (res.ok) {
             let content = await res.text();
             if (textMode) {
@@ -894,6 +888,7 @@
           }
         } catch(e) {}
       }
+      clearTimeout(timeoutId);
       return false;
     }
     
@@ -908,37 +903,37 @@
       currentUrl = formatted;
       searchInput.value = rawUrl;
       iframeUrlSpan.textContent = 'loading...';
-      proxyFrame.srcdoc = '<html><body style="background:#1a1a1a;display:flex;align-items:center;justify-content:center;padding:40px;"><div class="spinner"></div></body></html>';
+      proxyFrame.srcdoc = '<html><body style="background:#1a1a1a;display:flex;align-items:center;justify-content:center;padding:40px;"><div class="spinner"></div><div style="margin-top:15px;font-size:12px;">loading... (may take 15-30 seconds)</div></body></html>';
       iframeArea.classList.add('show');
       searchSection.classList.add('has-iframe');
       addToHistory(formatted);
       
       const success = await loadViaProxy(formatted);
       if (!success) {
-        proxyFrame.srcdoc = `<html><body style="background:#1a1a1a;padding:40px;text-align:center;"><h3>❌ cannot load ${formatted}</h3><p>try using the about:blank button</p></body></html>`;
+        proxyFrame.srcdoc = `<html><body style="background:#1a1a1a;padding:40px;text-align:center;"><h3>❌ cannot load ${formatted}</h3><p>try using the about:blank button</p><p>or check your internet connection</p></body></html>`;
         iframeUrlSpan.textContent = `failed: ${formatted}`;
       }
       localStorage.setItem('fanterLastUrl', formatted);
     }
     
-    // panic button - sends to science facts page
     function panic() {
-      const panicUrl = PANIC_URL;
-      window.open(panicUrl, '_blank');
+      window.open(PANIC_URL, '_blank');
       iframeArea.classList.remove('show');
       searchSection.classList.remove('has-iframe');
       proxyFrame.src = 'about:blank';
       searchInput.value = '';
       currentUrl = '';
-      showToast('📚 redirected to science facts');
+      showToast('📚 opened science facts');
     }
     
-    // proxy status check
     async function checkProxyStatus() {
       statusText.textContent = 'checking...';
       statusDot.className = 'status-dot slow';
       try {
-        const res = await fetch(PROXY_URL + encodeURIComponent('https://example.com'));
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        const res = await fetch(PROXY_URL + encodeURIComponent('https://example.com'), { signal: controller.signal });
+        clearTimeout(timeoutId);
         if (res.ok) {
           statusDot.className = 'status-dot online';
           statusText.textContent = 'online';
@@ -952,28 +947,46 @@
       }
     }
     
-    // theme
     function setTheme(theme) {
       document.body.className = theme;
       localStorage.setItem('fanterTheme', theme);
       document.querySelectorAll('.theme-dot').forEach(dot => {
         dot.classList.toggle('active', dot.dataset.theme === theme);
       });
-      drawBackground();
+    }
+    
+    // dropdown with push effect
+    function closeAllDropdowns() {
+      quickDropdown.classList.remove('show');
+      helpPanel.classList.remove('show');
+      historyPanel.classList.remove('show');
+      rightButtons.classList.remove('shifted');
+      activeDropdown = null;
+    }
+    
+    function openDropdown(dropdown, button) {
+      closeAllDropdowns();
+      dropdown.classList.add('show');
+      rightButtons.classList.add('shifted');
+      activeDropdown = dropdown;
     }
     
     // event listeners
     goBtn.onclick = () => { if (searchInput.value.trim()) loadUrl(searchInput.value); };
     searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') loadUrl(searchInput.value); });
     refreshBtn.onclick = () => { if (currentUrl) loadUrl(currentUrl); };
-    bypassBtn.onclick = () => { if (currentUrl) openAboutBlank(currentUrl); else if (searchInput.value.trim()) openAboutBlank(formatUrl(searchInput.value)); };
+    bypassBtn.onclick = () => { 
+      if (currentUrl) openAboutBlank(currentUrl); 
+      else if (searchInput.value.trim()) openAboutBlank(formatUrl(searchInput.value));
+      else showToast('enter a url first');
+    };
     
     textModeBtn.onclick = () => {
       textMode = !textMode;
       textModeBtn.style.background = textMode ? '#4a6e4a' : '';
       textModeBtn.style.color = textMode ? 'white' : '';
       if (currentUrl) loadUrl(currentUrl);
-      showToast(textMode ? 'text mode on - ads removed' : 'text mode off');
+      showToast(textMode ? 'text mode on' : 'text mode off');
     };
     
     fullscreenBtn.onclick = () => {
@@ -984,27 +997,32 @@
       }
     };
     
-    // dropdowns with smooth animation
     document.getElementById('quickLinksBtn').onclick = (e) => {
       e.stopPropagation();
-      quickDropdown.classList.toggle('show');
-      helpPanel.classList.remove('show');
-      historyPanel.classList.remove('show');
+      if (quickDropdown.classList.contains('show')) {
+        closeAllDropdowns();
+      } else {
+        openDropdown(quickDropdown, e.target);
+      }
     };
     
     document.getElementById('helpBtn').onclick = (e) => {
       e.stopPropagation();
-      helpPanel.classList.toggle('show');
-      quickDropdown.classList.remove('show');
-      historyPanel.classList.remove('show');
+      if (helpPanel.classList.contains('show')) {
+        closeAllDropdowns();
+      } else {
+        openDropdown(helpPanel, e.target);
+      }
     };
     
     document.getElementById('historyBtn').onclick = (e) => {
       e.stopPropagation();
-      historyPanel.classList.toggle('show');
-      updateHistoryList();
-      quickDropdown.classList.remove('show');
-      helpPanel.classList.remove('show');
+      if (historyPanel.classList.contains('show')) {
+        closeAllDropdowns();
+      } else {
+        updateHistoryList();
+        openDropdown(historyPanel, e.target);
+      }
     };
     
     document.getElementById('panicBtn').onclick = panic;
@@ -1015,35 +1033,27 @@
       showToast('history cleared');
     };
     
-    // close dropdowns when clicking outside
     document.addEventListener('click', (e) => {
-      if (!e.target.closest('.dropdown') && !e.target.closest('#quickLinksBtn')) {
-        quickDropdown.classList.remove('show');
-      }
-      if (!e.target.closest('.help-panel') && !e.target.closest('#helpBtn')) {
-        helpPanel.classList.remove('show');
-      }
-      if (!e.target.closest('.history-panel') && !e.target.closest('#historyBtn')) {
-        historyPanel.classList.remove('show');
+      if (!e.target.closest('.dropdown') && !e.target.closest('#quickLinksBtn') &&
+          !e.target.closest('.help-panel') && !e.target.closest('#helpBtn') &&
+          !e.target.closest('.history-panel') && !e.target.closest('#historyBtn')) {
+        closeAllDropdowns();
       }
     });
     
-    // quick link items
     document.querySelectorAll('.dropdown-item').forEach(el => {
       el.addEventListener('click', (e) => {
         e.stopPropagation();
         const url = el.dataset.url;
         if (url) loadUrl(url);
-        quickDropdown.classList.remove('show');
+        closeAllDropdowns();
       });
     });
     
-    // theme selector
     document.querySelectorAll('.theme-dot').forEach(dot => {
       dot.addEventListener('click', () => setTheme(dot.dataset.theme));
     });
     
-    // keyboard shortcuts
     document.addEventListener('keydown', (e) => {
       if (e.ctrlKey && e.key === 'k') {
         e.preventDefault();
@@ -1052,8 +1062,12 @@
       }
       if (e.ctrlKey && e.key === 'h') {
         e.preventDefault();
-        historyPanel.classList.toggle('show');
         updateHistoryList();
+        if (historyPanel.classList.contains('show')) {
+          closeAllDropdowns();
+        } else {
+          openDropdown(historyPanel);
+        }
       }
       if (e.key === '`') {
         e.preventDefault();
@@ -1070,7 +1084,7 @@
     const lastUrl = localStorage.getItem('fanterLastUrl');
     if (lastUrl) searchInput.value = lastUrl;
     
-    console.log('fanter search ready');
+    console.log('fanter search ready - fully fixed');
   </script>
 </body>
 </html>
