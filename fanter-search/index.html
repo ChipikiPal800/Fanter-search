@@ -17,7 +17,6 @@
       min-height: 100vh;
     }
 
-    /* Header */
     .proxy-header {
       background: rgba(0,0,0,0.8);
       backdrop-filter: blur(10px);
@@ -32,7 +31,7 @@
       font-size: 24px;
       font-weight: bold;
       color: #fbbf24;
-      margin-bottom: 10px;
+      margin-bottom: 15px;
     }
 
     .logo span {
@@ -77,11 +76,34 @@
       box-shadow: 0 5px 15px rgba(59,130,246,0.4);
     }
 
-    .search-bar button.secondary {
-      background: linear-gradient(135deg, #fbbf24, #d97706);
+    .proxy-methods {
+      margin-top: 15px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
-    /* Info bar */
+    .method-btn {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid #fbbf24;
+      border-radius: 30px;
+      padding: 6px 15px;
+      color: white;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .method-btn.active {
+      background: #fbbf24;
+      color: #1a1200;
+    }
+
+    .method-btn:hover {
+      background: #3b82f6;
+      border-color: #3b82f6;
+    }
+
     .info-bar {
       background: rgba(0,0,0,0.5);
       padding: 8px 20px;
@@ -101,68 +123,77 @@
       color: #fbbf24;
     }
 
-    /* Iframe container */
-    .iframe-container {
-      height: calc(100vh - 130px);
+    .proxy-container {
+      height: calc(100vh - 160px);
       width: 100%;
       position: relative;
-      background: #fff;
     }
 
-    iframe {
-      width: 100%;
+    .result-area {
+      padding: 20px;
+      color: white;
       height: 100%;
-      border: none;
+      overflow-y: auto;
+      font-family: monospace;
     }
 
-    .loading-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0,0,0,0.8);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 10;
-      transition: opacity 0.3s;
+    .result-area a {
+      color: #3b82f6;
+      text-decoration: none;
     }
 
-    .loading-spinner {
-      width: 50px;
-      height: 50px;
-      border: 4px solid #fbbf24;
-      border-top-color: #3b82f6;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
+    .result-area img {
+      max-width: 100%;
     }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
+    .loading {
+      text-align: center;
+      padding: 50px;
+      color: #fbbf24;
     }
 
-    .hidden {
-      display: none;
-    }
-
-    /* Footer */
     .footer {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
       background: rgba(0,0,0,0.7);
       padding: 5px 20px;
       font-size: 10px;
       color: #666;
       text-align: center;
-      z-index: 90;
     }
 
     .footer a {
       color: #fbbf24;
       text-decoration: none;
+    }
+
+    .proxy-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .proxy-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid #333;
+      border-radius: 10px;
+      padding: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .proxy-card:hover {
+      border-color: #fbbf24;
+      background: rgba(255,255,255,0.1);
+    }
+
+    .proxy-card h4 {
+      color: #fbbf24;
+      margin-bottom: 5px;
+    }
+
+    .proxy-card p {
+      font-size: 11px;
+      color: #aaa;
     }
   </style>
 </head>
@@ -170,144 +201,282 @@
   <div class="proxy-header">
     <div class="logo">Fanter <span>Search</span> 🔍</div>
     <div class="search-bar">
-      <input type="text" id="urlInput" placeholder="Enter URL or search... (e.g., youtube.com, discord.com)">
+      <input type="text" id="urlInput" placeholder="Enter URL (e.g., youtube.com, discord.com)">
       <button id="goBtn">🌐 Go</button>
-      <button id="newTabBtn" class="secondary">📌 Open in New Tab</button>
+      <button id="newTabBtn">📌 Open Direct</button>
+    </div>
+    <div class="proxy-methods">
+      <button class="method-btn active" data-method="cors">CORS Proxy</button>
+      <button class="method-btn" data-method="text">Text Mode</button>
+      <button class="method-btn" data-method="direct">Direct Link</button>
     </div>
   </div>
 
   <div class="info-bar">
-    <div class="status">🟢 Proxy Active</div>
-    <div class="warning">⚠️ For educational purposes only. Use responsibly.</div>
-    <div>🔒 Your activity is private</div>
+    <div class="status">🟢 Fanter Search Active</div>
+    <div class="warning">⚠️ Some sites may not work. Try different methods.</div>
+    <div>🔒 Your privacy is respected</div>
   </div>
 
-  <div class="iframe-container">
-    <div id="loadingOverlay" class="loading-overlay hidden">
-      <div class="loading-spinner"></div>
+  <div class="proxy-container">
+    <div id="resultArea" class="result-area">
+      <div style="text-align: center; padding: 50px;">
+        <h2>🔍 Welcome to Fanter Search</h2>
+        <p>Enter a URL above to browse freely.</p>
+        <p style="font-size: 12px; margin-top: 20px;">Popular sites: YouTube, Discord, Reddit, Twitch, Spotify</p>
+        
+        <div style="margin-top: 30px;">
+          <h3>Quick Access</h3>
+          <div class="proxy-list" id="quickLinks">
+            <div class="proxy-card" data-url="youtube.com">
+              <h4>🎬 YouTube</h4>
+              <p>Watch videos</p>
+            </div>
+            <div class="proxy-card" data-url="discord.com">
+              <h4>💬 Discord</h4>
+              <p>Chat with friends</p>
+            </div>
+            <div class="proxy-card" data-url="reddit.com">
+              <h4>📱 Reddit</h4>
+              <p>Browse communities</p>
+            </div>
+            <div class="proxy-card" data-url="twitch.tv">
+              <h4>🎮 Twitch</h4>
+              <p>Watch streams</p>
+            </div>
+            <div class="proxy-card" data-url="spotify.com">
+              <h4>🎵 Spotify</h4>
+              <p>Listen to music</p>
+            </div>
+            <div class="proxy-card" data-url="roblox.com">
+              <h4>🎲 Roblox</h4>
+              <p>Play games</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    <iframe id="proxyFrame" src="about:blank"></iframe>
   </div>
 
   <div class="footer">
-    <span>Fanter Search - Browse freely | <a href="#" id="clearBtn">Clear Cache</a> | <a href="#" id="homeBtn">Home</a></span>
+    <span>Fanter Search - Browse freely | <a href="#" id="clearBtn">Clear</a> | <a href="#" id="homeBtn">Home</a></span>
   </div>
 
   <script>
     // ============================================================
-    // FANTER SEARCH - Web Proxy
+    // FANTER SEARCH - WORKING PROXY
     // ============================================================
     
     const urlInput = document.getElementById('urlInput');
     const goBtn = document.getElementById('goBtn');
     const newTabBtn = document.getElementById('newTabBtn');
-    const proxyFrame = document.getElementById('proxyFrame');
-    const loadingOverlay = document.getElementById('loadingOverlay');
+    const resultArea = document.getElementById('resultArea');
     const clearBtn = document.getElementById('clearBtn');
     const homeBtn = document.getElementById('homeBtn');
-
-    // Popular shortcuts
-    const shortcuts = {
-      'yt': 'youtube.com',
-      'discord': 'discord.com',
-      'reddit': 'reddit.com',
-      'twitch': 'twitch.tv',
-      'spotify': 'open.spotify.com',
-      'roblox': 'roblox.com',
-      'github': 'github.com',
-      'gmail': 'mail.google.com',
-      'drive': 'drive.google.com',
-      'docs': 'docs.google.com'
-    };
-
+    
+    let currentMethod = 'cors';
+    
+    // Free CORS proxies (rotate if one fails)
+    const corsProxies = [
+      'https://api.allorigins.win/raw?url=',
+      'https://corsproxy.io/?url=',
+      'https://cors-anywhere.herokuapp.com/',
+      'https://proxy.cors.sh/'
+    ];
+    
+    let currentProxyIndex = 0;
+    
     // Format URL
     function formatUrl(input) {
-      let url = input.trim().toLowerCase();
-      
-      // Check for shortcuts
-      if (shortcuts[url]) {
-        url = 'https://' + shortcuts[url];
-      }
-      
-      // Add https:// if no protocol
+      let url = input.trim();
       if (!url.startsWith('http://') && !url.startsWith('https://')) {
         url = 'https://' + url;
       }
-      
       return url;
     }
-
-    // Load URL in iframe
-    function loadUrl(url) {
+    
+    // Show loading
+    function showLoading() {
+      resultArea.innerHTML = '<div class="loading"><div class="loading-spinner" style="width:40px;height:40px;border:3px solid #fbbf24;border-top-color:#3b82f6;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 20px;"></div><p>Loading...</p><style>@keyframes spin{to{transform:rotate(360deg)}}</style></div>';
+    }
+    
+    // Load via CORS proxy
+    async function loadViaCors(url) {
+      const encodedUrl = encodeURIComponent(url);
+      
+      for (let i = 0; i < corsProxies.length; i++) {
+        try {
+          const proxyUrl = corsProxies[i] + encodedUrl;
+          const response = await fetch(proxyUrl);
+          
+          if (response.ok) {
+            let html = await response.text();
+            
+            // Inject base tag to fix relative links
+            const baseUrl = url.match(/^https?:\/\/[^\/]+/)[0];
+            html = html.replace('<head>', `<head><base href="${baseUrl}/">`);
+            
+            // Display as HTML
+            resultArea.innerHTML = `
+              <div style="background:rgba(0,0,0,0.5);padding:10px;border-radius:10px;margin-bottom:15px;">
+                <div>🌐 Currently viewing: <strong>${url}</strong></div>
+                <div style="font-size:11px;margin-top:5px;">
+                  <button onclick="window.open('${url}', '_blank')" style="background:#3b82f6;border:none;padding:5px 10px;border-radius:5px;color:white;cursor:pointer;">Open Direct</button>
+                  <button onclick="location.reload()" style="background:#fbbf24;border:none;padding:5px 10px;border-radius:5px;color:#1a1200;cursor:pointer;margin-left:10px;">Refresh</button>
+                </div>
+              </div>
+              <div style="background:white;padding:20px;border-radius:10px;color:black;">
+                ${html}
+              </div>
+            `;
+            return true;
+          }
+        } catch(e) {
+          console.log(`Proxy ${i} failed:`, e);
+        }
+      }
+      return false;
+    }
+    
+    // Load via text mode (shows source)
+    async function loadViaText(url) {
+      const encodedUrl = encodeURIComponent(url);
+      const proxyUrl = corsProxies[0] + encodedUrl;
+      
+      try {
+        const response = await fetch(proxyUrl);
+        if (response.ok) {
+          const text = await response.text();
+          resultArea.innerHTML = `
+            <div style="background:rgba(0,0,0,0.5);padding:10px;border-radius:10px;margin-bottom:15px;">
+              <div>📄 Source of: <strong>${url}</strong></div>
+              <div style="font-size:11px;margin-top:5px;">
+                <button onclick="window.open('${url}', '_blank')" style="background:#3b82f6;border:none;padding:5px 10px;border-radius:5px;color:white;cursor:pointer;">Open Direct</button>
+              </div>
+            </div>
+            <pre style="background:#1a1a2e;padding:15px;border-radius:10px;overflow-x:auto;font-size:11px;color:#ddd;">${escapeHtml(text.substring(0, 50000))}</pre>
+          `;
+          return true;
+        }
+      } catch(e) {}
+      return false;
+    }
+    
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+    
+    // Main load function
+    async function loadUrl(url) {
       const formattedUrl = formatUrl(url);
       urlInput.value = formattedUrl;
+      showLoading();
       
-      // Show loading
-      loadingOverlay.classList.remove('hidden');
+      let success = false;
       
-      // Load in iframe
-      proxyFrame.src = formattedUrl;
+      if (currentMethod === 'cors') {
+        success = await loadViaCors(formattedUrl);
+        if (!success) {
+          resultArea.innerHTML = `
+            <div style="text-align:center;padding:50px;">
+              <h3>❌ Cannot load ${formattedUrl}</h3>
+              <p>Try these options:</p>
+              <ul style="text-align:left;display:inline-block;margin-top:20px;">
+                <li>Click "Open Direct" to open in new tab</li>
+                <li>Try "Text Mode" to see page source</li>
+                <li>Try a different URL</li>
+              </ul>
+            </div>
+          `;
+        }
+      } else if (currentMethod === 'text') {
+        success = await loadViaText(formattedUrl);
+      } else if (currentMethod === 'direct') {
+        window.open(formattedUrl, '_blank');
+        resultArea.innerHTML = `<div style="text-align:center;padding:50px;"><p>Opened ${formattedUrl} in a new tab.</p><button onclick="location.reload()" style="background:#3b82f6;border:none;padding:10px 20px;border-radius:10px;color:white;cursor:pointer;">Back</button></div>`;
+        success = true;
+      }
       
-      // Save to localStorage
-      localStorage.setItem('lastProxyUrl', formattedUrl);
+      if (success && currentMethod !== 'direct') {
+        localStorage.setItem('lastProxyUrl', formattedUrl);
+      }
     }
-
-    // Hide loading when iframe loads
-    proxyFrame.addEventListener('load', () => {
-      setTimeout(() => {
-        loadingOverlay.classList.add('hidden');
-      }, 500);
+    
+    // Method switching
+    document.querySelectorAll('.method-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.method-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentMethod = btn.dataset.method;
+        
+        let message = '';
+        if (currentMethod === 'cors') message = 'CORS Proxy mode - Best for most sites';
+        else if (currentMethod === 'text') message = 'Text mode - Shows page source code';
+        else message = 'Direct mode - Opens in new tab';
+        
+        resultArea.innerHTML = `<div style="text-align:center;padding:50px;"><p>✅ Switched to ${message}</p><p>Enter a URL above to begin.</p></div>`;
+      });
     });
-
-    // Handle iframe errors
-    proxyFrame.addEventListener('error', () => {
-      loadingOverlay.classList.add('hidden');
-      alert('❌ Cannot load this site. Some sites block iframes.\nTry opening in a new tab instead.');
+    
+    // Quick links
+    document.querySelectorAll('.proxy-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const url = card.dataset.url;
+        urlInput.value = url;
+        loadUrl(url);
+      });
     });
-
+    
     // Go button
     goBtn.addEventListener('click', () => {
       const url = urlInput.value;
-      if (url) {
-        loadUrl(url);
-      }
+      if (url) loadUrl(url);
     });
-
+    
     // Enter key
     urlInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
         loadUrl(urlInput.value);
       }
     });
-
-    // Open in new tab
+    
+    // New tab button
     newTabBtn.addEventListener('click', () => {
       const url = formatUrl(urlInput.value);
       window.open(url, '_blank');
     });
-
-    // Clear cache
+    
+    // Clear button
     clearBtn.addEventListener('click', () => {
       localStorage.removeItem('lastProxyUrl');
-      proxyFrame.src = 'about:blank';
       urlInput.value = '';
-      alert('✅ Cache cleared!');
+      resultArea.innerHTML = `
+        <div style="text-align:center;padding:50px;">
+          <h2>🔍 Welcome to Fanter Search</h2>
+          <p>Enter a URL above to browse freely.</p>
+        </div>
+      `;
     });
-
+    
     // Home button
     homeBtn.addEventListener('click', () => {
-      proxyFrame.src = 'about:blank';
       urlInput.value = '';
+      resultArea.innerHTML = `
+        <div style="text-align:center;padding:50px;">
+          <h2>🔍 Welcome to Fanter Search</h2>
+          <p>Enter a URL above to browse freely.</p>
+        </div>
+      `;
     });
-
+    
     // Load last URL on startup
     const lastUrl = localStorage.getItem('lastProxyUrl');
     if (lastUrl) {
       urlInput.value = lastUrl;
-      // Don't auto-load for privacy
     }
-
-    // Update URL when iframe navigates (limited due to CORS)
+    
     console.log('🔥 Fanter Search ready!');
   </script>
 </body>
