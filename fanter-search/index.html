@@ -277,12 +277,12 @@
     let currentMethod = 'cors';
     
     // Free CORS proxies (rotate if one fails)
-    const corsProxies = [
-      'https://fanter-search-proxy.onrender.com/',
-      'https://corsproxy.io/?url=',
-      'https://cors-anywhere.herokuapp.com/',
-      'https://proxy.cors.sh/'
-    ];
+const corsProxies = [
+  'https://fanter-search-proxy.onrender.com/proxy?url=',  // YOUR RENDER PROXY
+  'https://corsproxy.io/?url=',
+  'https://cors-anywhere.herokuapp.com/',
+  'https://proxy.cors.sh/'
+];
     
     let currentProxyIndex = 0;
     
