@@ -1,41 +1,11 @@
 const express = require('express');
 const cors = require('cors');
-const https = require('https');
-const http = require('http');
-const url = require('url');
-
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-// Helper function to fetch URLs (works without node-fetch)
-function fetchUrl(targetUrl) {
-  return new Promise((resolve, reject) => {
-    const parsedUrl = url.parse(targetUrl);
-    const protocol = parsedUrl.protocol === 'https:' ? https : http;
-    
-    const options = {
-      hostname: parsedUrl.hostname,
-      path: parsedUrl.path,
-      method: 'GET',
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-      }
-    };
-    
-    const req = protocol.request(options, (res) => {
-      let data = '';
-      res.on('data', chunk => data += chunk);
-      res.on('end', () => resolve({ statusCode: res.statusCode, data, headers: res.headers }));
-    });
-    
-    req.on('error', reject);
-    req.end();
-  });
-}
-
-// Main proxy endpoint
+// Simple proxy endpoint
 app.get('/proxy', async (req, res) => {
   const targetUrl = req.query.url;
   
@@ -44,17 +14,20 @@ app.get('/proxy', async (req, res) => {
   }
   
   try {
-    const result = await fetchUrl(targetUrl);
+    // Use fetch (built into Node 18+)
+    const response = await fetch(targetUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+      }
+    });
     
-    if (result.statusCode !== 200) {
-      return res.status(result.statusCode).json({ error: 'Failed to fetch URL' });
-    }
+    const data = await response.text();
     
     // Fix relative links
     const baseUrl = targetUrl.match(/^https?:\/\/[^\/]+/)[0];
-    let fixedData = result.data.replace(/(href|src)=["']\/(?!\/)/g, `$1="${baseUrl}/`);
+    const fixedData = data.replace(/(href|src)=["']\/(?!\/)/g, `$1="${baseUrl}/`);
     
-    res.set('Content-Type', result.headers['content-type'] || 'text/html');
+    res.set('Content-Type', response.headers.get('content-type') || 'text/html');
     res.send(fixedData);
   } catch (error) {
     console.error('Proxy error:', error.message);
@@ -64,12 +37,22 @@ app.get('/proxy', async (req, res) => {
 
 // Health check
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  res.json({ status: 'ok', message: 'Fanter Search Proxy is running!' });
+});
+
+// Root endpoint
+app.get('/', (req, res) => {
+  res.json({ 
+    status: 'online', 
+    service: 'Fanter Search Proxy',
+    endpoints: {
+      proxy: '/proxy?url=YOUR_URL',
+      health: '/health'
+    }
+  });
 });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`✅ Fanter Search Proxy running on port ${PORT}`);
-  console.log(`📍 Health check: http://localhost:${PORT}/health`);
-  console.log(`📍 Proxy endpoint: http://localhost:${PORT}/proxy?url=https://example.com`);
 });
