@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: fanter-search-proxy
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
