@@ -3,24 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Fanter Search</title>
+  <title>Fanter Search | Browse Freely</title>
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      user-select: none; /* Prevents accidental highlighting */
     }
 
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-      background: #eaf7ea;  /* Very faint green base */
       min-height: 100vh;
+      transition: background 0.3s ease, color 0.2s ease;
       overflow-x: hidden;
       position: relative;
     }
 
-    /* ===== BACKGROUND CONNECTING DOTS & LINES (Canvas) ==== */
+    /* Light Mode (default) */
+    body.light {
+      background: #eaf7ea;
+      color: #1a2e1a;
+    }
+
+    /* Dark Mode */
+    body.dark {
+      background: #0a1a0a;
+      color: #e0e0e0;
+    }
+
+    /* Background Canvas */
     #bgCanvas {
       position: fixed;
       top: 0;
@@ -31,7 +42,7 @@
       pointer-events: none;
     }
 
-    /* ===== MAIN CONTENT ===== */
+    /* Main Content */
     .main-content {
       position: relative;
       z-index: 10;
@@ -43,13 +54,55 @@
       transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
     }
 
-    /* When iframe is active, push content up */
     .main-content.has-iframe {
       justify-content: flex-start;
       padding-top: 20px;
     }
 
-    /* Header / Title */
+    /* Header with Theme Toggle */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: flex-end;
+      padding: 20px 24px;
+      z-index: 50;
+      gap: 16px;
+    }
+
+    .theme-toggle {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 40px;
+      padding: 10px 18px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+      font-size: 14px;
+      color: inherit;
+    }
+
+    body.light .theme-toggle {
+      background: white;
+      border-color: rgba(0, 0, 0, 0.1);
+      color: #1a2e1a;
+    }
+
+    body.dark .theme-toggle {
+      background: rgba(30, 30, 40, 0.8);
+      border-color: rgba(255, 255, 255, 0.15);
+      color: #e0e0e0;
+    }
+
+    .theme-toggle:hover {
+      transform: scale(0.98);
+      opacity: 0.9;
+    }
+
+    /* Title */
     .title {
       font-size: 3.2rem;
       font-weight: 700;
@@ -62,7 +115,13 @@
       text-align: center;
     }
 
-    /* Search Section (centered) */
+    body.dark .title {
+      background: linear-gradient(135deg, #4ade80, #22c55e);
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+
+    /* Search Section */
     .search-section {
       width: 100%;
       max-width: 620px;
@@ -71,14 +130,13 @@
       text-align: center;
     }
 
-    /* When iframe is active, search bar shrinks and moves up */
     .main-content.has-iframe .search-section {
       max-width: 500px;
       margin-top: 0;
       margin-bottom: 20px;
     }
 
-    /* Search Bar Container */
+    /* Search Bar */
     .search-wrapper {
       background: white;
       border-radius: 60px;
@@ -88,6 +146,12 @@
       padding: 6px;
       transition: all 0.3s;
       border: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    body.dark .search-wrapper {
+      background: #1a2a1a;
+      border-color: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
     }
 
     .search-wrapper:focus-within {
@@ -106,9 +170,17 @@
       color: #1a2e1a;
     }
 
+    body.dark .search-wrapper input {
+      color: #e0e0e0;
+    }
+
     .search-wrapper input::placeholder {
       color: #a3c2a3;
       font-style: italic;
+    }
+
+    body.dark .search-wrapper input::placeholder {
+      color: #5a7a5a;
     }
 
     .search-wrapper button {
@@ -129,7 +201,7 @@
       transform: scale(0.97);
     }
 
-    /* ===== QUICKLINKS DROPDOWN (Right Side) ===== */
+    /* Dropdown (Right Side) */
     .dropdown-container {
       position: fixed;
       top: 24px;
@@ -147,15 +219,23 @@
       gap: 12px;
       cursor: pointer;
       font-weight: 500;
-      color: #1a5c1a;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
       transition: all 0.2s;
       backdrop-filter: blur(4px);
+    }
+
+    body.dark .dropdown-trigger {
+      background: #1a2a1a;
+      border-color: rgba(255, 255, 255, 0.15);
+      color: #e0e0e0;
     }
 
     .dropdown-trigger:hover {
       background: #f0f7f0;
       border-color: #2d8c2d;
+    }
+
+    body.dark .dropdown-trigger:hover {
+      background: #2a3a2a;
     }
 
     .dropdown-arrow {
@@ -182,6 +262,11 @@
       border: 1px solid rgba(0, 0, 0, 0.06);
     }
 
+    body.dark .dropdown-menu {
+      background: #1a2a1a;
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
     .dropdown-menu.open {
       opacity: 1;
       visibility: visible;
@@ -198,12 +283,20 @@
       border-bottom: 1px solid #f0f0f0;
     }
 
+    body.dark .quicklink-item {
+      border-bottom-color: rgba(255, 255, 255, 0.08);
+    }
+
     .quicklink-item:last-child {
       border-bottom: none;
     }
 
     .quicklink-item:hover {
       background: #f4fbf4;
+    }
+
+    body.dark .quicklink-item:hover {
+      background: #2a3a2a;
     }
 
     .quicklink-icon {
@@ -215,11 +308,10 @@
 
     .quicklink-name {
       font-weight: 500;
-      color: #1a3a1a;
       flex: 1;
     }
 
-    /* ===== IFRAME CONTAINER (Scales from center) ===== */
+    /* Iframe Container */
     .iframe-container {
       width: 90%;
       max-width: 1300px;
@@ -232,7 +324,10 @@
       opacity: 0;
       transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.2);
       pointer-events: none;
-      position: relative;
+    }
+
+    body.dark .iframe-container {
+      background: #0f1a0f;
     }
 
     .iframe-container.visible {
@@ -250,14 +345,23 @@
       border-bottom: 1px solid #e0ede0;
     }
 
+    body.dark .iframe-header {
+      background: #0f1a0f;
+      border-bottom-color: #2a3a2a;
+    }
+
     .iframe-url {
       font-size: 13px;
-      color: #4a674a;
       font-family: monospace;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       flex: 1;
+      color: #4a674a;
+    }
+
+    body.dark .iframe-url {
+      color: #8aaa8a;
     }
 
     .iframe-buttons {
@@ -276,8 +380,16 @@
       color: #2d5a2d;
     }
 
+    body.dark .iframe-btn {
+      color: #8aaa8a;
+    }
+
     .iframe-btn:hover {
       background: #e0ede0;
+    }
+
+    body.dark .iframe-btn:hover {
+      background: #2a3a2a;
     }
 
     iframe {
@@ -287,7 +399,7 @@
       display: block;
     }
 
-    /* Fullscreen mode (cursor locked) */
+    /* Fullscreen */
     .iframe-container.fullscreen {
       position: fixed;
       top: 0;
@@ -304,13 +416,13 @@
       height: 100vh;
     }
 
-    /* Cursor lock hint */
+    /* Cursor Lock Hint */
     .cursor-lock-hint {
       position: fixed;
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(0,0,0,0.6);
+      background: rgba(0, 0, 0, 0.7);
       color: white;
       padding: 6px 14px;
       border-radius: 40px;
@@ -326,22 +438,70 @@
       opacity: 1;
     }
 
-    /* Utility */
-    .hidden {
-      display: none;
+    /* Welcome Screen */
+    .welcome {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .welcome-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+    }
+
+    .welcome h2 {
+      font-size: 28px;
+      margin-bottom: 12px;
+    }
+
+    .welcome p {
+      color: #666;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    body.dark .welcome p {
+      color: #aaa;
+    }
+
+    /* Loading */
+    .loading-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(45, 140, 45, 0.2);
+      border-top-color: #2d8c2d;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
 
     @media (max-width: 680px) {
       .title { font-size: 2rem; }
       .search-wrapper input { padding: 12px 18px; }
       .dropdown-menu { width: 260px; }
+      .header { padding: 16px; }
     }
   </style>
 </head>
-<body>
-
-  <!-- Canvas for connecting dots & lines -->
+<body class="dark">
+  <!-- Background Canvas (shifting dots & lines) -->
   <canvas id="bgCanvas"></canvas>
+
+  <!-- Header with Theme Toggle -->
+  <div class="header">
+    <div class="theme-toggle" id="themeToggle">🌓 Dark/Light</div>
+  </div>
 
   <!-- Dropdown Menu (Right side) -->
   <div class="dropdown-container">
@@ -349,9 +509,7 @@
       <span>⚡ Quick Links</span>
       <span class="dropdown-arrow" id="dropdownArrow">▼</span>
     </div>
-    <div class="dropdown-menu" id="dropdownMenu">
-      <!-- Quicklinks will be injected here via JS -->
-    </div>
+    <div class="dropdown-menu" id="dropdownMenu"></div>
   </div>
 
   <!-- Main Content -->
@@ -364,10 +522,10 @@
       </div>
     </div>
 
-    <!-- Iframe Container (hidden until search) -->
+    <!-- Iframe Container -->
     <div class="iframe-container" id="iframeContainer">
       <div class="iframe-header">
-        <span class="iframe-url" id="iframeUrl">Loading...</span>
+        <span class="iframe-url" id="iframeUrl">Ready</span>
         <div class="iframe-buttons">
           <button class="iframe-btn" id="fullscreenBtn" title="Fullscreen (cursor locked)">⛶</button>
           <button class="iframe-btn" id="refreshBtn" title="Refresh">⟳</button>
@@ -380,13 +538,16 @@
   <div class="cursor-lock-hint" id="cursorLockHint">🔒 Press ESC to exit fullscreen / unlock cursor</div>
 
   <script>
+    // ============================================================
+    // FANTER SEARCH — DARK/LIGHT MODE + SHIFTING DOTS & LINES
+    // ============================================================
     
-    
-    // ---------- bg
+    // ---------- SHIFTING BACKGROUND (Animated dots & lines) ----------
     const canvas = document.getElementById('bgCanvas');
     const ctx = canvas.getContext('2d');
     let points = [];
-    let animationFrame;
+    let time = 0;
+    let animationId;
 
     function initPoints() {
       const width = window.innerWidth;
@@ -400,10 +561,13 @@
       for (let i = 0; i <= cols; i++) {
         for (let j = 0; j <= rows; j++) {
           points.push({
-            x: i * 70 + (Math.random() * 10 - 5),
-            y: j * 70 + (Math.random() * 10 - 5),
             baseX: i * 70,
-            baseY: j * 70
+            baseY: j * 70,
+            offsetX: 0,
+            offsetY: 0,
+            phaseX: Math.random() * Math.PI * 2,
+            phaseY: Math.random() * Math.PI * 2,
+            speed: 0.5 + Math.random() * 0.8
           });
         }
       }
@@ -411,43 +575,50 @@
 
     function drawBackground() {
       if (!ctx) return;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const isDark = document.body.classList.contains('dark');
       
-      // Very faint green background 
-      ctx.fillStyle = '#eaf7ea';
+      // Clear with appropriate background color
+      ctx.fillStyle = isDark ? '#0a1a0a' : '#eaf7ea';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Update point positions with smooth drifting
+      for (let p of points) {
+        p.offsetX = Math.sin(time * 0.002 * p.speed + p.phaseX) * 12;
+        p.offsetY = Math.cos(time * 0.002 * p.speed * 0.7 + p.phaseY) * 12;
+      }
       
       // Draw lines between nearby points
       ctx.beginPath();
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+      ctx.strokeStyle = isDark ? 'rgba(100, 150, 100, 0.35)' : 'rgba(200, 220, 200, 0.7)';
       ctx.lineWidth = 1.2;
+      
       for (let i = 0; i < points.length; i++) {
         for (let j = i + 1; j < points.length; j++) {
-          const dx = points[i].x - points[j].x;
-          const dy = points[i].y - points[j].y;
+          const dx = (points[i].baseX + points[i].offsetX) - (points[j].baseX + points[j].offsetX);
+          const dy = (points[i].baseY + points[i].offsetY) - (points[j].baseY + points[j].offsetY);
           const dist = Math.sqrt(dx * dx + dy * dy);
           if (dist < 100) {
             ctx.beginPath();
-            ctx.moveTo(points[i].x, points[i].y);
-            ctx.lineTo(points[j].x, points[j].y);
+            ctx.moveTo(points[i].baseX + points[i].offsetX, points[i].baseY + points[i].offsetY);
+            ctx.lineTo(points[j].baseX + points[j].offsetX, points[j].baseY + points[j].offsetY);
             ctx.stroke();
           }
         }
       }
       
-      // Draw white dots
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+      // Draw larger dots (5px radius)
+      ctx.fillStyle = isDark ? 'rgba(150, 200, 150, 0.6)' : 'rgba(180, 210, 180, 0.8)';
       for (let p of points) {
         ctx.beginPath();
-        ctx.arc(p.x, p.y, 2.2, 0, Math.PI * 2);
+        ctx.arc(p.baseX + p.offsetX, p.baseY + p.offsetY, 5, 0, Math.PI * 2);
         ctx.fill();
       }
     }
 
     function animateBackground() {
-      if (!canvas) return;
+      time++;
       drawBackground();
-      requestAnimationFrame(animateBackground);
+      animationId = requestAnimationFrame(animateBackground);
     }
 
     window.addEventListener('resize', () => {
@@ -455,7 +626,7 @@
       drawBackground();
     });
 
-    // quicklinks
+    // ---------- QUICKLINKS DATA ----------
     const quickLinks = [
       { name: 'YouTube', url: 'youtube.com', icon: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdYYtpbk4xqsn2XvBocnTZjLJH2vsbPhYbRQ&s' },
       { name: 'Reddit', url: 'reddit.com', icon: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRYw6dBUuV1YaVQ3oSdn0xDl4SwmtCn2dKKiA&s' },
@@ -473,7 +644,6 @@
       'https://cors-anywhere.herokuapp.com/'
     ];
     
-    let currentMode = 'proxy';
     let currentUrl = '';
 
     // DOM Elements
@@ -486,11 +656,38 @@
     const refreshBtn = document.getElementById('refreshBtn');
     const mainContent = document.getElementById('mainContent');
     const cursorLockHint = document.getElementById('cursorLockHint');
+    const themeToggle = document.getElementById('themeToggle');
     
     // Dropdown elements
     const dropdownTrigger = document.getElementById('dropdownTrigger');
     const dropdownMenu = document.getElementById('dropdownMenu');
     const dropdownArrow = document.getElementById('dropdownArrow');
+
+    // ---------- THEME TOGGLE ----------
+    function initTheme() {
+      const saved = localStorage.getItem('fanterTheme');
+      if (saved === 'light') {
+        document.body.classList.remove('dark');
+        document.body.classList.add('light');
+      } else {
+        document.body.classList.remove('light');
+        document.body.classList.add('dark');
+      }
+      drawBackground(); // Refresh canvas colors
+    }
+
+    themeToggle.addEventListener('click', () => {
+      if (document.body.classList.contains('dark')) {
+        document.body.classList.remove('dark');
+        document.body.classList.add('light');
+        localStorage.setItem('fanterTheme', 'light');
+      } else {
+        document.body.classList.remove('light');
+        document.body.classList.add('dark');
+        localStorage.setItem('fanterTheme', 'dark');
+      }
+      drawBackground();
+    });
 
     // Helper: format URL
     function formatUrl(input) {
@@ -501,15 +698,12 @@
       return url;
     }
 
-    // Show iframe with scaling animation
     function showIframe() {
       iframeContainer.classList.add('visible');
       mainContent.classList.add('has-iframe');
-      // Scroll smoothly into view
       iframeContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    // Load via proxy
     async function loadViaProxy(url) {
       const encoded = encodeURIComponent(url);
       const proxyFull = PROXY_URL + encoded;
@@ -524,7 +718,6 @@
           return true;
         }
       } catch(e) {
-        // fallback
         for (let fb of FALLBACK_PROXIES) {
           try {
             const fallbackRes = await fetch(fb + encoded);
@@ -547,29 +740,25 @@
       currentUrl = formatted;
       searchInput.value = formatted;
       
-      // Show loading state
       iframeUrlSpan.textContent = 'Loading...';
-      proxyFrame.srcdoc = '<html><body style="background:#eaf7ea;display:flex;align-items:center;justify-content:center;font-family:sans-serif;">Loading Fanter Proxy...</body></html>';
+      proxyFrame.srcdoc = '<html><body style="background:#eaf7ea;display:flex;align-items:center;justify-content:center;font-family:sans-serif;padding:40px;"><div style="text-align:center"><div class="spinner" style="margin:0 auto 20px;"></div>Loading via Fanter Proxy...<br><small>First request may take 30-60 seconds (waking up)</small></div></body></html>';
       showIframe();
       
       const success = await loadViaProxy(formatted);
       if (!success) {
-        proxyFrame.srcdoc = `<html><body style="background:#eaf7ea;padding:40px;text-align:center;font-family:sans-serif;"><h3>❌ Cannot load ${formatted}</h3><p>Try again later or use Direct mode.</p></body></html>`;
+        proxyFrame.srcdoc = `<html><body style="background:#eaf7ea;padding:40px;text-align:center;font-family:sans-serif;"><h3>❌ Cannot load ${formatted}</h3><p>Possible reasons:<br>- Render proxy is waking up (30-60 sec)<br>- Site blocks proxies<br>- Try again in a moment</p><button onclick="location.reload()" style="margin-top:20px;padding:10px 24px;background:#2d8c2d;color:white;border:none;border-radius:30px;cursor:pointer">Retry</button></body></html>`;
         iframeUrlSpan.textContent = `Failed: ${formatted}`;
       }
+      localStorage.setItem('fanterLastUrl', formatted);
     }
 
-    // ---------- FULLSCREEN + CURSOR LOCK ----------
+    // Fullscreen + Cursor Lock
     function toggleFullscreen() {
       if (!document.fullscreenElement) {
         iframeContainer.requestFullscreen().then(() => {
           document.addEventListener('fullscreenchange', handleFullscreenChange);
           cursorLockHint.classList.add('visible');
-          // Attempt pointer lock
-          iframeContainer.requestPointerLock = iframeContainer.requestPointerLock || iframeContainer.mozRequestPointerLock;
-          if (iframeContainer.requestPointerLock) {
-            iframeContainer.requestPointerLock();
-          }
+          iframeContainer.requestPointerLock();
         }).catch(err => console.log('Fullscreen error:', err));
       } else {
         document.exitFullscreen();
@@ -584,22 +773,11 @@
       }
     }
 
-    // Pointer lock error handling
-    document.addEventListener('pointerlockerror', () => {
-      cursorLockHint.textContent = '⚠️ Cursor lock failed. Click inside iframe first.';
-      setTimeout(() => {
-        cursorLockHint.textContent = '🔒 Press ESC to exit fullscreen / unlock cursor';
-      }, 3000);
-    });
-
-    // Refresh iframe
     function refreshIframe() {
-      if (currentUrl) {
-        loadUrl(currentUrl);
-      }
+      if (currentUrl) loadUrl(currentUrl);
     }
 
-    // ---------- DROPDOWN LOGIC ----------
+    // Dropdown
     function buildDropdown() {
       dropdownMenu.innerHTML = '';
       quickLinks.forEach(link => {
@@ -619,7 +797,6 @@
       });
     }
 
-    // Toggle dropdown
     dropdownTrigger.addEventListener('click', (e) => {
       e.stopPropagation();
       dropdownMenu.classList.toggle('open');
@@ -632,7 +809,7 @@
       }
     });
 
-    // ---------- EVENT LISTENERS ----------
+    // Event Listeners
     goBtn.addEventListener('click', () => {
       const query = searchInput.value.trim();
       if (query) loadUrl(query);
@@ -643,26 +820,17 @@
     fullscreenBtn.addEventListener('click', toggleFullscreen);
     refreshBtn.addEventListener('click', refreshIframe);
 
-    // ---------- INITIALIZE ----------
+    // Initialize
     initPoints();
     animateBackground();
     buildDropdown();
+    initTheme();
 
-    // Optional: load last searched URL from localStorage
+    // Load last URL from localStorage
     const last = localStorage.getItem('fanterLastUrl');
-    if (last) {
-      searchInput.value = last;
-      // Do not auto-load — user must click Go
-    }
-    function storeLastUrl(url) {
-      if (url) localStorage.setItem('fanterLastUrl', url);
-    }
-    // Override loadUrl to store
-    const originalLoad = loadUrl;
-    window.loadUrl = function(u) { storeLastUrl(u); return originalLoad(u); };
-    loadUrl = function(u) { storeLastUrl(u); return originalLoad(u); };
+    if (last) searchInput.value = last;
     
-    console.log('🔥 Fanter Search ready — modern UI, scaling iframe, cursor lock.');
+    console.log('🔥 Fanter Search ready — Dark/Light mode, shifting dots & lines, larger dots!');
   </script>
 </body>
 </html>
