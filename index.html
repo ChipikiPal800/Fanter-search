@@ -19,19 +19,9 @@
       position: relative;
     }
 
-    /* Light Mode (default) */
-    body.light {
-      background: #e8e8e8;
-      color: #1a2e1a;
-    }
+    body.light { background: #e8e8e8; color: #1a2e1a; }
+    body.dark { background: #1a1a1a; color: #e0e0e0; }
 
-    /* Dark Mode */
-    body.dark {
-      background: #1a1a1a;
-      color: #e0e0e0;
-    }
-
-    /* Background Canvas */
     #bgCanvas {
       position: fixed;
       top: 0;
@@ -42,7 +32,6 @@
       pointer-events: none;
     }
 
-    /* Main Content */
     .main-content {
       position: relative;
       z-index: 10;
@@ -59,7 +48,7 @@
       padding-top: 20px;
     }
 
-    /* Theme Toggle - Bottom Left Corner */
+    /* Theme Toggle */
     .theme-toggle {
       position: fixed;
       bottom: 24px;
@@ -83,12 +72,6 @@
       color: #1a2e1a;
     }
 
-    .theme-toggle:hover {
-      transform: scale(0.98);
-      opacity: 0.9;
-    }
-
-    /* Title */
     .title {
       font-size: 3.2rem;
       font-weight: 700;
@@ -107,7 +90,6 @@
       background-clip: text;
     }
 
-    /* Search Section */
     .search-section {
       width: 100%;
       max-width: 620px;
@@ -122,7 +104,6 @@
       margin-bottom: 20px;
     }
 
-    /* Search Bar */
     .search-wrapper {
       background: white;
       border-radius: 60px;
@@ -138,11 +119,6 @@
       background: #2a2a2a;
       border-color: rgba(255, 255, 255, 0.1);
       box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-    }
-
-    .search-wrapper:focus-within {
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
-      transform: scale(1.01);
     }
 
     .search-wrapper input {
@@ -187,7 +163,7 @@
       transform: scale(0.97);
     }
 
-    /* Dropdown (Right Side) */
+    /* Dropdown */
     .dropdown-container {
       position: fixed;
       top: 24px;
@@ -215,25 +191,10 @@
       color: #1a2e1a;
     }
 
-    body.dark .dropdown-trigger {
-      color: #e0e0e0;
-    }
+    body.dark .dropdown-trigger { color: #e0e0e0; }
 
-    .dropdown-trigger:hover {
-      background: rgba(50, 50, 55, 0.9);
-    }
-
-    body.light .dropdown-trigger:hover {
-      background: rgba(200, 200, 200, 0.95);
-    }
-
-    .dropdown-arrow {
-      transition: transform 0.3s ease;
-    }
-
-    .dropdown-arrow.open {
-      transform: rotate(180deg);
-    }
+    .dropdown-arrow { transition: transform 0.3s ease; }
+    .dropdown-arrow.open { transform: rotate(180deg); }
 
     .dropdown-menu {
       position: absolute;
@@ -279,17 +240,11 @@
       color: #1a2e1a;
     }
 
-    .quicklink-item:last-child {
-      border-bottom: none;
-    }
-
     .quicklink-item:hover {
       background: rgba(255, 255, 255, 0.1);
     }
 
-    body.light .quicklink-item:hover {
-      background: #f4fbf4;
-    }
+    body.light .quicklink-item:hover { background: #f4fbf4; }
 
     .quicklink-icon {
       width: 28px;
@@ -298,10 +253,7 @@
       border-radius: 6px;
     }
 
-    .quicklink-name {
-      font-weight: 500;
-      flex: 1;
-    }
+    .quicklink-name { font-weight: 500; flex: 1; }
 
     /* Iframe Container */
     .iframe-container {
@@ -353,19 +305,14 @@
       color: #8aaa8a;
     }
 
-    body.light .iframe-url {
-      color: #4a674a;
-    }
+    body.light .iframe-url { color: #4a674a; }
 
-    .iframe-buttons {
-      display: flex;
-      gap: 12px;
-    }
+    .iframe-buttons { display: flex; gap: 12px; }
 
     .iframe-btn {
       background: none;
       border: none;
-      font-size: 16px;
+      font-size: 14px;
       cursor: pointer;
       padding: 6px 12px;
       border-radius: 30px;
@@ -374,17 +321,9 @@
       font-weight: 500;
     }
 
-    .iframe-btn:hover {
-      background: #3a4a3a;
-    }
-
-    body.light .iframe-btn {
-      color: #4a674a;
-    }
-
-    body.light .iframe-btn:hover {
-      background: #e0ede0;
-    }
+    .iframe-btn:hover { background: #3a4a3a; }
+    body.light .iframe-btn { color: #4a674a; }
+    body.light .iframe-btn:hover { background: #e0ede0; }
 
     iframe {
       width: 100%;
@@ -393,7 +332,6 @@
       display: block;
     }
 
-    /* Fullscreen */
     .iframe-container.fullscreen {
       position: fixed;
       top: 0;
@@ -406,11 +344,8 @@
       z-index: 1000;
     }
 
-    .iframe-container.fullscreen iframe {
-      height: 100vh;
-    }
+    .iframe-container.fullscreen iframe { height: 100vh; }
 
-    /* Cursor Lock Hint */
     .cursor-lock-hint {
       position: fixed;
       bottom: 20px;
@@ -427,44 +362,7 @@
       font-family: monospace;
     }
 
-    .cursor-lock-hint.visible {
-      opacity: 1;
-    }
-
-    /* Welcome Screen */
-    .welcome {
-      text-align: center;
-      padding: 60px 20px;
-    }
-
-    .welcome-icon {
-      font-size: 64px;
-      margin-bottom: 20px;
-    }
-
-    .welcome h2 {
-      font-size: 28px;
-      margin-bottom: 12px;
-    }
-
-    .welcome p {
-      color: #888;
-      max-width: 400px;
-      margin: 0 auto;
-    }
-
-    body.dark .welcome p {
-      color: #aaa;
-    }
-
-    /* Loading */
-    .loading-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 60px;
-    }
+    .cursor-lock-hint.visible { opacity: 1; }
 
     .spinner {
       width: 40px;
@@ -479,19 +377,61 @@
       to { transform: rotate(360deg); }
     }
 
+    /* Bypass method selector */
+    .bypass-selector {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: rgba(30, 30, 35, 0.85);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 40px;
+      padding: 8px 16px;
+      font-size: 12px;
+      color: #e0e0e0;
+      z-index: 100;
+    }
+
+    body.light .bypass-selector {
+      background: rgba(220, 220, 220, 0.9);
+      border-color: rgba(0, 0, 0, 0.1);
+      color: #1a2e1a;
+    }
+
+    .bypass-selector select {
+      background: transparent;
+      border: none;
+      color: inherit;
+      font-family: inherit;
+      font-size: 12px;
+      cursor: pointer;
+      outline: none;
+    }
+
     @media (max-width: 680px) {
       .title { font-size: 2rem; }
       .search-wrapper input { padding: 12px 18px; }
       .dropdown-menu { width: 260px; }
+      .bypass-selector { bottom: 80px; }
     }
   </style>
 </head>
 <body class="dark">
-  <!-- Background Canvas -->
   <canvas id="bgCanvas"></canvas>
 
   <!-- Theme Toggle - Bottom Left -->
   <div class="theme-toggle" id="themeToggle">🌓 Dark/Light</div>
+
+  <!-- Bypass Method Selector - Bottom Right -->
+  <div class="bypass-selector">
+    <span>🔓 Bypass method: </span>
+    <select id="bypassMethod">
+      <option value="popup">JavaScript Popup</option>
+      <option value="data">data: URL</option>
+      <option value="blank">about:blank</option>
+      <option value="direct">Direct Tab</option>
+    </select>
+  </div>
 
   <!-- Dropdown Menu (Right side) -->
   <div class="dropdown-container">
@@ -512,12 +452,11 @@
       </div>
     </div>
 
-    <!-- Iframe Container -->
     <div class="iframe-container" id="iframeContainer">
       <div class="iframe-header">
         <span class="iframe-url" id="iframeUrl">Ready</span>
         <div class="iframe-buttons">
-          <button class="iframe-btn" id="directTabBtn" title="Open in about:blank popup (bypasses blocks)">🔗 Bypass Tab</button>
+          <button class="iframe-btn" id="directTabBtn" title="Open with selected bypass method">🔓 Bypass</button>
           <button class="iframe-btn" id="fullscreenBtn" title="Fullscreen (cursor locked)">⛶</button>
           <button class="iframe-btn" id="refreshBtn" title="Refresh">⟳</button>
         </div>
@@ -530,34 +469,23 @@
 
   <script>
     // ============================================================
-    // FANTER SEARCH — about:blank POPUP BYPASS
+    // FANTER SEARCH — MULTIPLE BYPASS METHODS
     // ============================================================
     
-    // ---------- SHIFTING BACKGROUND (Gray, barely green) ----------
     const canvas = document.getElementById('bgCanvas');
     const ctx = canvas.getContext('2d');
-    let points = [];
-    let time = 0;
-    let animationId;
+    let points = [], time = 0;
 
     function initPoints() {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      canvas.width = width;
-      canvas.height = height;
-      
-      const cols = Math.floor(width / 70);
-      const rows = Math.floor(height / 70);
+      const width = window.innerWidth, height = window.innerHeight;
+      canvas.width = width; canvas.height = height;
+      const cols = Math.floor(width / 70), rows = Math.floor(height / 70);
       points = [];
       for (let i = 0; i <= cols; i++) {
         for (let j = 0; j <= rows; j++) {
           points.push({
-            baseX: i * 70,
-            baseY: j * 70,
-            offsetX: 0,
-            offsetY: 0,
-            phaseX: Math.random() * Math.PI * 2,
-            phaseY: Math.random() * Math.PI * 2,
+            baseX: i * 70, baseY: j * 70, offsetX: 0, offsetY: 0,
+            phaseX: Math.random() * Math.PI * 2, phaseY: Math.random() * Math.PI * 2,
             speed: 0.5 + Math.random() * 0.8
           });
         }
@@ -567,28 +495,22 @@
     function drawBackground() {
       if (!ctx) return;
       const isDark = document.body.classList.contains('dark');
-      
-      // Nearly gray background (barely any green)
       ctx.fillStyle = isDark ? '#1c1c1c' : '#d8d8d8';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
-      // Update point positions with smooth drifting
       for (let p of points) {
         p.offsetX = Math.sin(time * 0.002 * p.speed + p.phaseX) * 12;
         p.offsetY = Math.cos(time * 0.002 * p.speed * 0.7 + p.phaseY) * 12;
       }
       
-      // Draw lines between nearby points (very subtle)
       ctx.beginPath();
       ctx.strokeStyle = isDark ? 'rgba(100, 100, 100, 0.25)' : 'rgba(120, 120, 120, 0.3)';
       ctx.lineWidth = 1;
-      
       for (let i = 0; i < points.length; i++) {
         for (let j = i + 1; j < points.length; j++) {
           const dx = (points[i].baseX + points[i].offsetX) - (points[j].baseX + points[j].offsetX);
           const dy = (points[i].baseY + points[i].offsetY) - (points[j].baseY + points[j].offsetY);
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 100) {
+          if (Math.sqrt(dx * dx + dy * dy) < 100) {
             ctx.beginPath();
             ctx.moveTo(points[i].baseX + points[i].offsetX, points[i].baseY + points[i].offsetY);
             ctx.lineTo(points[j].baseX + points[j].offsetX, points[j].baseY + points[j].offsetY);
@@ -597,7 +519,6 @@
         }
       }
       
-      // Draw light gray dots with low opacity
       ctx.fillStyle = isDark ? 'rgba(160, 160, 160, 0.35)' : 'rgba(100, 100, 100, 0.3)';
       for (let p of points) {
         ctx.beginPath();
@@ -606,18 +527,10 @@
       }
     }
 
-    function animateBackground() {
-      time++;
-      drawBackground();
-      animationId = requestAnimationFrame(animateBackground);
-    }
+    function animateBackground() { time++; drawBackground(); requestAnimationFrame(animateBackground); }
+    window.addEventListener('resize', () => { initPoints(); drawBackground(); });
 
-    window.addEventListener('resize', () => {
-      initPoints();
-      drawBackground();
-    });
-
-    // ---------- QUICKLINKS DATA ----------
+    // QuickLinks
     const quickLinks = [
       { name: 'YouTube', url: 'youtube.com', icon: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdYYtpbk4xqsn2XvBocnTZjLJH2vsbPhYbRQ&s' },
       { name: 'Reddit', url: 'reddit.com', icon: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRYw6dBUuV1YaVQ3oSdn0xDl4SwmtCn2dKKiA&s' },
@@ -628,15 +541,10 @@
       { name: 'GeForce NOW', url: 'play.geforcenow.com', icon: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQjQnPCY_I0L4_-bLIdU0CcuVkYTAPICicosQ&s' }
     ];
 
-    // ---------- PROXY SETUP ----------
+    // Proxy
     const PROXY_URL = 'https://fanter-search-proxy.onrender.com/proxy?url=';
-    const FALLBACK_PROXIES = [
-      'https://corsproxy.io/?url=',
-      'https://cors-anywhere.herokuapp.com/'
-    ];
-    
+    const FALLBACK_PROXIES = ['https://corsproxy.io/?url=', 'https://cors-anywhere.herokuapp.com/'];
     let currentUrl = '';
-    let popupWindow = null;
 
     // DOM Elements
     const searchInput = document.getElementById('searchInput');
@@ -650,33 +558,25 @@
     const mainContent = document.getElementById('mainContent');
     const cursorLockHint = document.getElementById('cursorLockHint');
     const themeToggle = document.getElementById('themeToggle');
+    const bypassMethodSelect = document.getElementById('bypassMethod');
     
-    // Dropdown elements
     const dropdownTrigger = document.getElementById('dropdownTrigger');
     const dropdownMenu = document.getElementById('dropdownMenu');
     const dropdownArrow = document.getElementById('dropdownArrow');
 
-    // ---------- THEME TOGGLE ----------
+    // Theme
     function initTheme() {
       const saved = localStorage.getItem('fanterTheme');
-      if (saved === 'light') {
-        document.body.classList.remove('dark');
-        document.body.classList.add('light');
-      } else {
-        document.body.classList.remove('light');
-        document.body.classList.add('dark');
-      }
+      if (saved === 'light') { document.body.classList.remove('dark'); document.body.classList.add('light'); }
+      else { document.body.classList.remove('light'); document.body.classList.add('dark'); }
       drawBackground();
     }
-
     themeToggle.addEventListener('click', () => {
       if (document.body.classList.contains('dark')) {
-        document.body.classList.remove('dark');
-        document.body.classList.add('light');
+        document.body.classList.remove('dark'); document.body.classList.add('light');
         localStorage.setItem('fanterTheme', 'light');
       } else {
-        document.body.classList.remove('light');
-        document.body.classList.add('dark');
+        document.body.classList.remove('light'); document.body.classList.add('dark');
         localStorage.setItem('fanterTheme', 'dark');
       }
       drawBackground();
@@ -684,9 +584,7 @@
 
     function formatUrl(input) {
       let url = input.trim();
-      if (!url.startsWith('http://') && !url.startsWith('https://')) {
-        url = 'https://' + url;
-      }
+      if (!url.startsWith('http://') && !url.startsWith('https://')) url = 'https://' + url;
       return url;
     }
 
@@ -698,31 +596,18 @@
 
     async function loadViaProxy(url) {
       const encoded = encodeURIComponent(url);
-      const proxyFull = PROXY_URL + encoded;
-      try {
-        const res = await fetch(proxyFull);
-        if (res.ok) {
-          const html = await res.text();
-          const base = url.match(/^https?:\/\/[^\/]+/)[0];
-          const fixed = html.replace('<head>', `<head><base href="${base}/">`);
-          proxyFrame.srcdoc = fixed;
-          iframeUrlSpan.textContent = url;
-          return true;
-        }
-      } catch(e) {
-        for (let fb of FALLBACK_PROXIES) {
-          try {
-            const fallbackRes = await fetch(fb + encoded);
-            if (fallbackRes.ok) {
-              const html = await fallbackRes.text();
-              const base = url.match(/^https?:\/\/[^\/]+/)[0];
-              const fixed = html.replace('<head>', `<head><base href="${base}/">`);
-              proxyFrame.srcdoc = fixed;
-              iframeUrlSpan.textContent = url;
-              return true;
-            }
-          } catch(e2) {}
-        }
+      for (let proxy of [PROXY_URL, ...FALLBACK_PROXIES]) {
+        try {
+          const res = await fetch(proxy + encoded);
+          if (res.ok) {
+            let html = await res.text();
+            const base = url.match(/^https?:\/\/[^\/]+/)[0];
+            html = html.replace('<head>', `<head><base href="${base}/">`);
+            proxyFrame.srcdoc = html;
+            iframeUrlSpan.textContent = url;
+            return true;
+          }
+        } catch(e) {}
       }
       return false;
     }
@@ -731,92 +616,23 @@
       const formatted = formatUrl(rawUrl);
       currentUrl = formatted;
       searchInput.value = formatted;
-      
       iframeUrlSpan.textContent = 'Loading...';
-      proxyFrame.srcdoc = '<html><body style="background:#1a1a1a;display:flex;align-items:center;justify-content:center;font-family:sans-serif;padding:40px;color:white;"><div style="text-align:center"><div class="spinner" style="margin:0 auto 20px;"></div>Loading via Fanter Proxy...<br><small>First request may take 30-60 seconds (waking up)</small></div></body></html>';
+      proxyFrame.srcdoc = '<html><body style="background:#1a1a1a;display:flex;align-items:center;justify-content:center;font-family:sans-serif;padding:40px;color:white;"><div style="text-align:center"><div class="spinner"></div>Loading Fanter Proxy...<br><small>First request may take 30-60 seconds</small></div></body></html>';
       showIframe();
-      
       const success = await loadViaProxy(formatted);
       if (!success) {
-        proxyFrame.srcdoc = `<html><body style="background:#1a1a1a;padding:40px;text-align:center;font-family:sans-serif;color:white;"><h3>❌ Cannot load ${formatted}</h3><p>Possible reasons:<br>- Render proxy is waking up (30-60 sec)<br>- Site blocks proxies (try "Bypass Tab")<br>- Try again in a moment</p><button onclick="location.reload()" style="margin-top:20px;padding:10px 24px;background:#4a6e4a;color:white;border:none;border-radius:30px;cursor:pointer">Retry</button></body></html>`;
+        proxyFrame.srcdoc = `<html><body style="background:#1a1a1a;padding:40px;text-align:center;font-family:sans-serif;color:white;"><h3>❌ Cannot load ${formatted}</h3><p>Try the "Bypass" button with a different method.</p></body></html>`;
         iframeUrlSpan.textContent = `Failed: ${formatted}`;
       }
       localStorage.setItem('fanterLastUrl', formatted);
     }
 
     // ============================================================
-    // about:blank POPUP BYPASS (Opens in blank page to bypass blocks)
+    // MULTIPLE BYPASS METHODS
     // ============================================================
-    function openInAboutBlank() {
-      let url = currentUrl;
-      if (!url) {
-        url = formatUrl(searchInput.value);
-      }
-      
-      // Create an about:blank popup
-      const blankWindow = window.open('about:blank', '_blank');
-      
-      // Write a meta refresh to navigate to the target URL
-      // This bypasses most school/work blocks
-      blankWindow.document.write(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <title>Fanter Proxy - Loading...</title>
-          <meta http-equiv="refresh" content="0; url=${url}">
-          <style>
-            body {
-              margin: 0;
-              padding: 40px;
-              font-family: 'Inter', sans-serif;
-              background: #1a1a1a;
-              color: white;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              min-height: 100vh;
-              text-align: center;
-            }
-            .loader {
-              width: 40px;
-              height: 40px;
-              border: 3px solid #4a6e4a;
-              border-top-color: transparent;
-              border-radius: 50%;
-              animation: spin 0.8s linear infinite;
-              margin: 0 auto 20px;
-            }
-            @keyframes spin {
-              to { transform: rotate(360deg); }
-            }
-          </style>
-        </head>
-        <body>
-          <div>
-            <div class="loader"></div>
-            <p>Loading ${url}...</p>
-            <p style="font-size: 12px; opacity: 0.7;">If nothing loads, click <a href="${url}" target="_blank">here</a></p>
-          </div>
-          <script>
-            // Fallback: if meta refresh doesn't work, try JavaScript redirect
-            setTimeout(() => {
-              window.location.href = "${url}";
-            }, 100);
-          <\/script>
-        </body>
-        </html>
-      `);
-      
-      // Store reference to prevent multiple popups
-      if (popupWindow && !popupWindow.closed) {
-        popupWindow.focus();
-      } else {
-        popupWindow = blankWindow;
-      }
-      
-      // Show toast notification
+    function showToast(msg) {
       const toast = document.createElement('div');
-      toast.textContent = '🔓 Opened in about:blank popup - should bypass blocks!';
+      toast.textContent = msg;
       toast.style.position = 'fixed';
       toast.style.bottom = '80px';
       toast.style.left = '50%';
@@ -832,7 +648,57 @@
       setTimeout(() => toast.remove(), 3000);
     }
 
-    // Fullscreen + Cursor Lock
+    function openBypass() {
+      let url = currentUrl;
+      if (!url) url = formatUrl(searchInput.value);
+      const method = bypassMethodSelect.value;
+      
+      switch(method) {
+        case 'popup':
+          // Method 1: JavaScript popup redirect
+          const popup = window.open('', '_blank');
+          if (!popup) { alert('Popup blocked! Allow popups for this site.'); return; }
+          popup.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head><title>Fanter Proxy</title></head>
+            <body>
+              <script>window.location.href="${url}";<\/script>
+            </body>
+            </html>
+          `);
+          showToast('🔓 Opened with JavaScript Popup method');
+          break;
+          
+        case 'data':
+          // Method 2: data: URL
+          const redirectHtml = `<!DOCTYPE html><html><head><title>Fanter Proxy</title></head><body><script>window.location.href="${url}";<\/script></body></html>`;
+          const dataUrl = 'data:text/html,' + encodeURIComponent(redirectHtml);
+          window.open(dataUrl, '_blank');
+          showToast('🔓 Opened with data: URL method');
+          break;
+          
+        case 'blank':
+          // Method 3: about:blank
+          const blankWin = window.open('about:blank', '_blank');
+          blankWin.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head><title>Fanter Proxy</title><meta http-equiv="refresh" content="0; url=${url}"></head>
+            <body><script>window.location.href="${url}";<\/script></body>
+            </html>
+          `);
+          showToast('🔓 Opened with about:blank method');
+          break;
+          
+        case 'direct':
+          // Method 4: Direct tab
+          window.open(url, '_blank');
+          showToast('🔓 Opened in new tab (direct)');
+          break;
+      }
+    }
+
     function toggleFullscreen() {
       if (!document.fullscreenElement) {
         iframeContainer.requestFullscreen().then(() => {
@@ -853,64 +719,35 @@
       }
     }
 
-    function refreshIframe() {
-      if (currentUrl) loadUrl(currentUrl);
-    }
+    function refreshIframe() { if (currentUrl) loadUrl(currentUrl); }
 
-    // Dropdown
     function buildDropdown() {
       dropdownMenu.innerHTML = '';
       quickLinks.forEach(link => {
         const item = document.createElement('div');
         item.className = 'quicklink-item';
-        item.innerHTML = `
-          <img class="quicklink-icon" src="${link.icon}" alt="${link.name}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%234a6e4a%22%3E%3Cpath d=%22M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15h-2v-2h2v2zm0-4h-2V7h2v6z%22/%3E%3C/svg%3E'">
-          <span class="quicklink-name">${link.name}</span>
-        `;
-        item.addEventListener('click', () => {
-          searchInput.value = link.url;
-          loadUrl(link.url);
-          dropdownMenu.classList.remove('open');
-          dropdownArrow.classList.remove('open');
-        });
+        item.innerHTML = `<img class="quicklink-icon" src="${link.icon}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%234a6e4a%22%3E%3Cpath d=%22M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15h-2v-2h2v2zm0-4h-2V7h2v6z%22/%3E%3C/svg%3E'"><span class="quicklink-name">${link.name}</span>`;
+        item.addEventListener('click', () => { searchInput.value = link.url; loadUrl(link.url); dropdownMenu.classList.remove('open'); dropdownArrow.classList.remove('open'); });
         dropdownMenu.appendChild(item);
       });
     }
 
-    dropdownTrigger.addEventListener('click', (e) => {
-      e.stopPropagation();
-      dropdownMenu.classList.toggle('open');
-      dropdownArrow.classList.toggle('open');
-    });
-    document.addEventListener('click', (e) => {
-      if (!dropdownTrigger.contains(e.target)) {
-        dropdownMenu.classList.remove('open');
-        dropdownArrow.classList.remove('open');
-      }
-    });
+    dropdownTrigger.addEventListener('click', (e) => { e.stopPropagation(); dropdownMenu.classList.toggle('open'); dropdownArrow.classList.toggle('open'); });
+    document.addEventListener('click', (e) => { if (!dropdownTrigger.contains(e.target)) { dropdownMenu.classList.remove('open'); dropdownArrow.classList.remove('open'); } });
 
-    // Event Listeners
-    goBtn.addEventListener('click', () => {
-      const query = searchInput.value.trim();
-      if (query) loadUrl(query);
-    });
-    searchInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') loadUrl(searchInput.value);
-    });
+    goBtn.addEventListener('click', () => { if (searchInput.value.trim()) loadUrl(searchInput.value); });
+    searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') loadUrl(searchInput.value); });
     fullscreenBtn.addEventListener('click', toggleFullscreen);
     refreshBtn.addEventListener('click', refreshIframe);
-    directTabBtn.addEventListener('click', openInAboutBlank);
+    directTabBtn.addEventListener('click', openBypass);
 
-    // Initialize
     initPoints();
     animateBackground();
     buildDropdown();
     initTheme();
-
     const last = localStorage.getItem('fanterLastUrl');
     if (last) searchInput.value = last;
-    
-    console.log('🔥 Fanter Search ready — about:blank popup bypass added!');
+    console.log('🔥 Fanter Search ready — Multiple bypass methods available!');
   </script>
 </body>
 </html>
