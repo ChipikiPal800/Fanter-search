@@ -12,281 +12,444 @@
     }
 
     body {
-      background: linear-gradient(135deg, #0a0f1a, #0d1525);
-      font-family: 'Segoe UI', 'Courier New', monospace;
+      background: #0a0a0a;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', system-ui, sans-serif;
       min-height: 100vh;
+      color: #fff;
     }
 
-    .proxy-header {
-      background: rgba(0,0,0,0.8);
-      backdrop-filter: blur(10px);
-      border-bottom: 2px solid #fbbf24;
-      padding: 15px 20px;
+    /* Modern Header */
+    .header {
+      background: rgba(10, 10, 10, 0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       position: sticky;
       top: 0;
       z-index: 100;
     }
 
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
     .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
       font-size: 24px;
-      font-weight: bold;
-      color: #fbbf24;
-      margin-bottom: 15px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #fff 0%, #666 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
     }
 
     .logo span {
-      color: #3b82f6;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
     }
 
-    .search-bar {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .search-bar input {
+    /* Search Bar */
+    .search-container {
       flex: 1;
+      max-width: 500px;
+    }
+
+    .search-wrapper {
+      display: flex;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 60px;
+      padding: 4px;
+      transition: all 0.2s;
+    }
+
+    .search-wrapper:focus-within {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+
+    .search-wrapper input {
+      flex: 1;
+      background: transparent;
+      border: none;
       padding: 12px 20px;
-      border-radius: 50px;
-      border: 1px solid #fbbf24;
-      background: rgba(0,0,0,0.5);
-      color: white;
-      font-size: 16px;
+      color: #fff;
+      font-size: 15px;
       outline: none;
     }
 
-    .search-bar input:focus {
-      border-color: #3b82f6;
-      box-shadow: 0 0 10px rgba(59,130,246,0.3);
+    .search-wrapper input::placeholder {
+      color: #555;
     }
 
-    .search-bar button {
-      padding: 12px 25px;
-      border-radius: 50px;
+    .search-wrapper button {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
       border: none;
-      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      border-radius: 60px;
+      padding: 8px 24px;
       color: white;
-      font-weight: bold;
+      font-weight: 600;
       cursor: pointer;
       transition: all 0.2s;
+      font-size: 14px;
     }
 
-    .search-bar button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(59,130,246,0.4);
+    .search-wrapper button:hover {
+      transform: scale(0.98);
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
     }
 
-    .proxy-methods {
-      margin-top: 15px;
+    /* Mode Toggle */
+    .mode-toggle {
       display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 60px;
+      padding: 4px;
     }
 
-    .method-btn {
-      background: rgba(255,255,255,0.1);
-      border: 1px solid #fbbf24;
-      border-radius: 30px;
-      padding: 6px 15px;
-      color: white;
-      font-size: 12px;
+    .mode-btn {
+      background: transparent;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 60px;
+      color: #888;
+      font-size: 13px;
+      font-weight: 500;
       cursor: pointer;
       transition: all 0.2s;
     }
 
-    .method-btn.active {
-      background: #fbbf24;
-      color: #1a1200;
-    }
-
-    .method-btn:hover {
+    .mode-btn.active {
       background: #3b82f6;
-      border-color: #3b82f6;
+      color: white;
     }
 
-    .info-bar {
-      background: rgba(0,0,0,0.5);
-      padding: 8px 20px;
+    .mode-btn:hover:not(.active) {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+
+    /* Quick Access Section */
+    .quick-section {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 24px;
+    }
+
+    .section-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 12px;
+    }
+
+    .quick-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .quick-card:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(59, 130, 246, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .quick-emoji {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    .quick-name {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .quick-url {
+      font-size: 10px;
+      color: #555;
+      margin-top: 4px;
+    }
+
+    /* Result Area */
+    .result-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px 24px;
+      min-height: 400px;
+    }
+
+    .result-header {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
       display: flex;
       justify-content: space-between;
-      font-size: 12px;
-      color: #aaa;
+      align-items: center;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 12px;
     }
 
-    .status {
-      color: #22c55e;
-    }
-
-    .warning {
-      color: #fbbf24;
-    }
-
-    .proxy-container {
-      height: calc(100vh - 160px);
-      width: 100%;
-      position: relative;
-    }
-
-    .result-area {
-      padding: 20px;
-      color: white;
-      height: 100%;
-      overflow-y: auto;
+    .current-url {
+      font-size: 13px;
+      color: #888;
       font-family: monospace;
     }
 
-    .result-area a {
-      color: #3b82f6;
-      text-decoration: none;
-    }
-
-    .result-area img {
-      max-width: 100%;
-    }
-
-    .loading {
-      text-align: center;
-      padding: 50px;
-      color: #fbbf24;
-    }
-
-    .footer {
-      background: rgba(0,0,0,0.7);
-      padding: 5px 20px;
-      font-size: 10px;
-      color: #666;
-      text-align: center;
-    }
-
-    .footer a {
-      color: #fbbf24;
-      text-decoration: none;
-    }
-
-    .proxy-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    .action-buttons {
+      display: flex;
       gap: 10px;
-      margin-top: 15px;
     }
 
-    .proxy-card {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid #333;
-      border-radius: 10px;
-      padding: 10px;
+    .action-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 30px;
+      padding: 6px 14px;
+      color: #ddd;
+      font-size: 12px;
       cursor: pointer;
       transition: all 0.2s;
     }
 
-    .proxy-card:hover {
-      border-color: #fbbf24;
-      background: rgba(255,255,255,0.1);
+    .action-btn:hover {
+      background: rgba(59, 130, 246, 0.2);
+      border-color: #3b82f6;
+      color: white;
     }
 
-    .proxy-card h4 {
-      color: #fbbf24;
-      margin-bottom: 5px;
+    .content-frame {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      min-height: 500px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     }
 
-    .proxy-card p {
+    .content-frame iframe {
+      width: 100%;
+      height: 70vh;
+      border: none;
+    }
+
+    .content-text {
+      background: #0f0f0f;
+      border-radius: 16px;
+      padding: 20px;
+      color: #ddd;
+      font-family: monospace;
+      font-size: 12px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+
+    /* Loading */
+    .loading-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(59, 130, 246, 0.2);
+      border-top-color: #3b82f6;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Welcome Screen */
+    .welcome {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .welcome-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+    }
+
+    .welcome h2 {
+      font-size: 28px;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #fff, #888);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .welcome p {
+      color: #666;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 24px;
       font-size: 11px;
-      color: #aaa;
+      color: #444;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      margin-top: 40px;
+    }
+
+    .footer a {
+      color: #555;
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      color: #3b82f6;
+    }
+
+    /* Hide scrollbar but keep functionality */
+    .content-text::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .content-text::-webkit-scrollbar-track {
+      background: #1a1a1a;
+    }
+
+    .content-text::-webkit-scrollbar-thumb {
+      background: #333;
+      border-radius: 4px;
     }
   </style>
 </head>
 <body>
-  <div class="proxy-header">
-    <div class="logo">Fanter <span>Search</span> 🔍</div>
-    <div class="search-bar">
-      <input type="text" id="urlInput" placeholder="Enter URL (e.g., youtube.com, discord.com)">
-      <button id="goBtn">🌐 Go</button>
-      <button id="newTabBtn">📌 Open Direct</button>
-    </div>
-    <div class="proxy-methods">
-      <button class="method-btn active" data-method="cors">CORS Proxy</button>
-      <button class="method-btn" data-method="text">Text Mode</button>
-      <button class="method-btn" data-method="direct">Direct Link</button>
-    </div>
-  </div>
-
-  <div class="info-bar">
-    <div class="status">🟢 Fanter Search Active</div>
-    <div class="warning">⚠️ Some sites may not work. Try different methods.</div>
-    <div>🔒 Your privacy is respected</div>
-  </div>
-
-  <div class="proxy-container">
-    <div id="resultArea" class="result-area">
-      <div style="text-align: center; padding: 50px;">
-        <h2>🔍 Welcome to Fanter Search</h2>
-        <p>Enter a URL above to browse freely.</p>
-        <p style="font-size: 12px; margin-top: 20px;">Popular sites: YouTube, Discord, Reddit, Twitch, Spotify</p>
-        
-        <div style="margin-top: 30px;">
-          <h3>Quick Access</h3>
-          <div class="proxy-list" id="quickLinks">
-            <div class="proxy-card" data-url="youtube.com">
-              <h4>🎬 YouTube</h4>
-              <p>Watch videos</p>
-            </div>
-            <div class="proxy-card" data-url="discord.com">
-              <h4>💬 Discord</h4>
-              <p>Chat with friends</p>
-            </div>
-            <div class="proxy-card" data-url="reddit.com">
-              <h4>📱 Reddit</h4>
-              <p>Browse communities</p>
-            </div>
-            <div class="proxy-card" data-url="twitch.tv">
-              <h4>🎮 Twitch</h4>
-              <p>Watch streams</p>
-            </div>
-            <div class="proxy-card" data-url="spotify.com">
-              <h4>🎵 Spotify</h4>
-              <p>Listen to music</p>
-            </div>
-            <div class="proxy-card" data-url="cloudmoonapp.com">
-              <h4>☁️Cloudmoon</h4>
-              <p>Play games easily</p>
-            </div>
-          </div>
+  <div class="header">
+    <div class="header-content">
+      <div class="logo">
+        🔍 FANTER<span>Search</span>
+      </div>
+      <div class="search-container">
+        <div class="search-wrapper">
+          <input type="text" id="urlInput" placeholder="Enter URL or search...">
+          <button id="goBtn">Go</button>
         </div>
+      </div>
+      <div class="mode-toggle">
+        <button class="mode-btn active" data-mode="proxy">Proxy</button>
+        <button class="mode-btn" data-mode="direct">Direct</button>
+        <button class="mode-btn" data-mode="source">Source</button>
       </div>
     </div>
   </div>
 
+  <div class="quick-section">
+    <div class="section-title">⚡ QUICK ACCESS</div>
+    <div class="quick-grid" id="quickGrid">
+      <div class="quick-card" data-url="youtube.com">
+        <div class="quick-emoji">🎬</div>
+        <div class="quick-name">YouTube</div>
+        <div class="quick-url">youtube.com</div>
+      </div>
+      <div class="quick-card" data-url="discord.com">
+        <div class="quick-emoji">💬</div>
+        <div class="quick-name">Discord</div>
+        <div class="quick-url">discord.com</div>
+      </div>
+      <div class="quick-card" data-url="reddit.com">
+        <div class="quick-emoji">📱</div>
+        <div class="quick-name">Reddit</div>
+        <div class="quick-url">reddit.com</div>
+      </div>
+      <div class="quick-card" data-url="twitch.tv">
+        <div class="quick-emoji">🎮</div>
+        <div class="quick-name">Twitch</div>
+        <div class="quick-url">twitch.tv</div>
+      </div>
+      <div class="quick-card" data-url="spotify.com">
+        <div class="quick-emoji">🎵</div>
+        <div class="quick-name">Spotify</div>
+        <div class="quick-url">spotify.com</div>
+      </div>
+      <div class="quick-card" data-url="roblox.com">
+        <div class="quick-emoji">🎲</div>
+        <div class="quick-name">Roblox</div>
+        <div class="quick-url">roblox.com</div>
+      </div>
+      <div class="quick-card" data-url="github.com">
+        <div class="quick-emoji">🐙</div>
+        <div class="quick-name">GitHub</div>
+        <div class="quick-url">github.com</div>
+      </div>
+      <div class="quick-card" data-url="x.com">
+        <div class="quick-emoji">🐦</div>
+        <div class="quick-name">X / Twitter</div>
+        <div class="quick-url">x.com</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="result-container" id="resultContainer">
+    <div class="welcome">
+      <div class="welcome-icon">🌐</div>
+      <h2>Browse freely</h2>
+      <p>Enter a URL above or click a quick link to get started</p>
+    </div>
+  </div>
+
   <div class="footer">
-    <span>Fanter Search - Browse freely | <a href="#" id="clearBtn">Clear</a> | <a href="#" id="homeBtn">Home</a></span>
+    <span>Fanter Search • Browse freely • <a href="#" id="clearBtn">Clear</a> • <a href="#" id="homeBtn">Home</a></span>
   </div>
 
   <script>
     // ============================================================
-    // FANTER SEARCH - WORKING PROXY
+    // FANTER SEARCH - CLEAN MODERN UI
     // ============================================================
     
     const urlInput = document.getElementById('urlInput');
     const goBtn = document.getElementById('goBtn');
-    const newTabBtn = document.getElementById('newTabBtn');
-    const resultArea = document.getElementById('resultArea');
+    const resultContainer = document.getElementById('resultContainer');
     const clearBtn = document.getElementById('clearBtn');
     const homeBtn = document.getElementById('homeBtn');
     
-    let currentMethod = 'cors';
-    
-    // Free CORS proxies (rotate if one fails)
-const corsProxies = [
-  'https://fanter-search-proxy.onrender.com/proxy?url=',  
-  'https://corsproxy.io/?url=',
-  'https://cors-anywhere.herokuapp.com/',
-  'https://proxy.cors.sh/'
-];
-    
-    let currentProxyIndex = 0;
-    
-    // Format URL
+    let currentMode = 'proxy';
+    let currentUrl = '';
+
+    // CORS proxies
+    const corsProxies = [
+      'https://fanter-search-proxy.onrender.com/proxy?url=',
+      'https://corsproxy.io/?url=',
+      'https://cors-anywhere.herokuapp.com/'
+    ];
+
     function formatUrl(input) {
       let url = input.trim();
       if (!url.startsWith('http://') && !url.startsWith('https://')) {
@@ -294,14 +457,27 @@ const corsProxies = [
       }
       return url;
     }
-    
-    // Show loading
+
     function showLoading() {
-      resultArea.innerHTML = '<div class="loading"><div class="loading-spinner" style="width:40px;height:40px;border:3px solid #fbbf24;border-top-color:#3b82f6;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 20px;"></div><p>Loading...</p><style>@keyframes spin{to{transform:rotate(360deg)}}</style></div>';
+      resultContainer.innerHTML = `
+        <div class="loading-container">
+          <div class="spinner"></div>
+          <p style="margin-top: 20px; color: #666;">Loading...</p>
+        </div>
+      `;
     }
-    
-    // Load via CORS proxy
-    async function loadViaCors(url) {
+
+    function showWelcome() {
+      resultContainer.innerHTML = `
+        <div class="welcome">
+          <div class="welcome-icon">🌐</div>
+          <h2>Browse freely</h2>
+          <p>Enter a URL above or click a quick link to get started</p>
+        </div>
+      `;
+    }
+
+    async function loadViaProxy(url) {
       const encodedUrl = encodeURIComponent(url);
       
       for (let i = 0; i < corsProxies.length; i++) {
@@ -311,22 +487,19 @@ const corsProxies = [
           
           if (response.ok) {
             let html = await response.text();
-            
-            // Inject base tag to fix relative links
             const baseUrl = url.match(/^https?:\/\/[^\/]+/)[0];
             html = html.replace('<head>', `<head><base href="${baseUrl}/">`);
             
-            // Display as HTML
-            resultArea.innerHTML = `
-              <div style="background:rgba(0,0,0,0.5);padding:10px;border-radius:10px;margin-bottom:15px;">
-                <div>🌐 Currently viewing: <strong>${url}</strong></div>
-                <div style="font-size:11px;margin-top:5px;">
-                  <button onclick="window.open('${url}', '_blank')" style="background:#3b82f6;border:none;padding:5px 10px;border-radius:5px;color:white;cursor:pointer;">Open Direct</button>
-                  <button onclick="location.reload()" style="background:#fbbf24;border:none;padding:5px 10px;border-radius:5px;color:#1a1200;cursor:pointer;margin-left:10px;">Refresh</button>
+            resultContainer.innerHTML = `
+              <div class="result-header">
+                <div class="current-url">🌐 ${escapeHtml(url)}</div>
+                <div class="action-buttons">
+                  <button class="action-btn" onclick="window.open('${url}', '_blank')">Open New Tab</button>
+                  <button class="action-btn" onclick="location.reload()">Refresh</button>
                 </div>
               </div>
-              <div style="background:white;padding:20px;border-radius:10px;color:black;">
-                ${html}
+              <div class="content-frame">
+                <iframe srcdoc="${escapeHtml(html)}" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals"></iframe>
               </div>
             `;
             return true;
@@ -337,9 +510,8 @@ const corsProxies = [
       }
       return false;
     }
-    
-    // Load via text mode (shows source)
-    async function loadViaText(url) {
+
+    async function loadViaSource(url) {
       const encodedUrl = encodeURIComponent(url);
       const proxyUrl = corsProxies[0] + encodedUrl;
       
@@ -347,136 +519,118 @@ const corsProxies = [
         const response = await fetch(proxyUrl);
         if (response.ok) {
           const text = await response.text();
-          resultArea.innerHTML = `
-            <div style="background:rgba(0,0,0,0.5);padding:10px;border-radius:10px;margin-bottom:15px;">
-              <div>📄 Source of: <strong>${url}</strong></div>
-              <div style="font-size:11px;margin-top:5px;">
-                <button onclick="window.open('${url}', '_blank')" style="background:#3b82f6;border:none;padding:5px 10px;border-radius:5px;color:white;cursor:pointer;">Open Direct</button>
+          resultContainer.innerHTML = `
+            <div class="result-header">
+              <div class="current-url">📄 Source of ${escapeHtml(url)}</div>
+              <div class="action-buttons">
+                <button class="action-btn" onclick="window.open('${url}', '_blank')">Open Direct</button>
               </div>
             </div>
-            <pre style="background:#1a1a2e;padding:15px;border-radius:10px;overflow-x:auto;font-size:11px;color:#ddd;">${escapeHtml(text.substring(0, 50000))}</pre>
+            <div class="content-text">${escapeHtml(text.substring(0, 50000))}</div>
           `;
           return true;
         }
       } catch(e) {}
       return false;
     }
-    
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
+
+    function loadDirect(url) {
+      window.open(url, '_blank');
+      resultContainer.innerHTML = `
+        <div class="welcome">
+          <div class="welcome-icon">🔗</div>
+          <h2>Opened in new tab</h2>
+          <p>${escapeHtml(url)}</p>
+          <button onclick="showWelcome()" style="margin-top:20px;background:#3b82f6;border:none;padding:10px 24px;border-radius:30px;color:white;cursor:pointer;">Back</button>
+        </div>
+      `;
+      return true;
     }
-    
-    // Main load function
+
     async function loadUrl(url) {
       const formattedUrl = formatUrl(url);
+      currentUrl = formattedUrl;
       urlInput.value = formattedUrl;
       showLoading();
       
       let success = false;
       
-      if (currentMethod === 'cors') {
-        success = await loadViaCors(formattedUrl);
+      if (currentMode === 'proxy') {
+        success = await loadViaProxy(formattedUrl);
         if (!success) {
-          resultArea.innerHTML = `
-            <div style="text-align:center;padding:50px;">
-              <h3>❌ Cannot load ${formattedUrl}</h3>
-              <p>Try these options:</p>
-              <ul style="text-align:left;display:inline-block;margin-top:20px;">
-                <li>Click "Open Direct" to open in new tab</li>
-                <li>Try "Text Mode" to see page source</li>
-                <li>Try a different URL</li>
-              </ul>
+          resultContainer.innerHTML = `
+            <div class="welcome">
+              <div class="welcome-icon">❌</div>
+              <h2>Cannot load ${escapeHtml(formattedUrl)}</h2>
+              <p>Try Direct mode or Source mode</p>
             </div>
           `;
         }
-      } else if (currentMethod === 'text') {
-        success = await loadViaText(formattedUrl);
-      } else if (currentMethod === 'direct') {
-        window.open(formattedUrl, '_blank');
-        resultArea.innerHTML = `<div style="text-align:center;padding:50px;"><p>Opened ${formattedUrl} in a new tab.</p><button onclick="location.reload()" style="background:#3b82f6;border:none;padding:10px 20px;border-radius:10px;color:white;cursor:pointer;">Back</button></div>`;
-        success = true;
+      } else if (currentMode === 'source') {
+        success = await loadViaSource(formattedUrl);
+      } else if (currentMode === 'direct') {
+        success = loadDirect(formattedUrl);
       }
       
-      if (success && currentMethod !== 'direct') {
+      if (success && currentMode !== 'direct') {
         localStorage.setItem('lastProxyUrl', formattedUrl);
       }
     }
-    
-    // Method switching
-    document.querySelectorAll('.method-btn').forEach(btn => {
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Mode switching
+    document.querySelectorAll('.mode-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        document.querySelectorAll('.method-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        currentMethod = btn.dataset.method;
-        
-        let message = '';
-        if (currentMethod === 'cors') message = 'CORS Proxy mode - Best for most sites';
-        else if (currentMethod === 'text') message = 'Text mode - Shows page source code';
-        else message = 'Direct mode - Opens in new tab';
-        
-        resultArea.innerHTML = `<div style="text-align:center;padding:50px;"><p>✅ Switched to ${message}</p><p>Enter a URL above to begin.</p></div>`;
+        currentMode = btn.dataset.mode;
+        showWelcome();
       });
     });
-    
+
     // Quick links
-    document.querySelectorAll('.proxy-card').forEach(card => {
+    document.querySelectorAll('.quick-card').forEach(card => {
       card.addEventListener('click', () => {
         const url = card.dataset.url;
         urlInput.value = url;
         loadUrl(url);
       });
     });
-    
+
     // Go button
     goBtn.addEventListener('click', () => {
-      const url = urlInput.value;
-      if (url) loadUrl(url);
+      if (urlInput.value) loadUrl(urlInput.value);
     });
-    
+
     // Enter key
     urlInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        loadUrl(urlInput.value);
-      }
+      if (e.key === 'Enter') loadUrl(urlInput.value);
     });
-    
-    // New tab button
-    newTabBtn.addEventListener('click', () => {
-      const url = formatUrl(urlInput.value);
-      window.open(url, '_blank');
-    });
-    
+
     // Clear button
     clearBtn.addEventListener('click', () => {
       localStorage.removeItem('lastProxyUrl');
       urlInput.value = '';
-      resultArea.innerHTML = `
-        <div style="text-align:center;padding:50px;">
-          <h2>🔍 Welcome to Fanter Search</h2>
-          <p>Enter a URL above to browse freely.</p>
-        </div>
-      `;
+      showWelcome();
     });
-    
+
     // Home button
     homeBtn.addEventListener('click', () => {
       urlInput.value = '';
-      resultArea.innerHTML = `
-        <div style="text-align:center;padding:50px;">
-          <h2> welcome to Fanter Search</h2>
-          <p>enter a URL above to browse freely :3</p>
-        </div>
-      `;
+      showWelcome();
     });
-    
-    // Load last URL on startup
+
+    // Load last URL
     const lastUrl = localStorage.getItem('lastProxyUrl');
     if (lastUrl) {
       urlInput.value = lastUrl;
     }
-    
+
     console.log('🔥 Fanter Search ready!');
   </script>
 </body>
