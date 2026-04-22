@@ -3,379 +3,317 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Fanter Search | Browse Freely</title>
+  <title>fanter search</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', system-ui, sans-serif;
+      background: #0a0a0a;
+      color: #e0e0e0;
       min-height: 100vh;
-      transition: background 0.3s ease, color 0.2s ease;
-      overflow-x: hidden;
-      position: relative;
+      transition: background 0.2s ease;
     }
 
-    /* Themes */
-    body.dark { background: #1a1a1a; color: #e0e0e0; }
-    body.light { background: #e8e8e8; color: #1a2e1a; }
-    body.dark-green { background: #0d1f0d; color: #c0e0c0; }
-    body.purple { background: #1a0a2e; color: #d0c0e0; }
+    body.light {
+      background: #f5f5f5;
+      color: #1a1a1a;
+    }
 
-    #bgCanvas {
+    body.dark-green {
+      background: #0d1f0d;
+      color: #c0e0c0;
+    }
+
+    body.purple {
+      background: #1a0a2e;
+      color: #d0c0e0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* status bar only - no header */
+    .status-bar {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-      pointer-events: none;
-    }
-
-    .main-content {
-      position: relative;
-      z-index: 10;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.4s ease;
-    }
-
-    .main-content.has-iframe { justify-content: flex-start; padding-top: 20px; }
-
-    /* Header Bar */
-    .header-bar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      background: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(10px);
-      padding: 8px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      z-index: 50;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .header-left {
+      top: 20px;
+      left: 20px;
       display: flex;
       align-items: center;
       gap: 15px;
-    }
-
-    .logo-small {
-      font-size: 18px;
-      font-weight: bold;
-      background: linear-gradient(135deg, #4a6e4a, #6a8e6a);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
+      font-size: 11px;
+      z-index: 50;
     }
 
     .status-dot {
-      width: 10px;
-      height: 10px;
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
       display: inline-block;
       margin-right: 5px;
     }
-    .status-online { background: #22c55e; box-shadow: 0 0 5px #22c55e; }
-    .status-warning { background: #fbbf24; }
-    .status-offline { background: #ef4444; }
+    .online { background: #22c55e; box-shadow: 0 0 5px #22c55e; }
+    .slow { background: #fbbf24; }
+    .offline { background: #ef4444; }
 
-    .proxy-status {
-      font-size: 11px;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .header-right {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .header-btn {
-      background: rgba(255, 255, 255, 0.1);
-      border: none;
-      border-radius: 30px;
-      padding: 5px 12px;
-      color: inherit;
-      font-size: 12px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .header-btn:hover { background: rgba(255, 255, 255, 0.2); }
-
-    .panic-btn {
-      background: #ef4444;
-      color: white;
-    }
-    .panic-btn:hover { background: #dc2626; }
-
-    /* Tab Bar */
-    .tab-bar {
+    /* right side buttons */
+    .right-buttons {
       position: fixed;
-      top: 52px;
-      left: 0;
-      right: 0;
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(10px);
-      padding: 5px 10px;
+      right: 20px;
+      top: 20px;
       display: flex;
-      gap: 5px;
-      overflow-x: auto;
-      z-index: 49;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      flex-direction: column;
+      gap: 10px;
+      z-index: 100;
     }
 
-    .tab {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 20px;
-      padding: 5px 12px;
-      font-size: 11px;
-      cursor: pointer;
+    .round-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: rgba(30, 30, 35, 0.9);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       display: flex;
       align-items: center;
-      gap: 8px;
-      white-space: nowrap;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 18px;
       transition: all 0.2s;
+      color: #e0e0e0;
     }
 
-    .tab.active {
+    body.light .round-btn {
+      background: rgba(220, 220, 220, 0.9);
+      border-color: rgba(0, 0, 0, 0.1);
+      color: #1a1a1a;
+    }
+
+    .round-btn:hover {
+      transform: scale(1.05);
       background: #4a6e4a;
       color: white;
     }
 
-    .tab-close {
-      background: none;
-      border: none;
-      color: inherit;
-      cursor: pointer;
-      font-size: 14px;
-      padding: 0 4px;
+    /* dropdown menus */
+    .dropdown {
+      position: absolute;
+      right: 0;
+      top: 50px;
+      background: #1e1e1e;
+      border-radius: 16px;
+      padding: 8px;
+      min-width: 220px;
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 101;
     }
 
-    .tab-close:hover { color: #ef4444; }
-
-    .new-tab-btn {
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 20px;
-      padding: 5px 12px;
-      font-size: 11px;
-      cursor: pointer;
-      transition: all 0.2s;
+    body.light .dropdown {
+      background: white;
+      border-color: rgba(0, 0, 0, 0.1);
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
     }
 
-    /* Theme Selector */
-    .theme-selector {
-      position: fixed;
-      bottom: 80px;
-      left: 24px;
-      background: rgba(30, 30, 35, 0.95);
-      backdrop-filter: blur(10px);
-      border-radius: 30px;
-      padding: 8px 15px;
+    .dropdown.show {
       display: flex;
-      gap: 8px;
-      z-index: 100;
     }
 
-    .theme-option {
-      width: 25px;
-      height: 25px;
-      border-radius: 50%;
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 15px;
+      border-radius: 10px;
       cursor: pointer;
-      border: 2px solid rgba(255, 255, 255, 0.2);
-      transition: all 0.2s;
+      font-size: 13px;
+      transition: background 0.2s;
     }
-    .theme-option:hover { transform: scale(1.1); }
-    .theme-dark { background: #1a1a1a; }
-    .theme-light { background: #e8e8e8; }
-    .theme-green { background: #0d1f0d; }
-    .theme-purple { background: #1a0a2e; }
 
-    /* Title */
+    .dropdown-item:hover {
+      background: rgba(74, 110, 74, 0.2);
+    }
+
+    .dropdown-icon {
+      width: 24px;
+      height: 24px;
+      object-fit: contain;
+      border-radius: 4px;
+    }
+
+    /* help panel */
+    .help-panel {
+      position: fixed;
+      right: 80px;
+      top: 20px;
+      width: 300px;
+      background: #1e1e1e;
+      border-radius: 20px;
+      padding: 18px;
+      display: none;
+      z-index: 99;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+    }
+
+    body.light .help-panel {
+      background: white;
+      border-color: rgba(0, 0, 0, 0.1);
+    }
+
+    .help-panel.show {
+      display: block;
+    }
+
+    .help-section {
+      margin-bottom: 15px;
+    }
+
+    .help-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #4a6e4a;
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+    }
+
+    .help-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 0;
+      font-size: 11px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .help-key {
+      background: #2a2a2a;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 10px;
+    }
+
+    body.light .help-key {
+      background: #e8e8e8;
+    }
+
+    /* search section */
+    .search-section {
+      text-align: center;
+      margin-top: 25vh;
+      transform: translateY(-50%);
+    }
+
     .title {
-      font-size: 3rem;
+      font-size: 42px;
       font-weight: 700;
+      margin-bottom: 25px;
       background: linear-gradient(135deg, #4a6e4a, #6a8e6a);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      margin-bottom: 20px;
-      text-align: center;
     }
 
-    /* Search Section */
-    .search-section {
-      width: 100%;
-      max-width: 650px;
+    .search-box {
+      max-width: 550px;
       margin: 0 auto;
-      transition: all 0.4s ease;
-      text-align: center;
     }
-
-    .main-content.has-iframe .search-section {
-      max-width: 500px;
-      margin-top: 60px;
-      margin-bottom: 20px;
-    }
-
-    .search-engine-select {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-
-    .engine-btn {
-      background: none;
-      border: none;
-      padding: 4px 12px;
-      border-radius: 20px;
-      cursor: pointer;
-      font-size: 11px;
-      color: #888;
-      transition: all 0.2s;
-    }
-    .engine-btn.active { background: #4a6e4a; color: white; }
 
     .search-wrapper {
-      background: white;
-      border-radius: 60px;
       display: flex;
-      align-items: center;
-      padding: 6px;
-      transition: all 0.3s;
-      border: 1px solid rgba(0, 0, 0, 0.08);
+      background: #1e1e1e;
+      border-radius: 60px;
+      border: 1px solid #333;
+      overflow: hidden;
+      transition: all 0.2s;
     }
 
-    body.dark .search-wrapper,
-    body.dark-green .search-wrapper,
-    body.purple .search-wrapper {
-      background: #2a2a2a;
-      border-color: rgba(255, 255, 255, 0.1);
+    body.light .search-wrapper {
+      background: white;
+      border-color: #ddd;
+    }
+
+    .search-wrapper:focus-within {
+      border-color: #4a6e4a;
+      box-shadow: 0 0 0 2px rgba(74, 110, 74, 0.2);
     }
 
     .search-wrapper input {
       flex: 1;
+      padding: 14px 22px;
       border: none;
-      padding: 14px 20px;
-      font-size: 1rem;
       background: transparent;
+      color: inherit;
+      font-size: 15px;
       outline: none;
-      font-family: inherit;
-      color: #1a2e1a;
     }
-
-    body.dark .search-wrapper input,
-    body.dark-green .search-wrapper input,
-    body.purple .search-wrapper input { color: #e0e0e0; }
-
-    .search-wrapper input::placeholder { color: #aaa; font-style: italic; }
 
     .search-wrapper button {
       background: #4a6e4a;
       border: none;
-      border-radius: 50px;
-      padding: 8px 24px;
+      padding: 0 24px;
       color: white;
-      font-weight: 600;
+      font-weight: 500;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+
+    .search-wrapper button:hover {
+      background: #3a5e3a;
+    }
+
+    /* quick links horizontal */
+    .quick-links {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 25px;
+    }
+
+    .quick-link {
+      background: #1e1e1e;
+      border: 1px solid #333;
+      border-radius: 40px;
+      padding: 6px 18px;
+      font-size: 12px;
       cursor: pointer;
       transition: all 0.2s;
     }
 
-    /* History Panel */
-    .history-panel {
-      position: fixed;
-      right: 20px;
-      top: 100px;
-      width: 260px;
-      background: rgba(0, 0, 0, 0.9);
-      backdrop-filter: blur(10px);
-      border-radius: 16px;
-      padding: 12px;
-      z-index: 200;
-      transform: translateX(300px);
-      transition: transform 0.3s ease;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+    body.light .quick-link {
+      background: white;
+      border-color: #ddd;
     }
 
-    .history-panel.open { transform: translateX(0); }
-
-    .history-title {
-      font-size: 12px;
-      font-weight: bold;
-      margin-bottom: 10px;
-      padding-bottom: 5px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    .quick-link:hover {
+      background: #4a6e4a;
+      border-color: #4a6e4a;
+      color: white;
     }
 
-    .history-list {
-      max-height: 300px;
-      overflow-y: auto;
-    }
-
-    .history-item {
-      padding: 8px;
-      font-size: 11px;
-      cursor: pointer;
-      border-radius: 8px;
-      transition: background 0.2s;
-      word-break: break-all;
-    }
-    .history-item:hover { background: rgba(255, 255, 255, 0.1); }
-
-    .clear-history {
-      margin-top: 10px;
-      text-align: center;
-      font-size: 10px;
-      color: #ef4444;
-      cursor: pointer;
-    }
-
-    /* Shortcuts hint */
-    .shortcuts-hint {
-      position: fixed;
-      bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 9px;
-      color: #555;
-      background: rgba(0,0,0,0.5);
-      padding: 4px 12px;
+    /* iframe area */
+    .iframe-area {
+      margin-top: 30px;
       border-radius: 20px;
-      pointer-events: none;
-      z-index: 100;
-    }
-
-    /* Iframe Container */
-    .iframe-container {
-      width: 90%;
-      max-width: 1300px;
-      margin: 30px auto 20px;
-      border-radius: 24px;
-      background: #1a1a1a;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
       overflow: hidden;
-      transform: scale(0.95);
-      opacity: 0;
-      transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.2);
-      pointer-events: none;
+      background: #1e1e1e;
+      border: 1px solid #333;
+      display: none;
     }
 
-    .iframe-container.visible {
-      transform: scale(1);
-      opacity: 1;
-      pointer-events: auto;
+    .iframe-area.show {
+      display: block;
     }
 
     .iframe-header {
@@ -383,357 +321,432 @@
       justify-content: space-between;
       align-items: center;
       padding: 10px 16px;
-      background: #2a2a2a;
-      border-bottom: 1px solid #3a3a3a;
+      background: #252525;
+      border-bottom: 1px solid #333;
+    }
+
+    body.light .iframe-header {
+      background: #f0f0f0;
+      border-bottom-color: #ddd;
     }
 
     .iframe-url {
-      font-size: 12px;
+      font-size: 11px;
       font-family: monospace;
-      white-space: nowrap;
+      color: #888;
+      flex: 1;
       overflow: hidden;
       text-overflow: ellipsis;
-      flex: 1;
-      color: #8aaa8a;
+      white-space: nowrap;
     }
 
-    .iframe-buttons { display: flex; gap: 8px; }
+    .iframe-buttons {
+      display: flex;
+      gap: 6px;
+    }
 
     .iframe-btn {
       background: none;
       border: none;
-      font-size: 13px;
-      cursor: pointer;
       padding: 4px 10px;
-      border-radius: 30px;
-      color: #8aaa8a;
-    }
-    .iframe-btn:hover { background: #3a4a3a; }
-
-    .mode-badge {
-      font-size: 10px;
-      padding: 2px 8px;
       border-radius: 20px;
-      background: #4a6e4a;
+      cursor: pointer;
+      color: #888;
+      font-size: 11px;
+      transition: all 0.2s;
+    }
+
+    .iframe-btn:hover {
+      background: #3a3a3a;
       color: white;
     }
 
-    iframe { width: 100%; height: 65vh; border: none; display: block; }
-
-    .spinner {
-      width: 40px;
-      height: 40px;
-      border: 3px solid rgba(74, 110, 74, 0.2);
-      border-top-color: #4a6e4a;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
+    iframe {
+      width: 100%;
+      height: 55vh;
+      border: none;
+      display: block;
     }
 
-    @keyframes spin { to { transform: rotate(360deg); } }
+    /* history panel */
+    .history-panel {
+      position: fixed;
+      left: 20px;
+      bottom: 20px;
+      background: #1e1e1e;
+      border-radius: 16px;
+      padding: 12px;
+      min-width: 240px;
+      max-width: 280px;
+      display: none;
+      border: 1px solid #333;
+      z-index: 100;
+    }
 
-    @media (max-width: 680px) {
-      .title { font-size: 2rem; }
-      .header-bar { flex-direction: column; align-items: stretch; }
-      .history-panel { width: 90%; right: 5%; top: auto; bottom: 80px; }
+    body.light .history-panel {
+      background: white;
+      border-color: #ddd;
+    }
+
+    .history-panel.show {
+      display: block;
+    }
+
+    .history-title {
+      font-size: 11px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid #333;
+    }
+
+    .history-list {
+      max-height: 180px;
+      overflow-y: auto;
+    }
+
+    .history-item {
+      padding: 6px 8px;
+      font-size: 11px;
+      cursor: pointer;
+      border-radius: 8px;
+      word-break: break-all;
+    }
+
+    .history-item:hover {
+      background: rgba(74, 110, 74, 0.2);
+    }
+
+    .clear-history {
+      margin-top: 8px;
+      text-align: center;
+      font-size: 10px;
+      color: #ef4444;
+      cursor: pointer;
+      padding-top: 5px;
+      border-top: 1px solid #333;
+    }
+
+    /* theme selector */
+    .theme-selector {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      gap: 6px;
+      background: #1e1e1e;
+      padding: 6px 10px;
+      border-radius: 40px;
+      border: 1px solid #333;
+    }
+
+    .theme-dot {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .theme-dot:hover {
+      transform: scale(1.1);
+    }
+
+    .theme-dot.active {
+      border-color: #4a6e4a;
+      box-shadow: 0 0 5px #4a6e4a;
+    }
+
+    .dot-dark { background: #1a1a1a; }
+    .dot-light { background: #f5f5f5; border: 1px solid #ddd; }
+    .dot-green { background: #0d1f0d; }
+    .dot-purple { background: #1a0a2e; }
+
+    /* toast */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #4a6e4a;
+      color: white;
+      padding: 6px 16px;
+      border-radius: 30px;
+      font-size: 11px;
+      z-index: 1000;
+      animation: fadeOut 2s forwards;
+    }
+
+    @keyframes fadeOut {
+      0% { opacity: 1; }
+      70% { opacity: 1; }
+      100% { opacity: 0; visibility: hidden; }
+    }
+
+    /* loading */
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+    }
+
+    .spinner {
+      width: 28px;
+      height: 28px;
+      border: 2px solid #4a6e4a;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* panic overlay */
+    .panic-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #0a0a0a;
+      z-index: 10000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .panic-overlay.show {
+      display: flex;
+    }
+
+    .panic-text {
+      font-size: 14px;
+      color: #888;
+      margin-top: 15px;
+    }
+
+    @media (max-width: 768px) {
+      .title { font-size: 32px; }
+      .help-panel { width: 260px; right: 70px; }
+      .search-section { margin-top: 20vh; }
     }
   </style>
 </head>
 <body class="dark">
-  <canvas id="bgCanvas"></canvas>
-
-  <!-- Header Bar -->
-  <div class="header-bar">
-    <div class="header-left">
-      <div class="logo-small">🔍 FANTER SEARCH</div>
-      <div class="proxy-status" id="proxyStatus">
-        <span class="status-dot status-warning" id="statusDot"></span>
-        <span id="statusText">Checking...</span>
-      </div>
-    </div>
-    <div class="header-right">
-      <button class="header-btn" id="historyBtn">📜 History</button>
-      <button class="header-btn" id="stealthModeBtn">👻 Stealth</button>
-      <button class="header-btn panic-btn" id="panicBtn">😱 PANIC</button>
-    </div>
-  </div>
-
-  <!-- Tab Bar -->
-  <div class="tab-bar" id="tabBar">
-    <div class="tab active" data-tab="0">🏠 Main</div>
-    <div class="new-tab-btn" id="newTabBtn">+ New Tab</div>
-  </div>
-
-  <!-- Theme Selector -->
-  <div class="theme-selector">
-    <div class="theme-option theme-dark" data-theme="dark" title="Dark"></div>
-    <div class="theme-option theme-light" data-theme="light" title="Light"></div>
-    <div class="theme-option theme-green" data-theme="dark-green" title="Forest"></div>
-    <div class="theme-option theme-purple" data-theme="purple" title="Purple"></div>
-  </div>
-
-  <!-- History Panel -->
-  <div class="history-panel" id="historyPanel">
-    <div class="history-title">📜 Recently Visited</div>
-    <div class="history-list" id="historyList"></div>
-    <div class="clear-history" id="clearHistory">Clear History</div>
-  </div>
-
-  <!-- Main Content -->
-  <div class="main-content" id="mainContent">
-    <div class="search-section">
-      <div class="title">Fanter Search</div>
-      <div class="search-engine-select">
-        <button class="engine-btn active" data-engine="google">🔍 Google</button>
-        <button class="engine-btn" data-engine="ddg">🦆 DuckDuckGo</button>
-      </div>
-      <div class="search-wrapper">
-        <input type="text" id="searchInput" placeholder="Search or type a URL...">
-        <button id="goBtn">Go</button>
-      </div>
-      <div style="font-size: 10px; margin-top: 8px; opacity: 0.6;">
-        💡 Tip: Ctrl+K = Search | Ctrl+T = New Tab | Ctrl+H = History | ` = Panic
+  <div class="container">
+    <!-- status bar only -->
+    <div class="status-bar">
+      <div class="proxy-status">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusText">checking...</span>
       </div>
     </div>
 
-    <div class="iframe-container" id="iframeContainer">
+    <!-- right side buttons -->
+    <div class="right-buttons">
+      <div class="round-btn" id="quickLinksBtn">⚡</div>
+      <div class="round-btn" id="helpBtn">❓</div>
+      <div class="round-btn" id="historyBtn">📜</div>
+      <div class="round-btn" id="panicBtn">😱</div>
+    </div>
+
+    <!-- quick links dropdown with images -->
+    <div class="dropdown" id="quickDropdown">
+      <div class="dropdown-item" data-url="youtube.com">
+        <img class="dropdown-icon" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdYYtpbk4xqsn2XvBocnTZjLJH2vsbPhYbRQ&s" onerror="this.style.display='none'">
+        <span>youtube</span>
+      </div>
+      <div class="dropdown-item" data-url="reddit.com">
+        <img class="dropdown-icon" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRYw6dBUuV1YaVQ3oSdn0xDl4SwmtCn2dKKiA&s" onerror="this.style.display='none'">
+        <span>reddit</span>
+      </div>
+      <div class="dropdown-item" data-url="cloudmoonapp.com">
+        <img class="dropdown-icon" src="https://img.utdstc.com/icon/12d/349/12d349d1cd13cc225122ccd090b211e69c79a84c5216e55689f55f382235e423:200" onerror="this.style.display='none'">
+        <span>cloudmoon</span>
+      </div>
+      <div class="dropdown-item" data-url="spotify.com">
+        <img class="dropdown-icon" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQP-SeOb6iBTaeMUiL_lj3ac3LKNYP5foHCAg&s" onerror="this.style.display='none'">
+        <span>spotify</span>
+      </div>
+      <div class="dropdown-item" data-url="now.gg">
+        <img class="dropdown-icon" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRduQjU8n0k3kzifCT8BUXSGpg-hYRdxMUX5A&s" onerror="this.style.display='none'">
+        <span>now.gg</span>
+      </div>
+      <div class="dropdown-item" data-url="xbox.com/play">
+        <img class="dropdown-icon" src="https://assets.play.xbox.com/playxbox/static/media/CloudGaming_LetterBox.scale-200.ef909bf4.png" onerror="this.style.display='none'">
+        <span>xbox cloud</span>
+      </div>
+      <div class="dropdown-item" data-url="play.geforcenow.com">
+        <img class="dropdown-icon" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQjQnPCY_I0L4_-bLIdU0CcuVkYTAPICicosQ&s" onerror="this.style.display='none'">
+        <span>geforce now</span>
+      </div>
+    </div>
+
+    <!-- help panel -->
+    <div class="help-panel" id="helpPanel">
+      <div class="help-section">
+        <div class="help-title">keyboard shortcuts</div>
+        <div class="help-item"><span>focus search</span><span class="help-key">ctrl + k</span></div>
+        <div class="help-item"><span>show history</span><span class="help-key">ctrl + h</span></div>
+        <div class="help-item"><span>panic mode</span><span class="help-key">` (backtick)</span></div>
+      </div>
+      <div class="help-section">
+        <div class="help-title">features</div>
+        <div class="help-item"><span>history</span><span>saves last 20 sites</span></div>
+        <div class="help-item"><span>text mode</span><span>removes ads & scripts</span></div>
+        <div class="help-item"><span>themes</span><span>dark, light, forest, purple</span></div>
+      </div>
+      <div class="help-section">
+        <div class="help-title">tips</div>
+        <div class="help-item"><span>type any url or search term</span></div>
+        <div class="help-item"><span>green dot = proxy working</span></div>
+      </div>
+    </div>
+
+    <!-- history panel -->
+    <div class="history-panel" id="historyPanel">
+      <div class="history-title">recently visited</div>
+      <div class="history-list" id="historyList"></div>
+      <div class="clear-history" id="clearHistory">clear history</div>
+    </div>
+
+    <!-- main search section -->
+    <div class="search-section" id="searchSection">
+      <div class="title">fanter search</div>
+      <div class="search-box">
+        <div class="search-wrapper">
+          <input type="text" id="searchInput" placeholder="search or type a url...">
+          <button id="goBtn">go</button>
+        </div>
+      </div>
+      <div class="quick-links" id="quickLinksRow">
+        <div class="quick-link" data-url="youtube.com">youtube</div>
+        <div class="quick-link" data-url="reddit.com">reddit</div>
+        <div class="quick-link" data-url="spotify.com">spotify</div>
+        <div class="quick-link" data-url="twitch.tv">twitch</div>
+        <div class="quick-link" data-url="now.gg">now.gg</div>
+      </div>
+    </div>
+
+    <!-- iframe area -->
+    <div class="iframe-area" id="iframeArea">
       <div class="iframe-header">
-        <span class="iframe-url" id="iframeUrl">Ready</span>
+        <span class="iframe-url" id="iframeUrl">ready</span>
         <div class="iframe-buttons">
-          <span class="mode-badge" id="modeBadge">Proxy Mode</span>
-          <button class="iframe-btn" id="textModeBtn">📄 Text Mode</button>
-          <button class="iframe-btn" id="fullscreenBtn">⛶</button>
-          <button class="iframe-btn" id="refreshBtn">⟳</button>
+          <button class="iframe-btn" id="textModeBtn">text mode</button>
+          <button class="iframe-btn" id="fullscreenBtn">fullscreen</button>
+          <button class="iframe-btn" id="refreshBtn">refresh</button>
         </div>
       </div>
       <iframe id="proxyFrame" src="about:blank" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals allow-top-navigation"></iframe>
     </div>
-  </div>
 
-  <div class="shortcuts-hint">
-    🔥 Ctrl+K: Search | Ctrl+T: New Tab | Ctrl+H: History | ` : Panic
+    <!-- theme selector -->
+    <div class="theme-selector">
+      <div class="theme-dot dot-dark" data-theme="dark"></div>
+      <div class="theme-dot dot-light" data-theme="light"></div>
+      <div class="theme-dot dot-green" data-theme="dark-green"></div>
+      <div class="theme-dot dot-purple" data-theme="purple"></div>
+    </div>
+
+    <!-- panic overlay -->
+    <div class="panic-overlay" id="panicOverlay">
+      <div class="spinner"></div>
+      <div class="panic-text">everything hidden. click anywhere to return.</div>
+    </div>
   </div>
 
   <script>
     // ============================================================
-    // FANTER SEARCH — ALL FEATURES
+    // fanter search - clean & minimal
     // ============================================================
     
-    // Canvas Background
-    const canvas = document.getElementById('bgCanvas');
-    const ctx = canvas.getContext('2d');
-    let points = [], time = 0;
-
-    function initPoints() {
-      const w = window.innerWidth, h = window.innerHeight;
-      canvas.width = w; canvas.height = h;
-      const cols = Math.floor(w / 70), rows = Math.floor(h / 70);
-      points = [];
-      for (let i = 0; i <= cols; i++) {
-        for (let j = 0; j <= rows; j++) {
-          points.push({ baseX: i * 70, baseY: j * 70, offsetX: 0, offsetY: 0,
-            phaseX: Math.random() * Math.PI * 2, phaseY: Math.random() * Math.PI * 2,
-            speed: 0.5 + Math.random() * 0.8 });
-        }
-      }
-    }
-
-    function drawBackground() {
-      if (!ctx) return;
-      const isDark = document.body.classList.contains('dark');
-      ctx.fillStyle = isDark ? '#1c1c1c' : '#e8e8e8';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      for (let p of points) {
-        p.offsetX = Math.sin(time * 0.002 * p.speed + p.phaseX) * 12;
-        p.offsetY = Math.cos(time * 0.002 * p.speed * 0.7 + p.phaseY) * 12;
-      }
-      ctx.beginPath();
-      ctx.strokeStyle = isDark ? 'rgba(100,100,100,0.25)' : 'rgba(120,120,120,0.3)';
-      ctx.lineWidth = 1;
-      for (let i = 0; i < points.length; i++) {
-        for (let j = i + 1; j < points.length; j++) {
-          const dx = (points[i].baseX + points[i].offsetX) - (points[j].baseX + points[j].offsetX);
-          const dy = (points[i].baseY + points[i].offsetY) - (points[j].baseY + points[j].offsetY);
-          if (Math.sqrt(dx * dx + dy * dy) < 100) {
-            ctx.beginPath();
-            ctx.moveTo(points[i].baseX + points[i].offsetX, points[i].baseY + points[i].offsetY);
-            ctx.lineTo(points[j].baseX + points[j].offsetX, points[j].baseY + points[j].offsetY);
-            ctx.stroke();
-          }
-        }
-      }
-      ctx.fillStyle = isDark ? 'rgba(160,160,160,0.35)' : 'rgba(100,100,100,0.3)';
-      for (let p of points) {
-        ctx.beginPath();
-        ctx.arc(p.baseX + p.offsetX, p.baseY + p.offsetY, 5, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-    function animateBackground() { time++; drawBackground(); requestAnimationFrame(animateBackground); }
-    window.addEventListener('resize', () => { initPoints(); drawBackground(); });
-
-    // QuickLinks
-    const quickLinks = [
-      { name: 'YouTube', url: 'youtube.com' },
-      { name: 'Reddit', url: 'reddit.com' },
-      { name: 'Spotify', url: 'spotify.com' },
-      { name: 'now.gg', url: 'now.gg' },
-      { name: 'Xbox Cloud', url: 'xbox.com/play' },
-      { name: 'GeForce NOW', url: 'play.geforcenow.com' }
-    ];
-
-    // Proxy URLs
+    // proxy urls
     const PROXY_URL = 'https://fanter-search-proxy.onrender.com/proxy?url=';
     const FALLBACK_PROXIES = ['https://corsproxy.io/?url=', 'https://cors-anywhere.herokuapp.com/'];
     
-    // State
+    // state
     let currentUrl = '';
-    let currentEngine = 'google';
-    let stealthMode = false;
     let textMode = false;
     let history = JSON.parse(localStorage.getItem('fanterHistory') || '[]');
-    let currentTab = 0;
-    let tabs = [{ id: 0, url: '', title: 'Main' }];
-
-    // DOM Elements
+    let currentTheme = localStorage.getItem('fanterTheme') || 'dark';
+    
+    // dom elements
     const searchInput = document.getElementById('searchInput');
     const goBtn = document.getElementById('goBtn');
-    const iframeContainer = document.getElementById('iframeContainer');
+    const iframeArea = document.getElementById('iframeArea');
     const proxyFrame = document.getElementById('proxyFrame');
     const iframeUrlSpan = document.getElementById('iframeUrl');
+    const textModeBtn = document.getElementById('textModeBtn');
     const fullscreenBtn = document.getElementById('fullscreenBtn');
     const refreshBtn = document.getElementById('refreshBtn');
-    const textModeBtn = document.getElementById('textModeBtn');
-    const modeBadge = document.getElementById('modeBadge');
-    const mainContent = document.getElementById('mainContent');
-    const historyPanel = document.getElementById('historyPanel');
-    const historyList = document.getElementById('historyList');
+    const searchSection = document.getElementById('searchSection');
     const statusDot = document.getElementById('statusDot');
     const statusText = document.getElementById('statusText');
-    const panicBtn = document.getElementById('panicBtn');
-    const stealthModeBtn = document.getElementById('stealthModeBtn');
-    const historyBtn = document.getElementById('historyBtn');
-    const clearHistoryBtn = document.getElementById('clearHistory');
-    const newTabBtn = document.getElementById('newTabBtn');
-    const tabBar = document.getElementById('tabBar');
-
-    // Theme
-    function setTheme(theme) {
-      document.body.className = theme;
-      localStorage.setItem('fanterTheme', theme);
-      drawBackground();
+    const historyPanel = document.getElementById('historyPanel');
+    const historyList = document.getElementById('historyList');
+    const panicOverlay = document.getElementById('panicOverlay');
+    const quickDropdown = document.getElementById('quickDropdown');
+    const helpPanel = document.getElementById('helpPanel');
+    
+    // helpers
+    function showToast(msg) {
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.textContent = msg;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2000);
     }
-    document.querySelectorAll('.theme-option').forEach(opt => {
-      opt.addEventListener('click', () => setTheme(opt.dataset.theme));
-    });
-    const savedTheme = localStorage.getItem('fanterTheme');
-    if (savedTheme) setTheme(savedTheme);
-
-    // Proxy status check
-    async function checkProxyStatus() {
-      statusText.textContent = 'Checking...';
-      statusDot.className = 'status-dot status-warning';
-      try {
-        const res = await fetch(PROXY_URL + encodeURIComponent('https://example.com'));
-        if (res.ok) {
-          statusDot.className = 'status-dot status-online';
-          statusText.textContent = 'Proxy Online';
-        } else {
-          statusDot.className = 'status-dot status-warning';
-          statusText.textContent = 'Proxy Slow';
-        }
-      } catch(e) {
-        statusDot.className = 'status-dot status-offline';
-        statusText.textContent = 'Proxy Offline (fallbacks active)';
+    
+    function formatUrl(input) {
+      let url = input.trim().toLowerCase();
+      if (!url.includes('.') && !url.startsWith('http')) {
+        return `https://www.google.com/search?q=${encodeURIComponent(url)}`;
       }
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        url = 'https://' + url;
+      }
+      return url;
     }
-    setInterval(checkProxyStatus, 30000);
-    checkProxyStatus();
-
-    // History functions
+    
     function addToHistory(url) {
-      if (stealthMode) return;
       history = history.filter(h => h !== url);
       history.unshift(url);
       if (history.length > 20) history.pop();
       localStorage.setItem('fanterHistory', JSON.stringify(history));
       updateHistoryList();
     }
+    
     function updateHistoryList() {
       historyList.innerHTML = '';
-      history.forEach(url => {
+      history.slice(0, 10).forEach(url => {
         const item = document.createElement('div');
         item.className = 'history-item';
-        item.textContent = url.length > 40 ? url.substring(0, 40) + '...' : url;
+        item.textContent = url.length > 45 ? url.substring(0, 45) + '...' : url;
         item.onclick = () => loadUrl(url);
         historyList.appendChild(item);
       });
       if (history.length === 0) {
-        historyList.innerHTML = '<div style="padding:8px;color:#666;">No history yet</div>';
+        historyList.innerHTML = '<div style="padding:8px;color:#666;">no history yet</div>';
       }
     }
-    function clearHistory() {
-      history = [];
-      localStorage.setItem('fanterHistory', '[]');
-      updateHistoryList();
-      showToast('History cleared!');
-    }
-    clearHistoryBtn.onclick = clearHistory;
-    historyBtn.onclick = () => historyPanel.classList.toggle('open');
-    updateHistoryList();
-
-    // Search engine
-    document.querySelectorAll('.engine-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.engine-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        currentEngine = btn.dataset.engine;
-      });
-    });
-
-    function formatUrl(input) {
-      let url = input.trim();
-      // Check if it's a search query (no dots and not a URL)
-      if (!url.includes('.') && !url.startsWith('http')) {
-        if (currentEngine === 'google') return `https://www.google.com/search?q=${encodeURIComponent(url)}`;
-        else return `https://duckduckgo.com/?q=${encodeURIComponent(url)}`;
-      }
-      if (!url.startsWith('http://') && !url.startsWith('https://')) url = 'https://' + url;
-      return url;
-    }
-
-    function showIframe() {
-      iframeContainer.classList.add('visible');
-      mainContent.classList.add('has-iframe');
-    }
-
-    function showToast(msg) {
-      const toast = document.createElement('div');
-      toast.textContent = msg;
-      toast.style.position = 'fixed';
-      toast.style.bottom = '100px';
-      toast.style.left = '50%';
-      toast.style.transform = 'translateX(-50%)';
-      toast.style.background = '#4a6e4a';
-      toast.style.color = 'white';
-      toast.style.padding = '8px 16px';
-      toast.style.borderRadius = '30px';
-      toast.style.fontSize = '12px';
-      toast.style.zIndex = '2000';
-      document.body.appendChild(toast);
-      setTimeout(() => toast.remove(), 2000);
-    }
-
-    async function loadViaProxy(url, isTextMode = false) {
+    
+    async function loadViaProxy(url) {
       const encoded = encodeURIComponent(url);
       for (let proxy of [PROXY_URL, ...FALLBACK_PROXIES]) {
         try {
           const res = await fetch(proxy + encoded);
           if (res.ok) {
             let content = await res.text();
-            if (isTextMode) {
-              const textContent = content.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+            if (textMode) {
+              content = content.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
                 .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
-              proxyFrame.srcdoc = `<html><body style="background:#1a1a1a;color:#e0e0e0;padding:20px;font-family:monospace;white-space:pre-wrap;">${escapeHtml(textContent.substring(0, 50000))}</body></html>`;
+              proxyFrame.srcdoc = `<html><body style="background:#1a1a1a;color:#e0e0e0;padding:20px;font-family:monospace;white-space:pre-wrap;">${escapeHtml(content.substring(0, 50000))}</body></html>`;
             } else {
               const base = url.match(/^https?:\/\/[^\/]+/)[0];
               content = content.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '');
@@ -747,131 +760,176 @@
       }
       return false;
     }
-
+    
     function escapeHtml(text) {
       const div = document.createElement('div');
       div.textContent = text;
       return div.innerHTML;
     }
-
+    
     async function loadUrl(rawUrl) {
       const formatted = formatUrl(rawUrl);
       currentUrl = formatted;
       searchInput.value = rawUrl;
-      iframeUrlSpan.textContent = 'Loading...';
+      iframeUrlSpan.textContent = 'loading...';
       proxyFrame.srcdoc = '<html><body style="background:#1a1a1a;display:flex;align-items:center;justify-content:center;padding:40px;"><div class="spinner"></div></body></html>';
-      showIframe();
+      iframeArea.classList.add('show');
+      searchSection.style.marginTop = '20px';
+      searchSection.style.transform = 'none';
       addToHistory(formatted);
       
-      const success = await loadViaProxy(formatted, textMode);
+      const success = await loadViaProxy(formatted);
       if (!success) {
-        proxyFrame.srcdoc = `<html><body style="background:#1a1a1a;padding:40px;text-align:center;"><h3>❌ Cannot load ${formatted}</h3><p>Try using the "Bypass" button with a different method.</p></body></html>`;
-        iframeUrlSpan.textContent = `Failed: ${formatted}`;
+        proxyFrame.srcdoc = `<html><body style="background:#1a1a1a;padding:40px;text-align:center;"><h3>❌ cannot load ${formatted}</h3><p>try again or use a different site</p></body></html>`;
+        iframeUrlSpan.textContent = `failed: ${formatted}`;
       }
       localStorage.setItem('fanterLastUrl', formatted);
     }
-
-    // Text mode toggle
-    textModeBtn.onclick = () => {
-      textMode = !textMode;
-      modeBadge.textContent = textMode ? 'Text Mode' : 'Proxy Mode';
-      if (currentUrl) loadUrl(currentUrl);
-      showToast(textMode ? 'Text Mode ON - ads and scripts removed' : 'Proxy Mode ON');
-    };
-
-    // Stealth mode
-    stealthModeBtn.onclick = () => {
-      stealthMode = !stealthMode;
-      stealthModeBtn.style.background = stealthMode ? '#4a6e4a' : '';
-      showToast(stealthMode ? 'Stealth Mode ON - No history saved' : 'Stealth Mode OFF');
-    };
-
-    // Panic button
-    panicBtn.onclick = () => {
-      iframeContainer.classList.remove('visible');
-      mainContent.classList.remove('has-iframe');
+    
+    // proxy status check
+    async function checkProxyStatus() {
+      statusText.textContent = 'checking...';
+      statusDot.className = 'status-dot slow';
+      try {
+        const res = await fetch(PROXY_URL + encodeURIComponent('https://example.com'));
+        if (res.ok) {
+          statusDot.className = 'status-dot online';
+          statusText.textContent = 'online';
+        } else {
+          statusDot.className = 'status-dot slow';
+          statusText.textContent = 'slow';
+        }
+      } catch(e) {
+        statusDot.className = 'status-dot offline';
+        statusText.textContent = 'offline (fallbacks active)';
+      }
+    }
+    
+    // theme
+    function setTheme(theme) {
+      document.body.className = theme;
+      localStorage.setItem('fanterTheme', theme);
+      document.querySelectorAll('.theme-dot').forEach(dot => {
+        dot.classList.toggle('active', dot.dataset.theme === theme);
+      });
+    }
+    
+    // panic button
+    function panic() {
+      iframeArea.classList.remove('show');
+      searchSection.style.marginTop = '25vh';
+      searchSection.style.transform = 'translateY(-50%)';
       proxyFrame.src = 'about:blank';
       searchInput.value = '';
       currentUrl = '';
-      document.body.style.opacity = '1';
-      showToast('😱 Panic! Everything hidden!');
+      panicOverlay.classList.add('show');
       setTimeout(() => {
-        if (confirm('Exit panic mode?')) {
-          document.body.style.opacity = '1';
-        }
-      }, 100);
+        panicOverlay.classList.remove('show');
+      }, 2000);
+      showToast('🧹 everything hidden');
+    }
+    
+    // event listeners
+    goBtn.onclick = () => { if (searchInput.value.trim()) loadUrl(searchInput.value); };
+    searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') loadUrl(searchInput.value); });
+    refreshBtn.onclick = () => { if (currentUrl) loadUrl(currentUrl); };
+    
+    textModeBtn.onclick = () => {
+      textMode = !textMode;
+      textModeBtn.style.background = textMode ? '#4a6e4a' : '';
+      textModeBtn.style.color = textMode ? 'white' : '';
+      if (currentUrl) loadUrl(currentUrl);
+      showToast(textMode ? 'text mode on - ads removed' : 'text mode off');
     };
-
-    // Keyboard shortcuts
+    
+    fullscreenBtn.onclick = () => {
+      if (!document.fullscreenElement) {
+        iframeArea.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen();
+      }
+    };
+    
+    // dropdowns
+    document.getElementById('quickLinksBtn').onclick = (e) => {
+      e.stopPropagation();
+      quickDropdown.classList.toggle('show');
+      helpPanel.classList.remove('show');
+    };
+    
+    document.getElementById('helpBtn').onclick = (e) => {
+      e.stopPropagation();
+      helpPanel.classList.toggle('show');
+      quickDropdown.classList.remove('show');
+    };
+    
+    document.getElementById('historyBtn').onclick = (e) => {
+      e.stopPropagation();
+      historyPanel.classList.toggle('show');
+      updateHistoryList();
+    };
+    
+    document.getElementById('panicBtn').onclick = panic;
+    document.getElementById('clearHistory').onclick = () => {
+      history = [];
+      localStorage.setItem('fanterHistory', '[]');
+      updateHistoryList();
+      showToast('history cleared');
+    };
+    
+    // close dropdowns when clicking outside
+    document.addEventListener('click', () => {
+      quickDropdown.classList.remove('show');
+      helpPanel.classList.remove('show');
+      historyPanel.classList.remove('show');
+    });
+    
+    // quick link items
+    document.querySelectorAll('.dropdown-item, .quick-link').forEach(el => {
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const url = el.dataset.url;
+        if (url) loadUrl(url);
+        quickDropdown.classList.remove('show');
+      });
+    });
+    
+    // theme selector
+    document.querySelectorAll('.theme-dot').forEach(dot => {
+      dot.addEventListener('click', () => setTheme(dot.dataset.theme));
+    });
+    
+    // keyboard shortcuts
     document.addEventListener('keydown', (e) => {
       if (e.ctrlKey && e.key === 'k') {
         e.preventDefault();
         searchInput.focus();
-        showToast('🔍 Search focused');
-      }
-      if (e.ctrlKey && e.key === 't') {
-        e.preventDefault();
-        showToast('📑 New tab feature - refresh page to reset');
+        showToast('search focused');
       }
       if (e.ctrlKey && e.key === 'h') {
         e.preventDefault();
-        historyPanel.classList.toggle('open');
+        historyPanel.classList.toggle('show');
+        updateHistoryList();
       }
       if (e.key === '`') {
         e.preventDefault();
-        panicBtn.click();
+        panic();
       }
     });
-
-    // New tab
-    newTabBtn.onclick = () => {
-      showToast('📑 New tab - refresh to reset, or use multiple windows');
-      window.open(window.location.href, '_blank');
-    };
-
-    // Fullscreen
-    function toggleFullscreen() {
-      if (!document.fullscreenElement) {
-        iframeContainer.requestFullscreen().catch(err => console.log('Fullscreen error:', err));
-      } else {
-        document.exitFullscreen();
-      }
-    }
-    fullscreenBtn.onclick = toggleFullscreen;
-    refreshBtn.onclick = () => { if (currentUrl) loadUrl(currentUrl); };
-    goBtn.onclick = () => { if (searchInput.value.trim()) loadUrl(searchInput.value); };
-    searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') loadUrl(searchInput.value); });
-
-    // Add quick links to dropdown
-    const dropdownMenu = document.createElement('div');
-    dropdownMenu.className = 'dropdown-menu';
-    dropdownMenu.id = 'quickDropdown';
-    document.querySelector('.dropdown-container')?.remove();
-    const newDropdown = document.createElement('div');
-    newDropdown.className = 'dropdown-container';
-    newDropdown.innerHTML = `<div class="dropdown-trigger" id="dropdownTrigger">⚡ Quick Links <span class="dropdown-arrow">▼</span></div>`;
-    newDropdown.appendChild(dropdownMenu);
-    document.body.appendChild(newDropdown);
     
-    quickLinks.forEach(link => {
-      const item = document.createElement('div');
-      item.className = 'quicklink-item';
-      item.innerHTML = `<span class="quicklink-name">${link.name}</span>`;
-      item.onclick = () => { loadUrl(link.url); dropdownMenu.classList.remove('open'); };
-      dropdownMenu.appendChild(item);
-    });
+    // panic overlay click to close
+    panicOverlay.onclick = () => panicOverlay.classList.remove('show');
     
-    document.getElementById('dropdownTrigger')?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      dropdownMenu.classList.toggle('open');
-    });
-    document.addEventListener('click', () => dropdownMenu.classList.remove('open'));
-
-    initPoints();
-    animateBackground();
-    const last = localStorage.getItem('fanterLastUrl');
-    if (last) searchInput.value = last;
-    console.log('🔥 Fanter Search ready — All features added!');
+    // init
+    updateHistoryList();
+    checkProxyStatus();
+    setInterval(checkProxyStatus, 30000);
+    setTheme(currentTheme);
+    
+    const lastUrl = localStorage.getItem('fanterLastUrl');
+    if (lastUrl) searchInput.value = lastUrl;
+    
+    console.log('fanter search ready');
   </script>
 </body>
 </html>
