@@ -17,6 +17,7 @@
       color: #e0e0e0;
       min-height: 100vh;
       transition: background 0.2s ease;
+      overflow-x: hidden;
     }
 
     body.light {
@@ -34,13 +35,26 @@
       color: #d0c0e0;
     }
 
+    /* background canvas for dots and lines */
+    #bgCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
     .container {
+      position: relative;
+      z-index: 10;
       max-width: 1200px;
       margin: 0 auto;
       padding: 20px;
     }
 
-    /* status bar only - no header */
+    /* status bar */
     .status-bar {
       position: fixed;
       top: 20px;
@@ -86,8 +100,9 @@
       justify-content: center;
       cursor: pointer;
       font-size: 18px;
-      transition: all 0.2s;
+      transition: all 0.2s ease;
       color: #e0e0e0;
+      position: relative;
     }
 
     body.light .round-btn {
@@ -102,7 +117,7 @@
       color: white;
     }
 
-    /* dropdown menus */
+    /* dropdown menus with smooth animation */
     .dropdown {
       position: absolute;
       right: 0;
@@ -111,11 +126,13 @@
       border-radius: 16px;
       padding: 8px;
       min-width: 220px;
-      display: none;
-      flex-direction: column;
-      gap: 4px;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.25s ease;
       border: 1px solid rgba(255, 255, 255, 0.1);
       z-index: 101;
+      pointer-events: none;
     }
 
     body.light .dropdown {
@@ -125,7 +142,10 @@
     }
 
     .dropdown.show {
-      display: flex;
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      pointer-events: auto;
     }
 
     .dropdown-item {
@@ -150,7 +170,7 @@
       border-radius: 4px;
     }
 
-    /* help panel */
+    /* help panel with smooth animation */
     .help-panel {
       position: fixed;
       right: 80px;
@@ -159,10 +179,14 @@
       background: #1e1e1e;
       border-radius: 20px;
       padding: 18px;
-      display: none;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateX(-10px);
+      transition: all 0.25s ease;
       z-index: 99;
       border: 1px solid rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(10px);
+      pointer-events: none;
     }
 
     body.light .help-panel {
@@ -171,7 +195,10 @@
     }
 
     .help-panel.show {
-      display: block;
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(0);
+      pointer-events: auto;
     }
 
     .help-section {
@@ -211,6 +238,12 @@
       text-align: center;
       margin-top: 25vh;
       transform: translateY(-50%);
+      transition: all 0.4s ease;
+    }
+
+    .search-section.has-iframe {
+      margin-top: 20px;
+      transform: none;
     }
 
     .title {
@@ -224,7 +257,7 @@
     }
 
     .search-box {
-      max-width: 550px;
+      max-width: 650px;
       margin: 0 auto;
     }
 
@@ -249,18 +282,18 @@
 
     .search-wrapper input {
       flex: 1;
-      padding: 14px 22px;
+      padding: 16px 24px;
       border: none;
       background: transparent;
       color: inherit;
-      font-size: 15px;
+      font-size: 16px;
       outline: none;
     }
 
     .search-wrapper button {
       background: #4a6e4a;
       border: none;
-      padding: 0 24px;
+      padding: 0 28px;
       color: white;
       font-weight: 500;
       cursor: pointer;
@@ -270,36 +303,6 @@
 
     .search-wrapper button:hover {
       background: #3a5e3a;
-    }
-
-    /* quick links horizontal */
-    .quick-links {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 25px;
-    }
-
-    .quick-link {
-      background: #1e1e1e;
-      border: 1px solid #333;
-      border-radius: 40px;
-      padding: 6px 18px;
-      font-size: 12px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    body.light .quick-link {
-      background: white;
-      border-color: #ddd;
-    }
-
-    .quick-link:hover {
-      background: #4a6e4a;
-      border-color: #4a6e4a;
-      color: white;
     }
 
     /* iframe area */
@@ -314,6 +317,18 @@
 
     .iframe-area.show {
       display: block;
+      animation: fadeInUp 0.4s ease;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .iframe-header {
@@ -378,9 +393,13 @@
       padding: 12px;
       min-width: 240px;
       max-width: 280px;
-      display: none;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(10px);
+      transition: all 0.25s ease;
       border: 1px solid #333;
       z-index: 100;
+      pointer-events: none;
     }
 
     body.light .history-panel {
@@ -389,7 +408,10 @@
     }
 
     .history-panel.show {
-      display: block;
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      pointer-events: auto;
     }
 
     .history-title {
@@ -438,6 +460,7 @@
       padding: 6px 10px;
       border-radius: 40px;
       border: 1px solid #333;
+      z-index: 50;
     }
 
     .theme-dot {
@@ -505,41 +528,19 @@
       to { transform: rotate(360deg); }
     }
 
-    /* panic overlay */
-    .panic-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: #0a0a0a;
-      z-index: 10000;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-    }
-
-    .panic-overlay.show {
-      display: flex;
-    }
-
-    .panic-text {
-      font-size: 14px;
-      color: #888;
-      margin-top: 15px;
-    }
-
     @media (max-width: 768px) {
       .title { font-size: 32px; }
       .help-panel { width: 260px; right: 70px; }
       .search-section { margin-top: 20vh; }
+      .search-box { max-width: 90%; }
     }
   </style>
 </head>
 <body class="dark">
+  <canvas id="bgCanvas"></canvas>
+
   <div class="container">
-    <!-- status bar only -->
+    <!-- status bar -->
     <div class="status-bar">
       <div class="proxy-status">
         <span class="status-dot" id="statusDot"></span>
@@ -549,7 +550,7 @@
 
     <!-- right side buttons -->
     <div class="right-buttons">
-      <div class="round-btn" id="quickLinksBtn">⚡</div>
+      <div class="round-btn" id="quickLinksBtn">QL</div>
       <div class="round-btn" id="helpBtn">❓</div>
       <div class="round-btn" id="historyBtn">📜</div>
       <div class="round-btn" id="panicBtn">😱</div>
@@ -593,13 +594,14 @@
         <div class="help-title">keyboard shortcuts</div>
         <div class="help-item"><span>focus search</span><span class="help-key">ctrl + k</span></div>
         <div class="help-item"><span>show history</span><span class="help-key">ctrl + h</span></div>
-        <div class="help-item"><span>panic mode</span><span class="help-key">` (backtick)</span></div>
+        <div class="help-item"><span>panic page</span><span class="help-key">` (backtick)</span></div>
       </div>
       <div class="help-section">
         <div class="help-title">features</div>
         <div class="help-item"><span>history</span><span>saves last 20 sites</span></div>
         <div class="help-item"><span>text mode</span><span>removes ads & scripts</span></div>
         <div class="help-item"><span>themes</span><span>dark, light, forest, purple</span></div>
+        <div class="help-item"><span>about:blank</span><span>click bypass in iframe</span></div>
       </div>
       <div class="help-section">
         <div class="help-title">tips</div>
@@ -624,13 +626,6 @@
           <button id="goBtn">go</button>
         </div>
       </div>
-      <div class="quick-links" id="quickLinksRow">
-        <div class="quick-link" data-url="youtube.com">youtube</div>
-        <div class="quick-link" data-url="reddit.com">reddit</div>
-        <div class="quick-link" data-url="spotify.com">spotify</div>
-        <div class="quick-link" data-url="twitch.tv">twitch</div>
-        <div class="quick-link" data-url="now.gg">now.gg</div>
-      </div>
     </div>
 
     <!-- iframe area -->
@@ -638,6 +633,7 @@
       <div class="iframe-header">
         <span class="iframe-url" id="iframeUrl">ready</span>
         <div class="iframe-buttons">
+          <button class="iframe-btn" id="bypassBtn">about:blank</button>
           <button class="iframe-btn" id="textModeBtn">text mode</button>
           <button class="iframe-btn" id="fullscreenBtn">fullscreen</button>
           <button class="iframe-btn" id="refreshBtn">refresh</button>
@@ -653,22 +649,98 @@
       <div class="theme-dot dot-green" data-theme="dark-green"></div>
       <div class="theme-dot dot-purple" data-theme="purple"></div>
     </div>
-
-    <!-- panic overlay -->
-    <div class="panic-overlay" id="panicOverlay">
-      <div class="spinner"></div>
-      <div class="panic-text">everything hidden. click anywhere to return.</div>
-    </div>
   </div>
 
   <script>
     // ============================================================
-    // fanter search - clean & minimal
+    // fanter search - clean & minimal with about:blank
     // ============================================================
+    
+    // background canvas for dots and lines
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+    let points = [];
+    let time = 0;
+    
+    function initPoints() {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+      
+      const cols = Math.floor(width / 70);
+      const rows = Math.floor(height / 70);
+      points = [];
+      for (let i = 0; i <= cols; i++) {
+        for (let j = 0; j <= rows; j++) {
+          points.push({
+            baseX: i * 70,
+            baseY: j * 70,
+            offsetX: 0,
+            offsetY: 0,
+            phaseX: Math.random() * Math.PI * 2,
+            phaseY: Math.random() * Math.PI * 2,
+            speed: 0.3 + Math.random() * 0.6
+          });
+        }
+      }
+    }
+    
+    function drawBackground() {
+      if (!ctx) return;
+      const isDark = document.body.classList.contains('dark');
+      ctx.fillStyle = isDark ? '#0a0a0a' : '#f5f5f5';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // update point positions for smooth movement
+      for (let p of points) {
+        p.offsetX = Math.sin(time * 0.0015 * p.speed + p.phaseX) * 10;
+        p.offsetY = Math.cos(time * 0.0015 * p.speed * 0.7 + p.phaseY) * 10;
+      }
+      
+      // draw lines between nearby points
+      ctx.beginPath();
+      ctx.strokeStyle = isDark ? 'rgba(100, 100, 100, 0.2)' : 'rgba(120, 120, 120, 0.15)';
+      ctx.lineWidth = 1;
+      
+      for (let i = 0; i < points.length; i++) {
+        for (let j = i + 1; j < points.length; j++) {
+          const dx = (points[i].baseX + points[i].offsetX) - (points[j].baseX + points[j].offsetX);
+          const dy = (points[i].baseY + points[i].offsetY) - (points[j].baseY + points[j].offsetY);
+          if (Math.sqrt(dx * dx + dy * dy) < 100) {
+            ctx.beginPath();
+            ctx.moveTo(points[i].baseX + points[i].offsetX, points[i].baseY + points[i].offsetY);
+            ctx.lineTo(points[j].baseX + points[j].offsetX, points[j].baseY + points[j].offsetY);
+            ctx.stroke();
+          }
+        }
+      }
+      
+      // draw dots
+      ctx.fillStyle = isDark ? 'rgba(160, 160, 160, 0.25)' : 'rgba(80, 80, 80, 0.2)';
+      for (let p of points) {
+        ctx.beginPath();
+        ctx.arc(p.baseX + p.offsetX, p.baseY + p.offsetY, 3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      
+      time++;
+      requestAnimationFrame(drawBackground);
+    }
+    
+    window.addEventListener('resize', () => {
+      initPoints();
+    });
+    
+    initPoints();
+    drawBackground();
     
     // proxy urls
     const PROXY_URL = 'https://fanter-search-proxy.onrender.com/proxy?url=';
     const FALLBACK_PROXIES = ['https://corsproxy.io/?url=', 'https://cors-anywhere.herokuapp.com/'];
+    
+    // panic page url (science facts)
+    const PANIC_URL = 'https://www.sciencekids.co.nz/sciencefacts/top10.html';
     
     // state
     let currentUrl = '';
@@ -683,6 +755,7 @@
     const proxyFrame = document.getElementById('proxyFrame');
     const iframeUrlSpan = document.getElementById('iframeUrl');
     const textModeBtn = document.getElementById('textModeBtn');
+    const bypassBtn = document.getElementById('bypassBtn');
     const fullscreenBtn = document.getElementById('fullscreenBtn');
     const refreshBtn = document.getElementById('refreshBtn');
     const searchSection = document.getElementById('searchSection');
@@ -690,7 +763,6 @@
     const statusText = document.getElementById('statusText');
     const historyPanel = document.getElementById('historyPanel');
     const historyList = document.getElementById('historyList');
-    const panicOverlay = document.getElementById('panicOverlay');
     const quickDropdown = document.getElementById('quickDropdown');
     const helpPanel = document.getElementById('helpPanel');
     
@@ -736,6 +808,70 @@
       }
     }
     
+    // about:blank bypass feature
+    function openAboutBlank(url) {
+      const blankWindow = window.open('about:blank', '_blank');
+      if (!blankWindow) {
+        showToast('popup blocked - allow popups for this site');
+        return;
+      }
+      
+      blankWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>fanter proxy</title>
+          <style>
+            body {
+              margin: 0;
+              padding: 0;
+              height: 100vh;
+              overflow: hidden;
+              font-family: monospace;
+            }
+            iframe {
+              width: 100%;
+              height: 100%;
+              border: none;
+            }
+            .loading {
+              position: fixed;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              text-align: center;
+              color: #4a6e4a;
+            }
+            .spinner {
+              width: 30px;
+              height: 30px;
+              border: 2px solid #4a6e4a;
+              border-top-color: transparent;
+              border-radius: 50%;
+              animation: spin 0.6s linear infinite;
+              margin: 0 auto 10px;
+            }
+            @keyframes spin { to { transform: rotate(360deg); } }
+          </style>
+        </head>
+        <body>
+          <div class="loading">
+            <div class="spinner"></div>
+            <div>loading ${url}...</div>
+          </div>
+          <iframe src="${url}" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals allow-top-navigation"></iframe>
+          <script>
+            const iframe = document.querySelector('iframe');
+            const loading = document.querySelector('.loading');
+            iframe.onload = () => { loading.style.display = 'none'; };
+          <\/script>
+        </body>
+        </html>
+      `);
+      
+      showToast('opened in about:blank tab');
+    }
+    
     async function loadViaProxy(url) {
       const encoded = encodeURIComponent(url);
       for (let proxy of [PROXY_URL, ...FALLBACK_PROXIES]) {
@@ -774,16 +910,27 @@
       iframeUrlSpan.textContent = 'loading...';
       proxyFrame.srcdoc = '<html><body style="background:#1a1a1a;display:flex;align-items:center;justify-content:center;padding:40px;"><div class="spinner"></div></body></html>';
       iframeArea.classList.add('show');
-      searchSection.style.marginTop = '20px';
-      searchSection.style.transform = 'none';
+      searchSection.classList.add('has-iframe');
       addToHistory(formatted);
       
       const success = await loadViaProxy(formatted);
       if (!success) {
-        proxyFrame.srcdoc = `<html><body style="background:#1a1a1a;padding:40px;text-align:center;"><h3>❌ cannot load ${formatted}</h3><p>try again or use a different site</p></body></html>`;
+        proxyFrame.srcdoc = `<html><body style="background:#1a1a1a;padding:40px;text-align:center;"><h3>❌ cannot load ${formatted}</h3><p>try using the about:blank button</p></body></html>`;
         iframeUrlSpan.textContent = `failed: ${formatted}`;
       }
       localStorage.setItem('fanterLastUrl', formatted);
+    }
+    
+    // panic button - sends to science facts page
+    function panic() {
+      const panicUrl = PANIC_URL;
+      window.open(panicUrl, '_blank');
+      iframeArea.classList.remove('show');
+      searchSection.classList.remove('has-iframe');
+      proxyFrame.src = 'about:blank';
+      searchInput.value = '';
+      currentUrl = '';
+      showToast('📚 redirected to science facts');
     }
     
     // proxy status check
@@ -812,27 +959,14 @@
       document.querySelectorAll('.theme-dot').forEach(dot => {
         dot.classList.toggle('active', dot.dataset.theme === theme);
       });
-    }
-    
-    // panic button
-    function panic() {
-      iframeArea.classList.remove('show');
-      searchSection.style.marginTop = '25vh';
-      searchSection.style.transform = 'translateY(-50%)';
-      proxyFrame.src = 'about:blank';
-      searchInput.value = '';
-      currentUrl = '';
-      panicOverlay.classList.add('show');
-      setTimeout(() => {
-        panicOverlay.classList.remove('show');
-      }, 2000);
-      showToast('🧹 everything hidden');
+      drawBackground();
     }
     
     // event listeners
     goBtn.onclick = () => { if (searchInput.value.trim()) loadUrl(searchInput.value); };
     searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') loadUrl(searchInput.value); });
     refreshBtn.onclick = () => { if (currentUrl) loadUrl(currentUrl); };
+    bypassBtn.onclick = () => { if (currentUrl) openAboutBlank(currentUrl); else if (searchInput.value.trim()) openAboutBlank(formatUrl(searchInput.value)); };
     
     textModeBtn.onclick = () => {
       textMode = !textMode;
@@ -850,23 +984,27 @@
       }
     };
     
-    // dropdowns
+    // dropdowns with smooth animation
     document.getElementById('quickLinksBtn').onclick = (e) => {
       e.stopPropagation();
       quickDropdown.classList.toggle('show');
       helpPanel.classList.remove('show');
+      historyPanel.classList.remove('show');
     };
     
     document.getElementById('helpBtn').onclick = (e) => {
       e.stopPropagation();
       helpPanel.classList.toggle('show');
       quickDropdown.classList.remove('show');
+      historyPanel.classList.remove('show');
     };
     
     document.getElementById('historyBtn').onclick = (e) => {
       e.stopPropagation();
       historyPanel.classList.toggle('show');
       updateHistoryList();
+      quickDropdown.classList.remove('show');
+      helpPanel.classList.remove('show');
     };
     
     document.getElementById('panicBtn').onclick = panic;
@@ -878,14 +1016,20 @@
     };
     
     // close dropdowns when clicking outside
-    document.addEventListener('click', () => {
-      quickDropdown.classList.remove('show');
-      helpPanel.classList.remove('show');
-      historyPanel.classList.remove('show');
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.dropdown') && !e.target.closest('#quickLinksBtn')) {
+        quickDropdown.classList.remove('show');
+      }
+      if (!e.target.closest('.help-panel') && !e.target.closest('#helpBtn')) {
+        helpPanel.classList.remove('show');
+      }
+      if (!e.target.closest('.history-panel') && !e.target.closest('#historyBtn')) {
+        historyPanel.classList.remove('show');
+      }
     });
     
     // quick link items
-    document.querySelectorAll('.dropdown-item, .quick-link').forEach(el => {
+    document.querySelectorAll('.dropdown-item').forEach(el => {
       el.addEventListener('click', (e) => {
         e.stopPropagation();
         const url = el.dataset.url;
@@ -916,9 +1060,6 @@
         panic();
       }
     });
-    
-    // panic overlay click to close
-    panicOverlay.onclick = () => panicOverlay.classList.remove('show');
     
     // init
     updateHistoryList();
