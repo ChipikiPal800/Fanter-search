@@ -16,7 +16,7 @@
       background: #0a0a0a;
       color: #e0e0e0;
       min-height: 100vh;
-      transition: background 0.2s ease;
+      transition: background 0.3s ease;
       overflow-x: hidden;
       position: relative;
     }
@@ -36,7 +36,6 @@
       color: #d0c0e0;
     }
 
-    /* background canvas */
     #bgCanvas {
       position: fixed;
       top: 0;
@@ -57,7 +56,6 @@
       min-height: 100vh;
     }
 
-    /* status bar */
     .status-bar {
       position: fixed;
       top: 20px;
@@ -80,7 +78,6 @@
     .slow { background: #fbbf24; }
     .offline { background: #ef4444; }
 
-    /* right side buttons container */
     .right-buttons {
       position: fixed;
       right: 20px;
@@ -90,10 +87,9 @@
       align-items: flex-end;
       gap: 10px;
       z-index: 100;
-      transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
     }
 
-    /* push effect - moves down based on which dropdown is open */
     .right-buttons.push-quick { transform: translateY(180px); }
     .right-buttons.push-help { transform: translateY(180px); }
     .right-buttons.push-history { transform: translateY(180px); }
@@ -128,7 +124,6 @@
       color: white;
     }
 
-    /* dropdown menus */
     .dropdown {
       position: fixed;
       right: 20px;
@@ -138,8 +133,8 @@
       min-width: 200px;
       opacity: 0;
       visibility: hidden;
-      transform: translateY(-10px);
-      transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      transform: translateY(-15px);
+      transition: all 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.2);
       border: 1px solid rgba(255, 255, 255, 0.1);
       z-index: 99;
       pointer-events: none;
@@ -159,11 +154,10 @@
       pointer-events: auto;
     }
 
-    /* quick links dropdown position */
     #quickDropdown { top: 60px; }
-    #helpPanel { top: 60px; right: 20px; width: 280px; background: #1e1e1e; border-radius: 16px; padding: 15px; opacity: 0; visibility: hidden; transform: translateY(-10px); transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1); border: 1px solid rgba(255, 255, 255, 0.1); position: fixed; z-index: 99; pointer-events: none; }
+    #helpPanel { top: 60px; right: 20px; width: 280px; background: #1e1e1e; border-radius: 16px; padding: 15px; opacity: 0; visibility: hidden; transform: translateY(-15px); transition: all 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.2); border: 1px solid rgba(255, 255, 255, 0.1); position: fixed; z-index: 99; pointer-events: none; }
     #helpPanel.show { opacity: 1; visibility: visible; transform: translateY(0); pointer-events: auto; }
-    #historyPanel { top: 60px; right: 20px; width: 260px; background: #1e1e1e; border-radius: 16px; padding: 12px; opacity: 0; visibility: hidden; transform: translateY(-10px); transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1); border: 1px solid rgba(255, 255, 255, 0.1); position: fixed; z-index: 99; pointer-events: none; }
+    #historyPanel { top: 60px; right: 20px; width: 260px; background: #1e1e1e; border-radius: 16px; padding: 12px; opacity: 0; visibility: hidden; transform: translateY(-15px); transition: all 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.2); border: 1px solid rgba(255, 255, 255, 0.1); position: fixed; z-index: 99; pointer-events: none; }
     #historyPanel.show { opacity: 1; visibility: visible; transform: translateY(0); pointer-events: auto; }
 
     body.light #helpPanel, body.light #historyPanel {
@@ -225,7 +219,6 @@
       background: #e8e8e8;
     }
 
-    /* panic settings */
     .panic-settings {
       margin-top: 10px;
       padding-top: 10px;
@@ -261,7 +254,6 @@
       width: 100%;
     }
 
-    /* search section */
     .search-section {
       text-align: center;
       position: absolute;
@@ -341,7 +333,6 @@
       background: #3a5e3a;
     }
 
-    /* iframe area */
     .iframe-area {
       max-width: 1200px;
       margin: 0 auto 30px;
@@ -366,6 +357,48 @@
         opacity: 1;
         transform: translateY(0);
       }
+    }
+
+    .tab-bar {
+      display: flex;
+      gap: 5px;
+      padding: 8px 12px;
+      background: #252525;
+      border-bottom: 1px solid #333;
+      overflow-x: auto;
+    }
+
+    .tab {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 11px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .tab.active {
+      background: #4a6e4a;
+      color: white;
+    }
+
+    .tab-close {
+      background: none;
+      border: none;
+      color: inherit;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .new-tab {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 11px;
+      cursor: pointer;
     }
 
     .iframe-header {
@@ -423,6 +456,42 @@
       display: block;
     }
 
+    .notes-panel {
+      position: fixed;
+      bottom: 80px;
+      left: 20px;
+      width: 260px;
+      background: #1e1e1e;
+      border-radius: 16px;
+      padding: 12px;
+      border: 1px solid #333;
+      z-index: 90;
+      display: none;
+    }
+
+    .notes-panel.show {
+      display: block;
+    }
+
+    .notes-panel textarea {
+      width: 100%;
+      height: 120px;
+      background: #2a2a2a;
+      border: 1px solid #333;
+      border-radius: 8px;
+      color: white;
+      padding: 8px;
+      font-size: 11px;
+      resize: vertical;
+      margin-top: 5px;
+    }
+
+    body.light .notes-panel textarea {
+      background: #f0f0f0;
+      border-color: #ddd;
+      color: #1a1a1a;
+    }
+
     .history-list {
       max-height: 250px;
       overflow-y: auto;
@@ -450,7 +519,25 @@
       border-top: 1px solid #333;
     }
 
-    /* theme selector */
+    .saved-links-list {
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .saved-link-item {
+      padding: 5px 8px;
+      font-size: 10px;
+      cursor: pointer;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .saved-link-item:hover {
+      background: rgba(74, 110, 74, 0.2);
+    }
+
     .theme-selector {
       position: fixed;
       bottom: 20px;
@@ -487,7 +574,6 @@
     .dot-green { background: #0d1f0d; }
     .dot-purple { background: #1a0a2e; }
 
-    /* toast */
     .toast {
       position: fixed;
       bottom: 30px;
@@ -526,7 +612,7 @@
       .title { font-size: 32px; }
       .search-box { max-width: 90%; }
       .round-btn { width: 75px; font-size: 11px; }
-      #helpPanel, #historyPanel, #quickDropdown { width: 260px; right: 10px; }
+      .notes-panel { width: 220px; }
     }
   </style>
 </head>
@@ -546,6 +632,7 @@
       <div class="round-btn" id="helpBtn">help</div>
       <div class="round-btn" id="historyBtn">history</div>
       <div class="round-btn" id="panicBtn">panic</div>
+      <div class="round-btn" id="notesBtn">notes</div>
     </div>
 
     <!-- quick links dropdown -->
@@ -590,10 +677,10 @@
       </div>
       <div class="help-section">
         <div class="help-title">features</div>
-        <div class="help-item"><span>history</span><span>saves last 20 sites</span></div>
-        <div class="help-item"><span>text mode</span><span>removes ads & scripts</span></div>
-        <div class="help-item"><span>themes</span><span>dark, light, forest, purple</span></div>
-        <div class="help-item"><span>about:blank</span><span>click bypass in iframe</span></div>
+        <div class="help-item"><span>ad blocker</span><span>click in iframe</span></div>
+        <div class="help-item"><span>user agent</span><span>click in iframe</span></div>
+        <div class="help-item"><span>auto dark mode</span><span>6pm-6am</span></div>
+        <div class="help-item"><span>save later</span><span>bookmark pages</span></div>
       </div>
       <div class="help-section">
         <div class="help-title">custom panic url</div>
@@ -611,6 +698,15 @@
       <div class="clear-history" id="clearHistory">clear history</div>
     </div>
 
+    <!-- notes panel -->
+    <div class="notes-panel" id="notesPanel">
+      <div class="history-title">quick notes</div>
+      <textarea id="notesTextarea" placeholder="write your notes here..."></textarea>
+      <button id="saveNotesBtn" style="margin-top:8px;padding:4px 12px;border-radius:20px;border:none;background:#4a6e4a;color:white;cursor:pointer;font-size:10px;width:100%;">save notes</button>
+      <div class="history-title" style="margin-top:10px;">saved for later</div>
+      <div class="saved-links-list" id="savedLinksList"></div>
+    </div>
+
     <!-- main search section -->
     <div class="search-section" id="searchSection">
       <div class="title">fanter search</div>
@@ -624,13 +720,21 @@
 
     <!-- iframe area -->
     <div class="iframe-area" id="iframeArea">
+      <div class="tab-bar" id="tabBar">
+        <div class="tab active" data-tab="0">tab 1</div>
+        <div class="new-tab" id="newTabBtn">+ new tab</div>
+      </div>
       <div class="iframe-header">
         <span class="iframe-url" id="iframeUrl">ready</span>
         <div class="iframe-buttons">
           <button class="iframe-btn" id="bypassBtn">about:blank</button>
           <button class="iframe-btn" id="textModeBtn">text mode</button>
+          <button class="iframe-btn" id="adblockBtn">adblock: on</button>
+          <button class="iframe-btn" id="userAgentBtn">ua: chrome</button>
           <button class="iframe-btn" id="fullscreenBtn">fullscreen</button>
           <button class="iframe-btn" id="refreshBtn">refresh</button>
+          <button class="iframe-btn" id="shortenBtn">shorten</button>
+          <button class="iframe-btn" id="saveLaterBtn">save later</button>
         </div>
       </div>
       <iframe id="proxyFrame" src="about:blank" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals allow-top-navigation"></iframe>
@@ -646,9 +750,7 @@
   </div>
 
   <script>
-    // ============================================================
-    // fanter search - fully fixed with push animations
-    // ============================================================
+
     
     // background canvas
     const canvas = document.getElementById('bgCanvas');
@@ -730,15 +832,19 @@
       'https://cors-anywhere.herokuapp.com/'
     ];
     
-    // default panic url
     let PANIC_URL = localStorage.getItem('panicUrl') || 'https://www.sciencekids.co.nz/sciencefacts/top10.html';
     
     // state
     let currentUrl = '';
     let textMode = false;
+    let adBlockEnabled = true;
+    let userAgent = 'chrome';
     let history = JSON.parse(localStorage.getItem('fanterHistory') || '[]');
+    let savedNotes = localStorage.getItem('fanterNotes') || '';
+    let savedLinks = JSON.parse(localStorage.getItem('fanterSavedLinks') || '[]');
     let currentTheme = localStorage.getItem('fanterTheme') || 'dark';
-    let activeDropdown = null;
+    let tabs = [{ id: 0, url: '', title: 'tab 1' }];
+    let currentTab = 0;
     
     // dom elements
     const searchInput = document.getElementById('searchInput');
@@ -747,9 +853,13 @@
     const proxyFrame = document.getElementById('proxyFrame');
     const iframeUrlSpan = document.getElementById('iframeUrl');
     const textModeBtn = document.getElementById('textModeBtn');
+    const adblockBtn = document.getElementById('adblockBtn');
+    const userAgentBtn = document.getElementById('userAgentBtn');
     const bypassBtn = document.getElementById('bypassBtn');
     const fullscreenBtn = document.getElementById('fullscreenBtn');
     const refreshBtn = document.getElementById('refreshBtn');
+    const shortenBtn = document.getElementById('shortenBtn');
+    const saveLaterBtn = document.getElementById('saveLaterBtn');
     const searchSection = document.getElementById('searchSection');
     const statusDot = document.getElementById('statusDot');
     const statusText = document.getElementById('statusText');
@@ -757,11 +867,32 @@
     const historyList = document.getElementById('historyList');
     const quickDropdown = document.getElementById('quickDropdown');
     const helpPanel = document.getElementById('helpPanel');
+    const notesPanel = document.getElementById('notesPanel');
+    const notesTextarea = document.getElementById('notesTextarea');
+    const saveNotesBtn = document.getElementById('saveNotesBtn');
+    const savedLinksList = document.getElementById('savedLinksList');
     const rightButtons = document.getElementById('rightButtons');
     const panicUrlInput = document.getElementById('panicUrlInput');
     const savePanicBtn = document.getElementById('savePanicBtn');
+    const tabBar = document.getElementById('tabBar');
+    const newTabBtn = document.getElementById('newTabBtn');
     
-    // helpers
+    // load saved notes
+    notesTextarea.value = savedNotes;
+    
+    // auto dark mode (6pm - 6am)
+    function checkAutoDarkMode() {
+      const hour = new Date().getHours();
+      if (hour >= 18 || hour < 6) {
+        if (!document.body.classList.contains('dark') && !document.body.classList.contains('dark-green') && !document.body.classList.contains('purple')) {
+          setTheme('dark');
+          showToast('auto dark mode enabled');
+        }
+      }
+    }
+    setInterval(checkAutoDarkMode, 60000);
+    checkAutoDarkMode();
+    
     function showToast(msg) {
       const toast = document.createElement('div');
       toast.className = 'toast';
@@ -803,19 +934,43 @@
       }
     }
     
+    function updateSavedLinksList() {
+      savedLinksList.innerHTML = '';
+      if (savedLinks.length === 0) {
+        savedLinksList.innerHTML = '<div style="padding:8px;color:#666;">no saved links</div>';
+        return;
+      }
+      savedLinks.slice().reverse().forEach(link => {
+        const item = document.createElement('div');
+        item.className = 'saved-link-item';
+        item.innerHTML = `
+          <span style="flex:1;overflow:hidden;text-overflow:ellipsis;">${link.title || link.url}</span>
+          <button class="delete-saved" data-url="${link.url}" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:12px;">✕</button>
+        `;
+        item.querySelector('.delete-saved').onclick = (e) => {
+          e.stopPropagation();
+          savedLinks = savedLinks.filter(l => l.url !== link.url);
+          localStorage.setItem('fanterSavedLinks', JSON.stringify(savedLinks));
+          updateSavedLinksList();
+          showToast('removed from saved');
+        };
+        item.onclick = () => loadUrl(link.url);
+        savedLinksList.appendChild(item);
+      });
+    }
+    
     function openAboutBlank(url) {
       const blankWindow = window.open('about:blank', '_blank');
       if (!blankWindow) {
         showToast('popup blocked - allow popups for this site');
         return;
       }
-      
       blankWindow.document.write(`
         <!DOCTYPE html>
         <html>
         <head><title>fanter proxy</title>
         <style>
-          body{margin:0;padding:0;height:100vh;overflow:hidden;font-family:monospace;}
+          body{margin:0;padding:0;height:100vh;overflow:hidden;}
           iframe{width:100%;height:100%;border:none;}
           .loading{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:#4a6e4a;}
           .spinner{width:30px;height:30px;border:2px solid #4a6e4a;border-top-color:transparent;border-radius:50%;animation:spin 0.6s linear infinite;margin:0 auto 10px;}
@@ -823,7 +978,7 @@
         </style>
         </head>
         <body>
-          <div class="loading"><div class="spinner"></div><div>loading ${url}...</div></div>
+          <div class="loading"><div class="spinner"></div><div>loading...</div></div>
           <iframe src="${url}" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals allow-top-navigation"></iframe>
           <script>document.querySelector('iframe').onload=()=>{document.querySelector('.loading').style.display='none';};<\/script>
         </body>
@@ -832,14 +987,33 @@
       showToast('opened in about:blank tab');
     }
     
+    // URL shortener using TinyURL API
+    async function shortenUrl(url) {
+      try {
+        const res = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(url)}`);
+        const shortUrl = await res.text();
+        navigator.clipboard.writeText(shortUrl);
+        showToast(`shortened url copied: ${shortUrl}`);
+      } catch(e) {
+        showToast('failed to shorten url');
+      }
+    }
+    
     async function loadViaProxy(url) {
       const encoded = encodeURIComponent(url);
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000);
       
+      let userAgentString = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36';
+      if (userAgent === 'firefox') userAgentString = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/119.0';
+      if (userAgent === 'safari') userAgentString = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15';
+      
       for (let proxy of [PROXY_URL, ...FALLBACK_PROXIES]) {
         try {
-          const res = await fetch(proxy + encoded, { signal: controller.signal });
+          const res = await fetch(proxy + encoded, { 
+            signal: controller.signal,
+            headers: { 'User-Agent': userAgentString }
+          });
           clearTimeout(timeoutId);
           if (res && res.ok) {
             let content = await res.text();
@@ -848,8 +1022,11 @@
                 .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
               proxyFrame.srcdoc = `<html><body style="background:#1a1a1a;color:#e0e0e0;padding:20px;font-family:monospace;white-space:pre-wrap;">${escapeHtml(content.substring(0, 50000))}</body></html>`;
             } else {
+              if (adBlockEnabled) {
+                content = content.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '');
+                content = content.replace(/<iframe[^>]*>[\s\S]*?<\/iframe>/gi, '');
+              }
               const base = url.match(/^https?:\/\/[^\/]+/)[0];
-              content = content.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '');
               content = content.replace('<head>', `<head><base href="${base}/">`);
               proxyFrame.srcdoc = content;
             }
@@ -873,14 +1050,14 @@
       currentUrl = formatted;
       searchInput.value = rawUrl;
       iframeUrlSpan.textContent = 'loading...';
-      proxyFrame.srcdoc = '<html><body style="background:#1a1a1a;display:flex;align-items:center;justify-content:center;padding:40px;"><div class="spinner"></div><div style="margin-top:15px;font-size:12px;">loading... (may take 15-30 seconds)</div></body></html>';
+      proxyFrame.srcdoc = '<html><body style="background:#1a1a1a;display:flex;align-items:center;justify-content:center;padding:40px;"><div class="spinner"></div><div style="margin-top:15px;font-size:12px;">loading...</div></body></html>';
       iframeArea.classList.add('show');
       searchSection.classList.add('has-iframe');
       addToHistory(formatted);
       
       const success = await loadViaProxy(formatted);
       if (!success) {
-        proxyFrame.srcdoc = `<html><body style="background:#1a1a1a;padding:40px;text-align:center;"><h3>❌ cannot load ${formatted}</h3><p>try using the about:blank button</p><p>or check your internet connection</p></body></html>`;
+        proxyFrame.srcdoc = `<html><body style="background:#1a1a1a;padding:40px;text-align:center;"><h3>❌ cannot load ${formatted}</h3><p>try using the about:blank button</p></body></html>`;
         iframeUrlSpan.textContent = `failed: ${formatted}`;
       }
       localStorage.setItem('fanterLastUrl', formatted);
@@ -893,10 +1070,9 @@
       proxyFrame.src = 'about:blank';
       searchInput.value = '';
       currentUrl = '';
-      showToast('📚 panic button pressed');
+      showToast('panic button pressed');
     }
     
-    // save custom panic url
     savePanicBtn.onclick = () => {
       const newUrl = panicUrlInput.value.trim();
       if (newUrl) {
@@ -908,12 +1084,9 @@
         localStorage.setItem('panicUrl', PANIC_URL);
         showToast('panic url saved');
         panicUrlInput.value = '';
-      } else {
-        showToast('enter a valid url');
       }
     };
     
-    // load saved panic url into input placeholder
     panicUrlInput.placeholder = PANIC_URL;
     
     async function checkProxyStatus() {
@@ -943,24 +1116,62 @@
       document.querySelectorAll('.theme-dot').forEach(dot => {
         dot.classList.toggle('active', dot.dataset.theme === theme);
       });
-      // redraw background with new colors
-      initPoints();
     }
     
-    // dropdown with push effect - buttons below move down
+    // tabs
+    function updateTabs() {
+      tabBar.innerHTML = '';
+      tabs.forEach((tab, index) => {
+        const tabEl = document.createElement('div');
+        tabEl.className = `tab ${index === currentTab ? 'active' : ''}`;
+        tabEl.innerHTML = `<span>${tab.title}</span><button class="tab-close" data-id="${tab.id}">✕</button>`;
+        tabEl.onclick = (e) => {
+          if (!e.target.classList.contains('tab-close')) {
+            currentTab = index;
+            updateTabs();
+            if (tab.url) loadUrl(tab.url);
+          }
+        };
+        tabBar.appendChild(tabEl);
+      });
+      const newTabEl = document.createElement('div');
+      newTabEl.className = 'new-tab';
+      newTabEl.textContent = '+ new tab';
+      newTabEl.onclick = () => {
+        const newId = Date.now();
+        tabs.push({ id: newId, url: '', title: `tab ${tabs.length + 1}` });
+        currentTab = tabs.length - 1;
+        updateTabs();
+        proxyFrame.srcdoc = '<html><body style="background:#1a1a1a;display:flex;align-items:center;justify-content:center;padding:40px;">new tab</body></html>';
+        iframeUrlSpan.textContent = 'ready';
+        currentUrl = '';
+      };
+      tabBar.appendChild(newTabEl);
+    }
+    
+    newTabBtn.onclick = () => {
+      const newId = Date.now();
+      tabs.push({ id: newId, url: '', title: `tab ${tabs.length + 1}` });
+      currentTab = tabs.length - 1;
+      updateTabs();
+      proxyFrame.srcdoc = '<html><body style="background:#1a1a1a;display:flex;align-items:center;justify-content:center;padding:40px;">new tab</body></html>';
+      iframeUrlSpan.textContent = 'ready';
+      currentUrl = '';
+    };
+    
+    // dropdown functions
     function closeAllDropdowns() {
       quickDropdown.classList.remove('show');
       helpPanel.classList.remove('show');
       historyPanel.classList.remove('show');
+      notesPanel.classList.remove('show');
       rightButtons.classList.remove('push-quick', 'push-help', 'push-history');
-      activeDropdown = null;
     }
     
     function openDropdown(dropdown, pushClass) {
       closeAllDropdowns();
       dropdown.classList.add('show');
       rightButtons.classList.add(pushClass);
-      activeDropdown = dropdown;
     }
     
     // event listeners
@@ -981,6 +1192,40 @@
       showToast(textMode ? 'text mode on' : 'text mode off');
     };
     
+    adblockBtn.onclick = () => {
+      adBlockEnabled = !adBlockEnabled;
+      adblockBtn.textContent = adBlockEnabled ? 'adblock: on' : 'adblock: off';
+      if (currentUrl) loadUrl(currentUrl);
+      showToast(adBlockEnabled ? 'adblock enabled' : 'adblock disabled');
+    };
+    
+    userAgentBtn.onclick = () => {
+      const agents = ['chrome', 'firefox', 'safari'];
+      const currentIndex = agents.indexOf(userAgent);
+      const nextIndex = (currentIndex + 1) % agents.length;
+      userAgent = agents[nextIndex];
+      userAgentBtn.textContent = `ua: ${userAgent}`;
+      if (currentUrl) loadUrl(currentUrl);
+      showToast(`user agent: ${userAgent}`);
+    };
+    
+    shortenBtn.onclick = () => {
+      if (currentUrl) shortenUrl(currentUrl);
+      else showToast('load a page first');
+    };
+    
+    saveLaterBtn.onclick = () => {
+      if (currentUrl) {
+        const title = currentUrl.length > 30 ? currentUrl.substring(0, 30) + '...' : currentUrl;
+        savedLinks.push({ url: currentUrl, title: title, date: Date.now() });
+        localStorage.setItem('fanterSavedLinks', JSON.stringify(savedLinks));
+        updateSavedLinksList();
+        showToast('saved for later');
+      } else {
+        showToast('load a page first');
+      }
+    };
+    
     fullscreenBtn.onclick = () => {
       if (!document.fullscreenElement) {
         iframeArea.requestFullscreen().catch(() => {});
@@ -991,29 +1236,33 @@
     
     document.getElementById('quickLinksBtn').onclick = (e) => {
       e.stopPropagation();
-      if (quickDropdown.classList.contains('show')) {
-        closeAllDropdowns();
-      } else {
-        openDropdown(quickDropdown, 'push-quick');
-      }
+      if (quickDropdown.classList.contains('show')) closeAllDropdowns();
+      else openDropdown(quickDropdown, 'push-quick');
     };
     
     document.getElementById('helpBtn').onclick = (e) => {
       e.stopPropagation();
-      if (helpPanel.classList.contains('show')) {
-        closeAllDropdowns();
-      } else {
-        openDropdown(helpPanel, 'push-help');
-      }
+      if (helpPanel.classList.contains('show')) closeAllDropdowns();
+      else openDropdown(helpPanel, 'push-help');
     };
     
     document.getElementById('historyBtn').onclick = (e) => {
       e.stopPropagation();
-      if (historyPanel.classList.contains('show')) {
-        closeAllDropdowns();
-      } else {
+      if (historyPanel.classList.contains('show')) closeAllDropdowns();
+      else {
         updateHistoryList();
         openDropdown(historyPanel, 'push-history');
+      }
+    };
+    
+    document.getElementById('notesBtn').onclick = (e) => {
+      e.stopPropagation();
+      if (notesPanel.classList.contains('show')) {
+        notesPanel.classList.remove('show');
+        rightButtons.classList.remove('push-quick', 'push-help', 'push-history');
+      } else {
+        closeAllDropdowns();
+        notesPanel.classList.add('show');
       }
     };
     
@@ -1025,11 +1274,18 @@
       showToast('history cleared');
     };
     
+    saveNotesBtn.onclick = () => {
+      localStorage.setItem('fanterNotes', notesTextarea.value);
+      showToast('notes saved');
+    };
+    
     document.addEventListener('click', (e) => {
       if (!e.target.closest('#quickDropdown') && !e.target.closest('#quickLinksBtn') &&
           !e.target.closest('#helpPanel') && !e.target.closest('#helpBtn') &&
-          !e.target.closest('#historyPanel') && !e.target.closest('#historyBtn')) {
+          !e.target.closest('#historyPanel') && !e.target.closest('#historyBtn') &&
+          !e.target.closest('#notesPanel') && !e.target.closest('#notesBtn')) {
         closeAllDropdowns();
+        notesPanel.classList.remove('show');
       }
     });
     
@@ -1055,11 +1311,8 @@
       if (e.ctrlKey && e.key === 'h') {
         e.preventDefault();
         updateHistoryList();
-        if (historyPanel.classList.contains('show')) {
-          closeAllDropdowns();
-        } else {
-          openDropdown(historyPanel, 'push-history');
-        }
+        if (historyPanel.classList.contains('show')) closeAllDropdowns();
+        else openDropdown(historyPanel, 'push-history');
       }
       if (e.key === '`') {
         e.preventDefault();
@@ -1069,6 +1322,8 @@
     
     // init
     updateHistoryList();
+    updateSavedLinksList();
+    updateTabs();
     checkProxyStatus();
     setInterval(checkProxyStatus, 30000);
     setTheme(currentTheme);
@@ -1076,7 +1331,7 @@
     const lastUrl = localStorage.getItem('fanterLastUrl');
     if (lastUrl) searchInput.value = lastUrl;
     
-    console.log('fanter search ready - fully fixed');
+    console.log('fanter search ready 67676767');
   </script>
 </body>
 </html>
