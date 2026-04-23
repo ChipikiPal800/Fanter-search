@@ -968,6 +968,7 @@
     }
     
     // WORKING about:blank function - OPENS IN IFRAME WITHIN about:blank PAGE
+    // Also captures all links to open within the same about:blank iframe
     function openAboutBlank(url) {
       const blank = window.open();
       if (!blank) {
@@ -981,7 +982,7 @@
         <head>
           <title>fanter proxy</title>
           <style>
-            body { margin: 0; padding: 0; height: 100vh; overflow: hidden; background: #0a0a0a; }
+            body { margin: 0; padding: 0; height: 100vh; overflow: hidden; background: #0a0a0a; font-family: monospace; }
             iframe { width: 100%; height: 100%; border: none; }
             .loader {
               position: fixed;
@@ -990,8 +991,10 @@
               transform: translate(-50%, -50%);
               text-align: center;
               color: #4a6e4a;
-              font-family: monospace;
               z-index: 10;
+              background: #0a0a0a;
+              padding: 20px;
+              border-radius: 10px;
             }
             .spinner {
               width: 30px;
@@ -1003,20 +1006,104 @@
               margin: 0 auto 10px;
             }
             @keyframes spin { to { transform: rotate(360deg); } }
+            .nav-bar {
+              position: fixed;
+              top: 0;
+              left: 0;
+              right: 0;
+              background: #1a1a1a;
+              padding: 5px 10px;
+              display: flex;
+              gap: 5px;
+              z-index: 20;
+              font-size: 12px;
+            }
+            .nav-bar input {
+              flex: 1;
+              background: #2a2a2a;
+              border: 1px solid #333;
+              color: white;
+              padding: 4px 8px;
+              border-radius: 20px;
+            }
+            .nav-bar button {
+              background: #4a6e4a;
+              border: none;
+              color: white;
+              padding: 4px 12px;
+              border-radius: 20px;
+              cursor: pointer;
+            }
           </style>
         </head>
         <body>
+          <div class="nav-bar">
+            <input type="text" id="navUrl" placeholder="enter url..." value="${url}">
+            <button id="navGo">go</button>
+            <button id="navBack">←</button>
+            <button id="navForward">→</button>
+          </div>
           <div class="loader" id="loader">
             <div class="spinner"></div>
             <div>loading ${url}...</div>
           </div>
-          <iframe id="contentFrame" src="${url}" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals allow-top-navigation"></iframe>
+          <iframe id="contentFrame" src="${url}" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals allow-top-navigation allow-top-navigation-by-user-activation"></iframe>
           <script>
-            document.getElementById('contentFrame').onload = function() {
-              document.getElementById('loader').style.display = 'none';
+            var iframe = document.getElementById('contentFrame');
+            var loader = document.getElementById('loader');
+            var navInput = document.getElementById('navUrl');
+            var navGo = document.getElementById('navGo');
+            var navBack = document.getElementById('navBack');
+            var navForward = document.getElementById('navForward');
+            var historyStack = ['${url}'];
+            var historyIndex = 0;
+            
+            iframe.onload = function() {
+              loader.style.display = 'none';
+              try {
+                var iframeUrl = iframe.contentWindow.location.href;
+                if (iframeUrl && iframeUrl !== 'about:blank') {
+                  navInput.value = iframeUrl;
+                  if (historyStack[historyIndex] !== iframeUrl) {
+                    historyStack = historyStack.slice(0, historyIndex + 1);
+                    historyStack.push(iframeUrl);
+                    historyIndex++;
+                  }
+                }
+              } catch(e) {}
             };
+            
+            navGo.onclick = function() {
+              var newUrl = navInput.value.trim();
+              if (!newUrl.startsWith('http')) newUrl = 'https://' + newUrl;
+              loader.style.display = 'flex';
+              iframe.src = newUrl;
+              navInput.value = newUrl;
+            };
+            
+            navInput.addEventListener('keypress', function(e) {
+              if (e.key === 'Enter') navGo.click();
+            });
+            
+            navBack.onclick = function() {
+              if (historyIndex > 0) {
+                historyIndex--;
+                loader.style.display = 'flex';
+                iframe.src = historyStack[historyIndex];
+                navInput.value = historyStack[historyIndex];
+              }
+            };
+            
+            navForward.onclick = function() {
+              if (historyIndex < historyStack.length - 1) {
+                historyIndex++;
+                loader.style.display = 'flex';
+                iframe.src = historyStack[historyIndex];
+                navInput.value = historyStack[historyIndex];
+              }
+            };
+            
             setTimeout(function() {
-              var loader = document.getElementById('loader');
               if (loader) loader.style.display = 'none';
             }, 8000);
           <\/script>
@@ -1038,6 +1125,7 @@
       }
     }
     
+    // Direct fetch for iframe (bypasses CORS by using our proxy)
     async function loadViaProxy(url) {
       const encoded = encodeURIComponent(url);
       let userAgentString = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36';
@@ -1099,7 +1187,7 @@
       
       const success = await loadViaProxy(formatted);
       if (!success) {
-        proxyFrame.srcdoc = `<html><body style="background:#1a1a1a;padding:40px;text-align:center;"><h3>❌ cannot load ${formatted}</h3><p>try the about:blank button</p></body></html>`;
+        proxyFrame.srcdoc = `<html><body style="background:#1a1a1a;padding:40px;text-align:center;"><h3>❌ cannot load ${formatted}</h3><p>try the about:blank button in settings</p></body></html>`;
         iframeUrlSpan.textContent = `failed: ${formatted}`;
       }
       localStorage.setItem('fanterLastUrl', formatted);
@@ -1421,7 +1509,7 @@
     const lastUrl = localStorage.getItem('fanterLastUrl');
     if (lastUrl) searchInput.value = lastUrl;
     
-    console.log('fanter search ready - iframe works, about:blank works!');
+    console.log('fanter search ready - iframe works, about:blank works with navigation bar!');
   </script>
 </body>
 </html>
