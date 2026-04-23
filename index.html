@@ -90,13 +90,14 @@
       transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
     }
 
-    .right-buttons.push-quick { transform: translateY(180px); }
-    .right-buttons.push-help { transform: translateY(180px); }
-    .right-buttons.push-history { transform: translateY(180px); }
+    /* push effects - different amounts for each button's dropdown height */
+    .right-buttons.push-quick { transform: translateY(210px); }
+    .right-buttons.push-help { transform: translateY(280px); }
+    .right-buttons.push-history { transform: translateY(200px); }
 
     .round-btn {
-      width: 90px;
-      height: 36px;
+      width: 95px;
+      height: 38px;
       border-radius: 30px;
       background: rgba(30, 30, 35, 0.95);
       backdrop-filter: blur(10px);
@@ -110,6 +111,7 @@
       transition: all 0.2s ease;
       color: #e0e0e0;
       position: relative;
+      z-index: 101;
     }
 
     body.light .round-btn {
@@ -124,9 +126,14 @@
       color: white;
     }
 
-    .dropdown {
+    /* dropdown menus - positioned relative to each button */
+    .dropdown-container {
       position: fixed;
       right: 20px;
+      z-index: 99;
+    }
+
+    .dropdown {
       background: #1e1e1e;
       border-radius: 16px;
       padding: 8px;
@@ -136,9 +143,8 @@
       transform: translateY(-15px);
       transition: all 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.2);
       border: 1px solid rgba(255, 255, 255, 0.1);
-      z-index: 99;
-      pointer-events: none;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      pointer-events: none;
     }
 
     body.light .dropdown {
@@ -154,11 +160,32 @@
       pointer-events: auto;
     }
 
-    #quickDropdown { top: 60px; }
-    #helpPanel { top: 60px; right: 20px; width: 280px; background: #1e1e1e; border-radius: 16px; padding: 15px; opacity: 0; visibility: hidden; transform: translateY(-15px); transition: all 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.2); border: 1px solid rgba(255, 255, 255, 0.1); position: fixed; z-index: 99; pointer-events: none; }
-    #helpPanel.show { opacity: 1; visibility: visible; transform: translateY(0); pointer-events: auto; }
-    #historyPanel { top: 60px; right: 20px; width: 260px; background: #1e1e1e; border-radius: 16px; padding: 12px; opacity: 0; visibility: hidden; transform: translateY(-15px); transition: all 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.2); border: 1px solid rgba(255, 255, 255, 0.1); position: fixed; z-index: 99; pointer-events: none; }
-    #historyPanel.show { opacity: 1; visibility: visible; transform: translateY(0); pointer-events: auto; }
+    /* each dropdown positioned below its button */
+    #quickDropdown {
+      position: fixed;
+      right: 20px;
+      top: 60px;
+    }
+    #helpPanel {
+      position: fixed;
+      right: 20px;
+      top: 108px;
+      width: 280px;
+      background: #1e1e1e;
+      border-radius: 16px;
+      padding: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    #historyPanel {
+      position: fixed;
+      right: 20px;
+      top: 156px;
+      width: 260px;
+      background: #1e1e1e;
+      border-radius: 16px;
+      padding: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
 
     body.light #helpPanel, body.light #historyPanel {
       background: white;
@@ -611,8 +638,9 @@
     @media (max-width: 768px) {
       .title { font-size: 32px; }
       .search-box { max-width: 90%; }
-      .round-btn { width: 75px; font-size: 11px; }
+      .round-btn { width: 80px; font-size: 11px; }
       .notes-panel { width: 220px; }
+      #quickDropdown, #helpPanel, #historyPanel { right: 10px; }
     }
   </style>
 </head>
@@ -750,7 +778,9 @@
   </div>
 
   <script>
-
+    // ============================================================
+    // fanter search - fixed dropdown positioning
+    // ============================================================
     
     // background canvas
     const canvas = document.getElementById('bgCanvas');
@@ -987,7 +1017,6 @@
       showToast('opened in about:blank tab');
     }
     
-    // URL shortener using TinyURL API
     async function shortenUrl(url) {
       try {
         const res = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(url)}`);
@@ -1159,7 +1188,7 @@
       currentUrl = '';
     };
     
-    // dropdown functions
+    // dropdown functions with proper push
     function closeAllDropdowns() {
       quickDropdown.classList.remove('show');
       helpPanel.classList.remove('show');
@@ -1168,10 +1197,33 @@
       rightButtons.classList.remove('push-quick', 'push-help', 'push-history');
     }
     
-    function openDropdown(dropdown, pushClass) {
+    function openQuickDropdown() {
       closeAllDropdowns();
-      dropdown.classList.add('show');
-      rightButtons.classList.add(pushClass);
+      quickDropdown.classList.add('show');
+      rightButtons.classList.add('push-quick');
+    }
+    
+    function openHelpPanel() {
+      closeAllDropdowns();
+      helpPanel.classList.add('show');
+      rightButtons.classList.add('push-help');
+    }
+    
+    function openHistoryPanel() {
+      closeAllDropdowns();
+      updateHistoryList();
+      historyPanel.classList.add('show');
+      rightButtons.classList.add('push-history');
+    }
+    
+    function openNotesPanel() {
+      if (notesPanel.classList.contains('show')) {
+        notesPanel.classList.remove('show');
+        rightButtons.classList.remove('push-quick', 'push-help', 'push-history');
+      } else {
+        closeAllDropdowns();
+        notesPanel.classList.add('show');
+      }
     }
     
     // event listeners
@@ -1237,33 +1289,24 @@
     document.getElementById('quickLinksBtn').onclick = (e) => {
       e.stopPropagation();
       if (quickDropdown.classList.contains('show')) closeAllDropdowns();
-      else openDropdown(quickDropdown, 'push-quick');
+      else openQuickDropdown();
     };
     
     document.getElementById('helpBtn').onclick = (e) => {
       e.stopPropagation();
       if (helpPanel.classList.contains('show')) closeAllDropdowns();
-      else openDropdown(helpPanel, 'push-help');
+      else openHelpPanel();
     };
     
     document.getElementById('historyBtn').onclick = (e) => {
       e.stopPropagation();
       if (historyPanel.classList.contains('show')) closeAllDropdowns();
-      else {
-        updateHistoryList();
-        openDropdown(historyPanel, 'push-history');
-      }
+      else openHistoryPanel();
     };
     
     document.getElementById('notesBtn').onclick = (e) => {
       e.stopPropagation();
-      if (notesPanel.classList.contains('show')) {
-        notesPanel.classList.remove('show');
-        rightButtons.classList.remove('push-quick', 'push-help', 'push-history');
-      } else {
-        closeAllDropdowns();
-        notesPanel.classList.add('show');
-      }
+      openNotesPanel();
     };
     
     document.getElementById('panicBtn').onclick = panic;
@@ -1285,7 +1328,6 @@
           !e.target.closest('#historyPanel') && !e.target.closest('#historyBtn') &&
           !e.target.closest('#notesPanel') && !e.target.closest('#notesBtn')) {
         closeAllDropdowns();
-        notesPanel.classList.remove('show');
       }
     });
     
@@ -1310,9 +1352,7 @@
       }
       if (e.ctrlKey && e.key === 'h') {
         e.preventDefault();
-        updateHistoryList();
-        if (historyPanel.classList.contains('show')) closeAllDropdowns();
-        else openDropdown(historyPanel, 'push-history');
+        openHistoryPanel();
       }
       if (e.key === '`') {
         e.preventDefault();
@@ -1331,7 +1371,7 @@
     const lastUrl = localStorage.getItem('fanterLastUrl');
     if (lastUrl) searchInput.value = lastUrl;
     
-    console.log('fanter search ready 67676767');
+    console.log('fanter search ready - dropdown positioning fixed');
   </script>
 </body>
 </html>
