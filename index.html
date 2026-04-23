@@ -16,67 +16,12 @@
       background: #0a0a0a;
       color: #e0e0e0;
       min-height: 100vh;
-      transition: background 0.3s ease;
       overflow-x: hidden;
-      position: relative;
     }
 
-    body.light {
-      background: #f5f5f5;
-      color: #1a1a1a;
-    }
-
-    body.dark-green {
-      background: #0d1f0d;
-      color: #c0e0c0;
-    }
-
-    body.purple {
-      background: #1a0a2e;
-      color: #d0c0e0;
-    }
-
-    #bgCanvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-      pointer-events: none;
-      display: block;
-    }
-
-    .container {
-      position: relative;
-      z-index: 10;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
-      min-height: 100vh;
-    }
-
-    .status-bar {
-      position: fixed;
-      top: 20px;
-      left: 20px;
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      font-size: 11px;
-      z-index: 50;
-    }
-
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      display: inline-block;
-      margin-right: 5px;
-    }
-    .online { background: #22c55e; box-shadow: 0 0 5px #22c55e; }
-    .slow { background: #fbbf24; }
-    .offline { background: #ef4444; }
+    body.light { background: #f5f5f5; color: #1a1a1a; }
+    body.dark-green { background: #0d1f0d; color: #c0e0c0; }
+    body.purple { background: #1a0a2e; color: #d0c0e0; }
 
     /* Right side buttons */
     .right-buttons {
@@ -88,13 +33,10 @@
       align-items: flex-end;
       gap: 10px;
       z-index: 100;
-      transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      transition: transform 0.3s ease;
     }
 
-    /* Push amounts - increased to fully clear the menus */
-    .right-buttons.push-quick { transform: translateY(240px); }
-    .right-buttons.push-help { transform: translateY(350px); }
-    .right-buttons.push-history { transform: translateY(300px); }
+    .right-buttons.push { transform: translateY(250px); }
 
     .round-btn {
       width: 95px;
@@ -109,28 +51,26 @@
       cursor: pointer;
       font-size: 13px;
       font-weight: 500;
-      transition: all 0.2s ease;
+      transition: all 0.2s;
       color: #e0e0e0;
-      position: relative;
-      z-index: 101;
     }
 
     body.light .round-btn {
       background: rgba(220, 220, 220, 0.95);
-      border-color: rgba(0, 0, 0, 0.1);
       color: #1a1a1a;
     }
 
     .round-btn:hover {
-      transform: scale(1.02);
       background: #4a6e4a;
       color: white;
+      transform: scale(1.02);
     }
 
     /* Dropdown menus */
     .dropdown-menu {
       position: fixed;
       right: 20px;
+      top: 60px;
       background: #1e1e1e;
       border-radius: 16px;
       padding: 8px;
@@ -138,28 +78,26 @@
       opacity: 0;
       visibility: hidden;
       transform: translateY(-10px);
-      transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      transition: all 0.3s ease;
       border: 1px solid rgba(255, 255, 255, 0.1);
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-      pointer-events: none;
       z-index: 99;
     }
 
     body.light .dropdown-menu {
       background: white;
-      border-color: rgba(0, 0, 0, 0.1);
     }
 
     .dropdown-menu.show {
       opacity: 1;
       visibility: visible;
       transform: translateY(0);
-      pointer-events: auto;
     }
 
-    #quickDropdown { top: 60px; }
-    #helpPanel { top: 60px; width: 280px; padding: 15px; }
-    #historyPanel { top: 60px; width: 260px; padding: 12px; }
+    #helpPanel, #historyPanel {
+      width: 280px;
+      padding: 15px;
+    }
 
     .dropdown-item {
       display: flex;
@@ -180,7 +118,6 @@
       width: 22px;
       height: 22px;
       object-fit: contain;
-      border-radius: 4px;
     }
 
     .help-section {
@@ -192,7 +129,6 @@
       font-weight: 600;
       color: #4a6e4a;
       margin-bottom: 8px;
-      letter-spacing: 0.5px;
     }
 
     .help-item {
@@ -211,10 +147,6 @@
       font-size: 10px;
     }
 
-    body.light .help-key {
-      background: #e8e8e8;
-    }
-
     .panic-settings {
       margin-top: 10px;
       padding-top: 10px;
@@ -230,12 +162,6 @@
       color: white;
       font-size: 11px;
       margin-top: 5px;
-    }
-
-    body.light .panic-settings input {
-      background: #f0f0f0;
-      border-color: #ddd;
-      color: #1a1a1a;
     }
 
     .save-panic {
@@ -312,18 +238,6 @@
 
     .notes-panel.show {
       display: block;
-      animation: slideUp 0.3s ease;
-    }
-
-    @keyframes slideUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
     }
 
     .notes-panel textarea {
@@ -339,48 +253,40 @@
       margin-top: 5px;
     }
 
-    body.light .notes-panel textarea {
-      background: #f0f0f0;
-      border-color: #ddd;
-      color: #1a1a1a;
-    }
-
-    /* Features Panel - Left Side Menu */
+    /* Features Panel */
     .features-panel {
       position: fixed;
-      left: -280px;
-      top: 0;
-      width: 280px;
-      height: 100vh;
+      right: 20px;
+      top: 60px;
+      width: 260px;
       background: #1e1e1e;
-      border-right: 1px solid #333;
-      z-index: 200;
-      transition: left 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-      display: flex;
-      flex-direction: column;
-      padding: 20px;
+      border-radius: 16px;
+      padding: 15px;
+      border: 1px solid #333;
+      z-index: 99;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.3s ease;
     }
 
-    body.light .features-panel {
-      background: white;
-      border-right-color: #ddd;
-    }
-
-    .features-panel.open {
-      left: 0;
+    .features-panel.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
     }
 
     .features-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       padding-bottom: 10px;
       border-bottom: 1px solid #333;
     }
 
     .features-title {
-      font-size: 16px;
+      font-size: 14px;
       font-weight: 600;
       color: #4a6e4a;
     }
@@ -389,15 +295,8 @@
       background: none;
       border: none;
       color: #888;
-      font-size: 20px;
+      font-size: 18px;
       cursor: pointer;
-    }
-
-    .features-list {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
     }
 
     .feature-item {
@@ -406,152 +305,20 @@
       align-items: center;
       padding: 8px 0;
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      font-size: 13px;
-    }
-
-    body.light .feature-item {
-      border-bottom-color: rgba(0, 0, 0, 0.05);
+      font-size: 12px;
     }
 
     .feature-item button {
       background: #4a6e4a;
       border: none;
-      padding: 5px 12px;
+      padding: 4px 10px;
       border-radius: 20px;
       color: white;
       cursor: pointer;
-      font-size: 11px;
+      font-size: 10px;
     }
 
-    .feature-item button:hover {
-      background: #3a5e3a;
-    }
-
-    /* Iframe area - with settings button */
-    .iframe-area {
-      max-width: 1200px;
-      margin: 0 auto 30px;
-      border-radius: 20px;
-      overflow: hidden;
-      background: #1e1e1e;
-      border: 1px solid #333;
-      display: none;
-    }
-
-    .iframe-area.show {
-      display: block;
-      animation: fadeInUp 0.4s ease;
-    }
-
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .tab-bar {
-      display: flex;
-      gap: 5px;
-      padding: 8px 12px;
-      background: #252525;
-      border-bottom: 1px solid #333;
-      overflow-x: auto;
-    }
-
-    .tab {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 20px;
-      padding: 4px 12px;
-      font-size: 11px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      white-space: nowrap;
-    }
-
-    .tab.active {
-      background: #4a6e4a;
-      color: white;
-    }
-
-    .tab-close {
-      background: none;
-      border: none;
-      color: inherit;
-      cursor: pointer;
-      font-size: 12px;
-      padding: 0 4px;
-    }
-
-    .new-tab {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 20px;
-      padding: 4px 12px;
-      font-size: 11px;
-      cursor: pointer;
-    }
-
-    .iframe-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 16px;
-      background: #252525;
-      border-bottom: 1px solid #333;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    body.light .iframe-header {
-      background: #f0f0f0;
-      border-bottom-color: #ddd;
-    }
-
-    .iframe-url {
-      font-size: 11px;
-      font-family: monospace;
-      color: #888;
-      flex: 1;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .iframe-buttons {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
-    .iframe-btn {
-      background: none;
-      border: none;
-      padding: 5px 12px;
-      border-radius: 20px;
-      cursor: pointer;
-      color: #888;
-      font-size: 11px;
-      transition: all 0.2s;
-    }
-
-    .iframe-btn:hover {
-      background: #3a3a3a;
-      color: white;
-    }
-
-    iframe {
-      width: 100%;
-      height: 55vh;
-      border: none;
-      display: block;
-    }
-
+    /* Search section */
     .search-section {
       text-align: center;
       position: absolute;
@@ -593,17 +360,11 @@
       border-radius: 60px;
       border: 1px solid #333;
       overflow: hidden;
-      transition: all 0.2s;
     }
 
     body.light .search-wrapper {
       background: white;
       border-color: #ddd;
-    }
-
-    .search-wrapper:focus-within {
-      border-color: #4a6e4a;
-      box-shadow: 0 0 0 2px rgba(74, 110, 74, 0.2);
     }
 
     .search-wrapper input {
@@ -624,11 +385,113 @@
       font-weight: 500;
       cursor: pointer;
       font-size: 14px;
-      transition: background 0.2s;
     }
 
     .search-wrapper button:hover {
       background: #3a5e3a;
+    }
+
+    /* Iframe area */
+    .iframe-area {
+      max-width: 1200px;
+      margin: 0 auto 30px;
+      border-radius: 20px;
+      overflow: hidden;
+      background: #1e1e1e;
+      border: 1px solid #333;
+      display: none;
+    }
+
+    .iframe-area.show {
+      display: block;
+    }
+
+    .tab-bar {
+      display: flex;
+      gap: 5px;
+      padding: 8px 12px;
+      background: #252525;
+      border-bottom: 1px solid #333;
+      overflow-x: auto;
+    }
+
+    .tab {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 11px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .tab.active {
+      background: #4a6e4a;
+      color: white;
+    }
+
+    .tab-close {
+      background: none;
+      border: none;
+      color: inherit;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .new-tab {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .iframe-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 16px;
+      background: #252525;
+      border-bottom: 1px solid #333;
+    }
+
+    .iframe-url {
+      font-size: 11px;
+      font-family: monospace;
+      color: #888;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .iframe-buttons {
+      display: flex;
+      gap: 6px;
+    }
+
+    .iframe-btn {
+      background: none;
+      border: none;
+      padding: 5px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      color: #888;
+      font-size: 11px;
+    }
+
+    .iframe-btn:hover {
+      background: #3a3a3a;
+      color: white;
+    }
+
+    iframe {
+      width: 100%;
+      height: 55vh;
+      border: none;
+      display: block;
     }
 
     .theme-selector {
@@ -650,7 +513,6 @@
       border-radius: 50%;
       cursor: pointer;
       border: 2px solid transparent;
-      transition: all 0.2s;
     }
 
     .theme-dot:hover {
@@ -659,7 +521,6 @@
 
     .theme-dot.active {
       border-color: #4a6e4a;
-      box-shadow: 0 0 5px #4a6e4a;
     }
 
     .dot-dark { background: #1a1a1a; }
@@ -700,226 +561,165 @@
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
-
-    @media (max-width: 768px) {
-      .title { font-size: 32px; }
-      .search-box { max-width: 90%; }
-      .round-btn { width: 80px; font-size: 11px; }
-      .notes-panel { width: 220px; }
-      .features-panel { width: 260px; }
-    }
   </style>
 </head>
 <body class="dark">
-  <canvas id="bgCanvas"></canvas>
+  <div class="right-buttons" id="rightButtons">
+    <div class="round-btn" id="quickLinksBtn">quick linx</div>
+    <div class="round-btn" id="helpBtn">help</div>
+    <div class="round-btn" id="historyBtn">history</div>
+    <div class="round-btn" id="panicBtn">panic</div>
+    <div class="round-btn" id="notesBtn">notes</div>
+  </div>
 
-  <div class="container">
-    <div class="status-bar">
-      <div class="proxy-status">
-        <span class="status-dot" id="statusDot"></span>
-        <span id="statusText">checking...</span>
-      </div>
+  <!-- quick links dropdown -->
+  <div class="dropdown-menu" id="quickDropdown">
+    <div class="dropdown-item" data-url="youtube.com">
+      <span>🎬 youtube</span>
     </div>
-
-    <!-- Right side buttons -->
-    <div class="right-buttons" id="rightButtons">
-      <div class="round-btn" id="quickLinksBtn">quick linx</div>
-      <div class="round-btn" id="helpBtn">help</div>
-      <div class="round-btn" id="historyBtn">history</div>
-      <div class="round-btn" id="panicBtn">panic</div>
-      <div class="round-btn" id="notesBtn">notes</div>
+    <div class="dropdown-item" data-url="reddit.com">
+      <span>📱 reddit</span>
     </div>
-
-    <!-- quick links dropdown -->
-    <div class="dropdown-menu" id="quickDropdown">
-      <div class="dropdown-item" data-url="youtube.com">
-        <img class="dropdown-icon" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdYYtpbk4xqsn2XvBocnTZjLJH2vsbPhYbRQ&s" onerror="this.style.display='none'">
-        <span>youtube</span>
-      </div>
-      <div class="dropdown-item" data-url="reddit.com">
-        <img class="dropdown-icon" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRYw6dBUuV1YaVQ3oSdn0xDl4SwmtCn2dKKiA&s" onerror="this.style.display='none'">
-        <span>reddit</span>
-      </div>
-      <div class="dropdown-item" data-url="cloudmoonapp.com">
-        <img class="dropdown-icon" src="https://img.utdstc.com/icon/12d/349/12d349d1cd13cc225122ccd090b211e69c79a84c5216e55689f55f382235e423:200" onerror="this.style.display='none'">
-        <span>cloudmoon</span>
-      </div>
-      <div class="dropdown-item" data-url="spotify.com">
-        <img class="dropdown-icon" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQP-SeOb6iBTaeMUiL_lj3ac3LKNYP5foHCAg&s" onerror="this.style.display='none'">
-        <span>spotify</span>
-      </div>
-      <div class="dropdown-item" data-url="now.gg">
-        <img class="dropdown-icon" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRduQjU8n0k3kzifCT8BUXSGpg-hYRdxMUX5A&s" onerror="this.style.display='none'">
-        <span>now.gg</span>
-      </div>
-      <div class="dropdown-item" data-url="xbox.com/play">
-        <img class="dropdown-icon" src="https://assets.play.xbox.com/playxbox/static/media/CloudGaming_LetterBox.scale-200.ef909bf4.png" onerror="this.style.display='none'">
-        <span>xbox cloud</span>
-      </div>
-      <div class="dropdown-item" data-url="play.geforcenow.com">
-        <img class="dropdown-icon" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQjQnPCY_I0L4_-bLIdU0CcuVkYTAPICicosQ&s" onerror="this.style.display='none'">
-        <span>geforce now</span>
-      </div>
+    <div class="dropdown-item" data-url="cloudmoonapp.com">
+      <span>☁️ cloudmoon</span>
     </div>
-
-    <!-- help panel -->
-    <div class="dropdown-menu" id="helpPanel">
-      <div class="help-section">
-        <div class="help-title">keyboard shortcuts</div>
-        <div class="help-item"><span>focus search</span><span class="help-key">ctrl + k</span></div>
-        <div class="help-item"><span>show history</span><span class="help-key">ctrl + h</span></div>
-        <div class="help-item"><span>panic mode</span><span class="help-key">` (backtick)</span></div>
-      </div>
-      <div class="help-section">
-        <div class="help-title">features</div>
-        <div class="help-item"><span>ad blocker</span><span>click settings</span></div>
-        <div class="help-item"><span>user agent</span><span>click settings</span></div>
-        <div class="help-item"><span>auto dark mode</span><span>6pm-6am</span></div>
-        <div class="help-item"><span>save later</span><span>click settings</span></div>
-      </div>
-      <div class="help-section">
-        <div class="help-title">custom panic url</div>
-        <div class="panic-settings">
-          <input type="text" id="panicUrlInput" placeholder="enter url...">
-          <button class="save-panic" id="savePanicBtn">save panic url</button>
-        </div>
-      </div>
+    <div class="dropdown-item" data-url="spotify.com">
+      <span>🎵 spotify</span>
     </div>
-
-    <!-- history panel -->
-    <div class="dropdown-menu" id="historyPanel">
-      <div class="history-title">recently visited</div>
-      <div class="history-list" id="historyList"></div>
-      <div class="clear-history" id="clearHistory">clear history</div>
+    <div class="dropdown-item" data-url="now.gg">
+      <span>🎮 now.gg</span>
     </div>
-
-    <!-- notes panel -->
-    <div class="notes-panel" id="notesPanel">
-      <div class="history-title">quick notes</div>
-      <textarea id="notesTextarea" placeholder="write your notes here..."></textarea>
-      <button id="saveNotesBtn" style="margin-top:8px;padding:4px 12px;border-radius:20px;border:none;background:#4a6e4a;color:white;cursor:pointer;font-size:10px;width:100%;">save notes</button>
-      <div class="history-title" style="margin-top:10px;">saved for later</div>
-      <div class="saved-links-list" id="savedLinksList"></div>
+    <div class="dropdown-item" data-url="xbox.com/play">
+      <span>🎮 xbox cloud</span>
     </div>
-
-    <!-- main search section -->
-    <div class="search-section" id="searchSection">
-      <div class="title">fanter search</div>
-      <div class="search-box">
-        <div class="search-wrapper">
-          <input type="text" id="searchInput" placeholder="search or type a url...">
-          <button id="goBtn">go</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- iframe area -->
-    <div class="iframe-area" id="iframeArea">
-      <div class="tab-bar" id="tabBar"></div>
-      <div class="iframe-header">
-        <span class="iframe-url" id="iframeUrl">ready</span>
-        <div class="iframe-buttons">
-          <button class="iframe-btn" id="settingsBtn">⚙️ settings</button>
-        </div>
-      </div>
-      <iframe id="proxyFrame" src="about:blank" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals allow-top-navigation"></iframe>
-    </div>
-
-    <!-- theme selector -->
-    <div class="theme-selector">
-      <div class="theme-dot dot-dark" data-theme="dark"></div>
-      <div class="theme-dot dot-light" data-theme="light"></div>
-      <div class="theme-dot dot-green" data-theme="dark-green"></div>
-      <div class="theme-dot dot-purple" data-theme="purple"></div>
+    <div class="dropdown-item" data-url="play.geforcenow.com">
+      <span>🎮 geforce now</span>
     </div>
   </div>
 
+  <!-- help panel -->
+  <div class="dropdown-menu" id="helpPanel">
+    <div class="help-section">
+      <div class="help-title">keyboard shortcuts</div>
+      <div class="help-item"><span>focus search</span><span class="help-key">ctrl + k</span></div>
+      <div class="help-item"><span>show history</span><span class="help-key">ctrl + h</span></div>
+      <div class="help-item"><span>panic mode</span><span class="help-key">`</span></div>
+    </div>
+    <div class="help-section">
+      <div class="help-title">features</div>
+      <div class="help-item"><span>about:blank</span><span>click settings</span></div>
+      <div class="help-item"><span>text mode</span><span>click settings</span></div>
+      <div class="help-item"><span>ad blocker</span><span>click settings</span></div>
+      <div class="help-item"><span>user agent</span><span>click settings</span></div>
+    </div>
+    <div class="help-section">
+      <div class="help-title">custom panic url</div>
+      <div class="panic-settings">
+        <input type="text" id="panicUrlInput" placeholder="enter url...">
+        <button class="save-panic" id="savePanicBtn">save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- history panel -->
+  <div class="dropdown-menu" id="historyPanel">
+    <div class="history-title">recently visited</div>
+    <div class="history-list" id="historyList"></div>
+    <div class="clear-history" id="clearHistory">clear history</div>
+  </div>
+
+  <!-- features panel (settings) -->
+  <div class="features-panel" id="featuresPanel">
+    <div class="features-header">
+      <div class="features-title">settings</div>
+      <button class="features-close" id="featuresCloseBtn">✕</button>
+    </div>
+    <div class="feature-item">
+      <span>📄 about:blank bypass</span>
+      <button id="featureAboutBlankBtn">open</button>
+    </div>
+    <div class="feature-item">
+      <span>📝 text mode</span>
+      <button id="featureTextModeBtn">off</button>
+    </div>
+    <div class="feature-item">
+      <span>🚫 ad blocker</span>
+      <button id="featureAdblockBtn">on</button>
+    </div>
+    <div class="feature-item">
+      <span>🔄 user agent</span>
+      <button id="featureUserAgentBtn">chrome</button>
+    </div>
+    <div class="feature-item">
+      <span>🔗 url shortener</span>
+      <button id="featureShortenBtn">shorten</button>
+    </div>
+    <div class="feature-item">
+      <span>💾 save for later</span>
+      <button id="featureSaveLaterBtn">save</button>
+    </div>
+    <div class="feature-item">
+      <span>🖥️ fullscreen</span>
+      <button id="featureFullscreenBtn">enter</button>
+    </div>
+    <div class="feature-item">
+      <span>🔄 refresh</span>
+      <button id="featureRefreshBtn">refresh</button>
+    </div>
+  </div>
+
+  <!-- notes panel -->
+  <div class="notes-panel" id="notesPanel">
+    <div class="history-title">quick notes</div>
+    <textarea id="notesTextarea" placeholder="write your notes here..."></textarea>
+    <button id="saveNotesBtn" style="margin-top:8px;padding:4px 12px;border-radius:20px;border:none;background:#4a6e4a;color:white;cursor:pointer;font-size:10px;width:100%;">save notes</button>
+    <div class="history-title" style="margin-top:10px;">saved for later</div>
+    <div class="saved-links-list" id="savedLinksList"></div>
+  </div>
+
+  <!-- search section -->
+  <div class="search-section" id="searchSection">
+    <div class="title">fanter search</div>
+    <div class="search-box">
+      <div class="search-wrapper">
+        <input type="text" id="searchInput" placeholder="search or type a url...">
+        <button id="goBtn">go</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- iframe area -->
+  <div class="iframe-area" id="iframeArea">
+    <div class="tab-bar" id="tabBar"></div>
+    <div class="iframe-header">
+      <span class="iframe-url" id="iframeUrl">ready</span>
+      <div class="iframe-buttons">
+        <button class="iframe-btn" id="settingsBtn">⚙️ settings</button>
+      </div>
+    </div>
+    <iframe id="proxyFrame" src="about:blank"></iframe>
+  </div>
+
+  <!-- theme selector -->
+  <div class="theme-selector">
+    <div class="theme-dot dot-dark" data-theme="dark"></div>
+    <div class="theme-dot dot-light" data-theme="light"></div>
+    <div class="theme-dot dot-green" data-theme="dark-green"></div>
+    <div class="theme-dot dot-purple" data-theme="purple"></div>
+  </div>
+
   <script>
-   
+    // ============================================================
+    // fanter search - clean working version
+    // ============================================================
     
-    // background canvas
-    const canvas = document.getElementById('bgCanvas');
-    const ctx = canvas.getContext('2d');
-    let points = [];
-    let time = 0;
-    
-    function initPoints() {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      canvas.width = width;
-      canvas.height = height;
-      
-      const cols = Math.floor(width / 80);
-      const rows = Math.floor(height / 80);
-      points = [];
-      for (let i = 0; i <= cols; i++) {
-        for (let j = 0; j <= rows; j++) {
-          points.push({
-            baseX: i * 80,
-            baseY: j * 80,
-            offsetX: 0,
-            offsetY: 0,
-            phaseX: Math.random() * Math.PI * 2,
-            phaseY: Math.random() * Math.PI * 2,
-            speed: 0.3 + Math.random() * 0.6
-          });
-        }
-      }
-    }
-    
-    function drawBackground() {
-      if (!ctx) return;
-      const isDark = document.body.classList.contains('dark') || document.body.classList.contains('dark-green') || document.body.classList.contains('purple');
-      ctx.fillStyle = isDark ? '#0a0a0a' : '#f5f5f5';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
-      for (let p of points) {
-        p.offsetX = Math.sin(time * 0.0015 * p.speed + p.phaseX) * 10;
-        p.offsetY = Math.cos(time * 0.0015 * p.speed * 0.7 + p.phaseY) * 10;
-      }
-      
-      ctx.beginPath();
-      ctx.strokeStyle = isDark ? 'rgba(100, 100, 100, 0.2)' : 'rgba(80, 80, 80, 0.15)';
-      ctx.lineWidth = 1;
-      
-      for (let i = 0; i < points.length; i++) {
-        for (let j = i + 1; j < points.length; j++) {
-          const dx = (points[i].baseX + points[i].offsetX) - (points[j].baseX + points[j].offsetX);
-          const dy = (points[i].baseY + points[i].offsetY) - (points[j].baseY + points[j].offsetY);
-          if (Math.sqrt(dx * dx + dy * dy) < 100) {
-            ctx.beginPath();
-            ctx.moveTo(points[i].baseX + points[i].offsetX, points[i].baseY + points[i].offsetY);
-            ctx.lineTo(points[j].baseX + points[j].offsetX, points[j].baseY + points[j].offsetY);
-            ctx.stroke();
-          }
-        }
-      }
-      
-      ctx.fillStyle = isDark ? 'rgba(160, 160, 160, 0.25)' : 'rgba(80, 80, 80, 0.2)';
-      for (let p of points) {
-        ctx.beginPath();
-        ctx.arc(p.baseX + p.offsetX, p.baseY + p.offsetY, 3, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      
-      time++;
-      requestAnimationFrame(drawBackground);
-    }
-    
-    window.addEventListener('resize', () => initPoints());
-    initPoints();
-    drawBackground();
-    
-    // proxy urls
+    // Proxy URLs
     const PROXY_URL = 'https://fanter-search-proxy.onrender.com/proxy?url=';
-    const FALLBACK_PROXIES = [
-      'https://corsproxy.io/?url=',
-      'https://cors-anywhere.herokuapp.com/'
-    ];
+    const FALLBACK_PROXIES = ['https://corsproxy.io/?url=', 'https://cors-anywhere.herokuapp.com/'];
     
     let PANIC_URL = localStorage.getItem('panicUrl') || 'https://www.sciencekids.co.nz/sciencefacts/top10.html';
     
-    // state
+    // State
     let currentUrl = '';
     let textMode = false;
     let adBlockEnabled = true;
@@ -929,11 +729,11 @@
     let savedLinks = JSON.parse(localStorage.getItem('fanterSavedLinks') || '[]');
     let currentTheme = localStorage.getItem('fanterTheme') || 'dark';
     
-    // tabs array
+    // Tabs
     let tabs = [{ id: Date.now(), url: '', title: 'tab 1' }];
     let currentTab = 0;
     
-    // dom elements
+    // DOM elements
     const searchInput = document.getElementById('searchInput');
     const goBtn = document.getElementById('goBtn');
     const iframeArea = document.getElementById('iframeArea');
@@ -941,24 +741,23 @@
     const iframeUrlSpan = document.getElementById('iframeUrl');
     const settingsBtn = document.getElementById('settingsBtn');
     const searchSection = document.getElementById('searchSection');
-    const statusDot = document.getElementById('statusDot');
-    const statusText = document.getElementById('statusText');
-    const historyPanel = document.getElementById('historyPanel');
     const historyList = document.getElementById('historyList');
-    const quickDropdown = document.getElementById('quickDropdown');
-    const helpPanel = document.getElementById('helpPanel');
-    const notesPanel = document.getElementById('notesPanel');
+    const savedLinksList = document.getElementById('savedLinksList');
     const notesTextarea = document.getElementById('notesTextarea');
     const saveNotesBtn = document.getElementById('saveNotesBtn');
-    const savedLinksList = document.getElementById('savedLinksList');
     const rightButtons = document.getElementById('rightButtons');
     const panicUrlInput = document.getElementById('panicUrlInput');
     const savePanicBtn = document.getElementById('savePanicBtn');
     const tabBar = document.getElementById('tabBar');
     
-    // features panel elements
+    // Panels
+    const quickDropdown = document.getElementById('quickDropdown');
+    const helpPanel = document.getElementById('helpPanel');
+    const historyPanel = document.getElementById('historyPanel');
+    const notesPanel = document.getElementById('notesPanel');
     const featuresPanel = document.getElementById('featuresPanel');
-    const featuresCloseBtn = document.getElementById('featuresCloseBtn');
+    
+    // Feature buttons
     const featureAboutBlankBtn = document.getElementById('featureAboutBlankBtn');
     const featureTextModeBtn = document.getElementById('featureTextModeBtn');
     const featureAdblockBtn = document.getElementById('featureAdblockBtn');
@@ -967,23 +766,12 @@
     const featureSaveLaterBtn = document.getElementById('featureSaveLaterBtn');
     const featureFullscreenBtn = document.getElementById('featureFullscreenBtn');
     const featureRefreshBtn = document.getElementById('featureRefreshBtn');
+    const featuresCloseBtn = document.getElementById('featuresCloseBtn');
     
-    // load saved notes
+    // Load saved notes
     notesTextarea.value = savedNotes;
     
-    // auto dark mode
-    function checkAutoDarkMode() {
-      const hour = new Date().getHours();
-      if (hour >= 18 || hour < 6) {
-        if (!document.body.classList.contains('dark') && !document.body.classList.contains('dark-green') && !document.body.classList.contains('purple')) {
-          setTheme('dark');
-          showToast('auto dark mode enabled');
-        }
-      }
-    }
-    setInterval(checkAutoDarkMode, 60000);
-    checkAutoDarkMode();
-    
+    // Helper functions
     function showToast(msg) {
       const toast = document.createElement('div');
       toast.className = 'toast';
@@ -1035,8 +823,8 @@
         const item = document.createElement('div');
         item.className = 'saved-link-item';
         item.innerHTML = `
-          <span style="flex:1;overflow:hidden;text-overflow:ellipsis;">${link.title || link.url}</span>
-          <button class="delete-saved" data-url="${link.url}" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:12px;">✕</button>
+          <span>${link.title || link.url}</span>
+          <button class="delete-saved" data-url="${link.url}" style="background:none;border:none;color:#ef4444;cursor:pointer;">✕</button>
         `;
         item.querySelector('.delete-saved').onclick = (e) => {
           e.stopPropagation();
@@ -1050,127 +838,33 @@
       });
     }
     
-    // tabs functions
-    function updateTabs() {
-      tabBar.innerHTML = '';
-      tabs.forEach((tab, index) => {
-        const tabEl = document.createElement('div');
-        tabEl.className = `tab ${index === currentTab ? 'active' : ''}`;
-        tabEl.innerHTML = `<span>${tab.title}</span><button class="tab-close" data-index="${index}">✕</button>`;
-        
-        tabEl.onclick = (e) => {
-          if (!e.target.classList.contains('tab-close')) {
-            currentTab = index;
-            updateTabs();
-            if (tab.url) {
-              loadUrl(tab.url);
-            } else {
-              proxyFrame.srcdoc = '<html><body style="background:#1a1a1a;display:flex;align-items:center;justify-content:center;padding:40px;">new tab</body></html>';
-              iframeUrlSpan.textContent = 'ready';
-              currentUrl = '';
-            }
-          }
-        };
-        
-        const closeBtn = tabEl.querySelector('.tab-close');
-        closeBtn.onclick = (e) => {
-          e.stopPropagation();
-          if (tabs.length === 1) {
-            showToast('cannot close last tab');
-            return;
-          }
-          tabs.splice(index, 1);
-          if (currentTab >= tabs.length) currentTab = tabs.length - 1;
-          if (currentTab === index && tabs[currentTab] && tabs[currentTab].url) {
-            loadUrl(tabs[currentTab].url);
-          } else if (currentTab === index) {
-            proxyFrame.srcdoc = '<html><body style="background:#1a1a1a;display:flex;align-items:center;justify-content:center;padding:40px;">new tab</body></html>';
-            iframeUrlSpan.textContent = 'ready';
-            currentUrl = '';
-          }
-          updateTabs();
-        };
-        
-        tabBar.appendChild(tabEl);
-      });
-      
-      const newTabEl = document.createElement('div');
-      newTabEl.className = 'new-tab';
-      newTabEl.textContent = '+ new tab';
-      newTabEl.onclick = () => {
-        const newId = Date.now();
-        tabs.push({ id: newId, url: '', title: `tab ${tabs.length + 1}` });
-        currentTab = tabs.length - 1;
-        updateTabs();
-        proxyFrame.srcdoc = '<html><body style="background:#1a1a1a;display:flex;align-items:center;justify-content:center;padding:40px;">new tab</body></html>';
-        iframeUrlSpan.textContent = 'ready';
-        currentUrl = '';
-      };
-      tabBar.appendChild(newTabEl);
-    }
-    
-    // about:blank - WORKS and STAYS as about:blank
+    // About:blank - STAYS as about:blank
     function openAboutBlank(url) {
       const blankWindow = window.open('about:blank', '_blank');
       if (!blankWindow) {
-        showToast('popup blocked - allow popups for this site');
+        showToast('popup blocked - allow popups');
         return;
       }
-      // Write HTML that KEEPS the address bar as about:blank
       blankWindow.document.write(`
         <!DOCTYPE html>
         <html>
-        <head>
-          <title>fanter proxy</title>
-          <style>
-            body { margin: 0; padding: 0; height: 100vh; overflow: hidden; background: #0a0a0a; }
-            iframe { width: 100%; height: 100%; border: none; }
-            .loading {
-              position: fixed;
-              top: 50%;
-              left: 50%;
-              transform: translate(-50%, -50%);
-              text-align: center;
-              font-family: monospace;
-              color: #4a6e4a;
-              background: #0a0a0a;
-              padding: 20px;
-              border-radius: 10px;
-              z-index: 10;
-            }
-            .spinner {
-              width: 30px;
-              height: 30px;
-              border: 2px solid #4a6e4a;
-              border-top-color: transparent;
-              border-radius: 50%;
-              animation: spin 0.6s linear infinite;
-              margin: 0 auto 10px;
-            }
-            @keyframes spin { to { transform: rotate(360deg); } }
-          </style>
+        <head><title>fanter proxy</title>
+        <style>
+          body{margin:0;padding:0;height:100vh;overflow:hidden;background:#0a0a0a;}
+          iframe{width:100%;height:100%;border:none;}
+          .loading{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:#4a6e4a;}
+          .spinner{width:30px;height:30px;border:2px solid #4a6e4a;border-top-color:transparent;border-radius:50%;animation:spin 0.6s linear infinite;margin:0 auto 10px;}
+          @keyframes spin{to{transform:rotate(360deg);}}
+        </style>
         </head>
         <body>
-          <div class="loading" id="loading">
-            <div class="spinner"></div>
-            <div>loading ${url}...</div>
-          </div>
-          <iframe id="contentFrame" src="${url}" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals allow-top-navigation allow-top-navigation-by-user-activation"></iframe>
-          <script>
-            var iframe = document.getElementById('contentFrame');
-            var loading = document.getElementById('loading');
-            iframe.onload = function() {
-              if (loading) loading.style.display = 'none';
-            };
-            // Fallback
-            setTimeout(function() {
-              if (loading) loading.style.display = 'none';
-            }, 5000);
-          <\/script>
+          <div class="loading"><div class="spinner"></div><div>loading...</div></div>
+          <iframe src="${url}"></iframe>
+          <script>document.querySelector('iframe').onload=()=>{document.querySelector('.loading').style.display='none';};<\/script>
         </body>
         </html>
       `);
-      showToast('opened in about:blank tab (stays about:blank)');
+      showToast('opened in about:blank tab');
     }
     
     async function shortenUrl(url) {
@@ -1178,23 +872,22 @@
         const res = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(url)}`);
         const shortUrl = await res.text();
         navigator.clipboard.writeText(shortUrl);
-        showToast(`shortened url copied: ${shortUrl}`);
+        showToast(`shortened: ${shortUrl}`);
       } catch(e) {
-        showToast('failed to shorten url');
+        showToast('failed to shorten');
       }
     }
     
     async function loadViaProxy(url) {
       const encoded = encodeURIComponent(url);
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 15000);
-      
       let userAgentString = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36';
       if (userAgent === 'firefox') userAgentString = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/119.0';
       if (userAgent === 'safari') userAgentString = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15';
       
       for (let proxy of [PROXY_URL, ...FALLBACK_PROXIES]) {
         try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 15000);
           const res = await fetch(proxy + encoded, { 
             signal: controller.signal,
             headers: { 'User-Agent': userAgentString }
@@ -1205,11 +898,10 @@
             if (textMode) {
               content = content.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
                 .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
-              proxyFrame.srcdoc = `<html><body style="background:#1a1a1a;color:#e0e0e0;padding:20px;font-family:monospace;white-space:pre-wrap;">${escapeHtml(content.substring(0, 50000))}</body></html>`;
+              proxyFrame.srcdoc = `<html><body style="background:#1a1a1a;padding:20px;font-family:monospace;white-space:pre-wrap;">${escapeHtml(content.substring(0, 50000))}</body></html>`;
             } else {
               if (adBlockEnabled) {
                 content = content.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '');
-                content = content.replace(/<iframe[^>]*>[\s\S]*?<\/iframe>/gi, '');
               }
               const base = url.match(/^https?:\/\/[^\/]+/)[0];
               content = content.replace('<head>', `<head><base href="${base}/">`);
@@ -1219,15 +911,13 @@
             
             if (tabs[currentTab]) {
               tabs[currentTab].url = url;
-              let title = url.replace(/^https?:\/\//, '').substring(0, 20);
-              tabs[currentTab].title = title;
+              tabs[currentTab].title = url.replace(/^https?:\/\//, '').substring(0, 20);
               updateTabs();
             }
             return true;
           }
         } catch(e) {}
       }
-      clearTimeout(timeoutId);
       return false;
     }
     
@@ -1242,14 +932,14 @@
       currentUrl = formatted;
       searchInput.value = rawUrl;
       iframeUrlSpan.textContent = 'loading...';
-      proxyFrame.srcdoc = '<html><body style="background:#1a1a1a;display:flex;align-items:center;justify-content:center;padding:40px;"><div class="spinner"></div><div style="margin-top:15px;font-size:12px;">loading...</div></body></html>';
+      proxyFrame.srcdoc = '<html><body style="background:#1a1a1a;display:flex;align-items:center;justify-content:center;padding:40px;"><div class="spinner"></div><div>loading...</div></body></html>';
       iframeArea.classList.add('show');
       searchSection.classList.add('has-iframe');
       addToHistory(formatted);
       
       const success = await loadViaProxy(formatted);
       if (!success) {
-        proxyFrame.srcdoc = `<html><body style="background:#1a1a1a;padding:40px;text-align:center;"><h3>❌ cannot load ${formatted}</h3><p>try using the about:blank button in settings</p></body></html>`;
+        proxyFrame.srcdoc = `<html><body style="background:#1a1a1a;padding:40px;text-align:center;"><h3>❌ cannot load ${formatted}</h3><p>try the about:blank button</p></body></html>`;
         iframeUrlSpan.textContent = `failed: ${formatted}`;
       }
       localStorage.setItem('fanterLastUrl', formatted);
@@ -1269,9 +959,7 @@
       const newUrl = panicUrlInput.value.trim();
       if (newUrl) {
         let url = newUrl;
-        if (!url.startsWith('http://') && !url.startsWith('https://')) {
-          url = 'https://' + url;
-        }
+        if (!url.startsWith('http')) url = 'https://' + url;
         PANIC_URL = url;
         localStorage.setItem('panicUrl', PANIC_URL);
         showToast('panic url saved');
@@ -1281,27 +969,6 @@
     
     panicUrlInput.placeholder = PANIC_URL;
     
-    async function checkProxyStatus() {
-      statusText.textContent = 'checking...';
-      statusDot.className = 'status-dot slow';
-      try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
-        const res = await fetch(PROXY_URL + encodeURIComponent('https://example.com'), { signal: controller.signal });
-        clearTimeout(timeoutId);
-        if (res && res.ok) {
-          statusDot.className = 'status-dot online';
-          statusText.textContent = 'online';
-        } else {
-          statusDot.className = 'status-dot slow';
-          statusText.textContent = 'slow';
-        }
-      } catch(e) {
-        statusDot.className = 'status-dot offline';
-        statusText.textContent = 'offline (fallbacks active)';
-      }
-    }
-    
     function setTheme(theme) {
       document.body.className = theme;
       localStorage.setItem('fanterTheme', theme);
@@ -1310,16 +977,59 @@
       });
     }
     
-    // Features panel functions
-    function toggleFeaturesPanel() {
-      featuresPanel.classList.toggle('open');
+    // Tabs
+    function updateTabs() {
+      tabBar.innerHTML = '';
+      tabs.forEach((tab, index) => {
+        const tabEl = document.createElement('div');
+        tabEl.className = `tab ${index === currentTab ? 'active' : ''}`;
+        tabEl.innerHTML = `<span>${tab.title}</span><button class="tab-close" data-index="${index}">✕</button>`;
+        tabEl.onclick = (e) => {
+          if (!e.target.classList.contains('tab-close')) {
+            currentTab = index;
+            updateTabs();
+            if (tab.url) loadUrl(tab.url);
+            else {
+              proxyFrame.srcdoc = '<html><body style="background:#1a1a1a;padding:40px;">new tab</body></html>';
+              iframeUrlSpan.textContent = 'ready';
+              currentUrl = '';
+            }
+          }
+        };
+        const closeBtn = tabEl.querySelector('.tab-close');
+        closeBtn.onclick = (e) => {
+          e.stopPropagation();
+          if (tabs.length === 1) {
+            showToast('cannot close last tab');
+            return;
+          }
+          tabs.splice(index, 1);
+          if (currentTab >= tabs.length) currentTab = tabs.length - 1;
+          if (currentTab === index && tabs[currentTab]?.url) loadUrl(tabs[currentTab].url);
+          else {
+            proxyFrame.srcdoc = '<html><body style="background:#1a1a1a;padding:40px;">new tab</body></html>';
+            iframeUrlSpan.textContent = 'ready';
+            currentUrl = '';
+          }
+          updateTabs();
+        };
+        tabBar.appendChild(tabEl);
+      });
+      const newTabEl = document.createElement('div');
+      newTabEl.className = 'new-tab';
+      newTabEl.textContent = '+ new tab';
+      newTabEl.onclick = () => {
+        tabs.push({ id: Date.now(), url: '', title: `tab ${tabs.length + 1}` });
+        currentTab = tabs.length - 1;
+        updateTabs();
+        proxyFrame.srcdoc = '<html><body style="background:#1a1a1a;padding:40px;">new tab</body></html>';
+        iframeUrlSpan.textContent = 'ready';
+        currentUrl = '';
+      };
+      tabBar.appendChild(newTabEl);
     }
     
-    function closeFeaturesPanel() {
-      featuresPanel.classList.remove('open');
-    }
-    
-    // Update feature button states
+    // Feature updates
     function updateFeatureButtons() {
       featureTextModeBtn.textContent = textMode ? 'on' : 'off';
       featureTextModeBtn.style.background = textMode ? '#4a6e4a' : '#666';
@@ -1328,142 +1038,56 @@
       featureUserAgentBtn.textContent = userAgent;
     }
     
-    // Feature actions
-    featureAboutBlankBtn.onclick = () => {
-      if (currentUrl) openAboutBlank(currentUrl);
-      else if (searchInput.value.trim()) openAboutBlank(formatUrl(searchInput.value));
-      else showToast('enter a url first');
-      closeFeaturesPanel();
-    };
-    
-    featureTextModeBtn.onclick = () => {
-      textMode = !textMode;
-      updateFeatureButtons();
-      if (currentUrl) loadUrl(currentUrl);
-      showToast(textMode ? 'text mode on' : 'text mode off');
-      closeFeaturesPanel();
-    };
-    
-    featureAdblockBtn.onclick = () => {
-      adBlockEnabled = !adBlockEnabled;
-      updateFeatureButtons();
-      if (currentUrl) loadUrl(currentUrl);
-      showToast(adBlockEnabled ? 'adblock enabled' : 'adblock disabled');
-      closeFeaturesPanel();
-    };
-    
-    featureUserAgentBtn.onclick = () => {
-      const agents = ['chrome', 'firefox', 'safari'];
-      const currentIndex = agents.indexOf(userAgent);
-      const nextIndex = (currentIndex + 1) % agents.length;
-      userAgent = agents[nextIndex];
-      updateFeatureButtons();
-      if (currentUrl) loadUrl(currentUrl);
-      showToast(`user agent: ${userAgent}`);
-      closeFeaturesPanel();
-    };
-    
-    featureShortenBtn.onclick = () => {
-      if (currentUrl) shortenUrl(currentUrl);
-      else showToast('load a page first');
-      closeFeaturesPanel();
-    };
-    
-    featureSaveLaterBtn.onclick = () => {
-      if (currentUrl) {
-        const title = currentUrl.length > 30 ? currentUrl.substring(0, 30) + '...' : currentUrl;
-        savedLinks.push({ url: currentUrl, title: title, date: Date.now() });
-        localStorage.setItem('fanterSavedLinks', JSON.stringify(savedLinks));
-        updateSavedLinksList();
-        showToast('saved for later');
-      } else {
-        showToast('load a page first');
-      }
-      closeFeaturesPanel();
-    };
-    
-    featureFullscreenBtn.onclick = () => {
-      if (!document.fullscreenElement) {
-        iframeArea.requestFullscreen().catch(() => {});
-      } else {
-        document.exitFullscreen();
-      }
-      closeFeaturesPanel();
-    };
-    
-    featureRefreshBtn.onclick = () => {
-      if (currentUrl) loadUrl(currentUrl);
-      else showToast('load a page first');
-      closeFeaturesPanel();
-    };
-    
-    // Settings button in iframe header
-    settingsBtn.onclick = toggleFeaturesPanel;
-    featuresCloseBtn.onclick = closeFeaturesPanel;
-    
-    // dropdown functions
-    function closeAllMenus() {
+    // Panel functions
+    function closeAllPanels() {
       quickDropdown.classList.remove('show');
       helpPanel.classList.remove('show');
       historyPanel.classList.remove('show');
       notesPanel.classList.remove('show');
-      rightButtons.classList.remove('push-quick', 'push-help', 'push-history');
+      featuresPanel.classList.remove('show');
+      rightButtons.classList.remove('push');
     }
     
-    function openQuickMenu() {
-      closeAllMenus();
-      quickDropdown.classList.add('show');
-      rightButtons.classList.add('push-quick');
+    function openPanel(panel) {
+      closeAllPanels();
+      panel.classList.add('show');
+      rightButtons.classList.add('push');
     }
     
-    function openHelpMenu() {
-      closeAllMenus();
-      helpPanel.classList.add('show');
-      rightButtons.classList.add('push-help');
-    }
-    
-    function openHistoryMenu() {
-      closeAllMenus();
-      updateHistoryList();
-      historyPanel.classList.add('show');
-      rightButtons.classList.add('push-history');
-    }
-    
-    function openNotes() {
-      if (notesPanel.classList.contains('show')) {
-        notesPanel.classList.remove('show');
-        rightButtons.classList.remove('push-quick', 'push-help', 'push-history');
-      } else {
-        closeAllMenus();
-        notesPanel.classList.add('show');
-      }
-    }
-    
-    // event listeners
+    // Event listeners
     goBtn.onclick = () => { if (searchInput.value.trim()) loadUrl(searchInput.value); };
     searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') loadUrl(searchInput.value); });
     
     document.getElementById('quickLinksBtn').onclick = (e) => {
       e.stopPropagation();
-      if (quickDropdown.classList.contains('show')) closeAllMenus();
-      else openQuickMenu();
+      if (quickDropdown.classList.contains('show')) closeAllPanels();
+      else openPanel(quickDropdown);
     };
     
     document.getElementById('helpBtn').onclick = (e) => {
       e.stopPropagation();
-      if (helpPanel.classList.contains('show')) closeAllMenus();
-      else openHelpMenu();
+      if (helpPanel.classList.contains('show')) closeAllPanels();
+      else openPanel(helpPanel);
     };
     
     document.getElementById('historyBtn').onclick = (e) => {
       e.stopPropagation();
-      if (historyPanel.classList.contains('show')) closeAllMenus();
-      else openHistoryMenu();
+      if (historyPanel.classList.contains('show')) closeAllPanels();
+      else {
+        updateHistoryList();
+        openPanel(historyPanel);
+      }
     };
     
     document.getElementById('notesBtn').onclick = (e) => {
       e.stopPropagation();
-      openNotes();
+      if (notesPanel.classList.contains('show')) {
+        notesPanel.classList.remove('show');
+        rightButtons.classList.remove('push');
+      } else {
+        closeAllPanels();
+        notesPanel.classList.add('show');
+      }
     };
     
     document.getElementById('panicBtn').onclick = panic;
@@ -1479,28 +1103,97 @@
       showToast('notes saved');
     };
     
-    document.addEventListener('click', (e) => {
-      if (!e.target.closest('#quickDropdown') && !e.target.closest('#quickLinksBtn') &&
-          !e.target.closest('#helpPanel') && !e.target.closest('#helpBtn') &&
-          !e.target.closest('#historyPanel') && !e.target.closest('#historyBtn') &&
-          !e.target.closest('#featuresPanel') && !e.target.closest('#settingsBtn') &&
-          !e.target.closest('#notesPanel') && !e.target.closest('#notesBtn')) {
-        closeAllMenus();
-        closeFeaturesPanel();
-      }
-    });
+    settingsBtn.onclick = () => {
+      if (featuresPanel.classList.contains('show')) closeAllPanels();
+      else openPanel(featuresPanel);
+    };
+    
+    featuresCloseBtn.onclick = closeAllPanels;
+    
+    // Feature actions
+    featureAboutBlankBtn.onclick = () => {
+      if (currentUrl) openAboutBlank(currentUrl);
+      else if (searchInput.value.trim()) openAboutBlank(formatUrl(searchInput.value));
+      else showToast('enter a url first');
+      closeAllPanels();
+    };
+    
+    featureTextModeBtn.onclick = () => {
+      textMode = !textMode;
+      updateFeatureButtons();
+      if (currentUrl) loadUrl(currentUrl);
+      showToast(textMode ? 'text mode on' : 'text mode off');
+      closeAllPanels();
+    };
+    
+    featureAdblockBtn.onclick = () => {
+      adBlockEnabled = !adBlockEnabled;
+      updateFeatureButtons();
+      if (currentUrl) loadUrl(currentUrl);
+      showToast(adBlockEnabled ? 'adblock on' : 'adblock off');
+      closeAllPanels();
+    };
+    
+    featureUserAgentBtn.onclick = () => {
+      const agents = ['chrome', 'firefox', 'safari'];
+      const idx = (agents.indexOf(userAgent) + 1) % agents.length;
+      userAgent = agents[idx];
+      updateFeatureButtons();
+      if (currentUrl) loadUrl(currentUrl);
+      showToast(`user agent: ${userAgent}`);
+      closeAllPanels();
+    };
+    
+    featureShortenBtn.onclick = () => {
+      if (currentUrl) shortenUrl(currentUrl);
+      else showToast('load a page first');
+      closeAllPanels();
+    };
+    
+    featureSaveLaterBtn.onclick = () => {
+      if (currentUrl) {
+        const title = currentUrl.substring(0, 30);
+        savedLinks.push({ url: currentUrl, title: title });
+        localStorage.setItem('fanterSavedLinks', JSON.stringify(savedLinks));
+        updateSavedLinksList();
+        showToast('saved for later');
+      } else showToast('load a page first');
+      closeAllPanels();
+    };
+    
+    featureFullscreenBtn.onclick = () => {
+      if (!document.fullscreenElement) iframeArea.requestFullscreen();
+      else document.exitFullscreen();
+      closeAllPanels();
+    };
+    
+    featureRefreshBtn.onclick = () => {
+      if (currentUrl) loadUrl(currentUrl);
+      else showToast('load a page first');
+      closeAllPanels();
+    };
     
     document.querySelectorAll('.dropdown-item').forEach(el => {
       el.addEventListener('click', (e) => {
         e.stopPropagation();
         const url = el.dataset.url;
         if (url) loadUrl(url);
-        closeAllMenus();
+        closeAllPanels();
       });
     });
     
     document.querySelectorAll('.theme-dot').forEach(dot => {
       dot.addEventListener('click', () => setTheme(dot.dataset.theme));
+    });
+    
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#quickDropdown') && !e.target.closest('#quickLinksBtn') &&
+          !e.target.closest('#helpPanel') && !e.target.closest('#helpBtn') &&
+          !e.target.closest('#historyPanel') && !e.target.closest('#historyBtn') &&
+          !e.target.closest('#featuresPanel') && !e.target.closest('#settingsBtn') &&
+          !e.target.closest('#notesPanel') && !e.target.closest('#notesBtn')) {
+        closeAllPanels();
+      }
     });
     
     document.addEventListener('keydown', (e) => {
@@ -1511,7 +1204,8 @@
       }
       if (e.ctrlKey && e.key === 'h') {
         e.preventDefault();
-        openHistoryMenu();
+        updateHistoryList();
+        openPanel(historyPanel);
       }
       if (e.key === '`') {
         e.preventDefault();
@@ -1519,19 +1213,30 @@
       }
     });
     
-    // init
+    // Auto dark mode
+    function checkAutoDarkMode() {
+      const hour = new Date().getHours();
+      if (hour >= 18 || hour < 6) {
+        if (!document.body.classList.contains('dark') && !document.body.classList.contains('dark-green') && !document.body.classList.contains('purple')) {
+          setTheme('dark');
+          showToast('auto dark mode enabled');
+        }
+      }
+    }
+    setInterval(checkAutoDarkMode, 60000);
+    checkAutoDarkMode();
+    
+    // Init
     updateHistoryList();
     updateSavedLinksList();
     updateTabs();
     updateFeatureButtons();
-    checkProxyStatus();
-    setInterval(checkProxyStatus, 30000);
     setTheme(currentTheme);
     
     const lastUrl = localStorage.getItem('fanterLastUrl');
     if (lastUrl) searchInput.value = lastUrl;
     
-    console.log('fanter search ready ');
+    console.log('fanter search ready');
   </script>
 </body>
 </html>
