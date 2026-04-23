@@ -91,10 +91,10 @@
       transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
     }
 
-    /* Push amounts based on actual menu heights */
-    .right-buttons.push-quick { transform: translateY(210px); }
-    .right-buttons.push-help { transform: translateY(330px); }
-    .right-buttons.push-history { transform: translateY(280px); }
+    /* Push amounts - increased to fully clear the menus */
+    .right-buttons.push-quick { transform: translateY(240px); }
+    .right-buttons.push-help { transform: translateY(350px); }
+    .right-buttons.push-history { transform: translateY(300px); }
 
     .round-btn {
       width: 95px;
@@ -427,38 +427,7 @@
       background: #3a5e3a;
     }
 
-    /* Features toggle button */
-    .features-toggle {
-      position: fixed;
-      left: 20px;
-      top: 20px;
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      background: rgba(30, 30, 35, 0.95);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 20px;
-      transition: all 0.2s ease;
-      color: #e0e0e0;
-      z-index: 101;
-    }
-
-    body.light .features-toggle {
-      background: rgba(220, 220, 220, 0.95);
-    }
-
-    .features-toggle:hover {
-      background: #4a6e4a;
-      color: white;
-      transform: scale(1.05);
-    }
-
-    /* Iframe area - with settings buttons */
+    /* Iframe area - with settings button */
     .iframe-area {
       max-width: 1200px;
       margin: 0 auto 30px;
@@ -752,51 +721,6 @@
       </div>
     </div>
 
-    <!-- Features Toggle Button (Left Side) -->
-    <div class="features-toggle" id="featuresToggleBtn">⚙️</div>
-
-    <!-- Features Panel (Left Side Menu) -->
-    <div class="features-panel" id="featuresPanel">
-      <div class="features-header">
-        <div class="features-title">settings</div>
-        <button class="features-close" id="featuresCloseBtn">✕</button>
-      </div>
-      <div class="features-list">
-        <div class="feature-item">
-          <span>📄 about:blank bypass</span>
-          <button id="featureAboutBlankBtn">open</button>
-        </div>
-        <div class="feature-item">
-          <span>📝 text mode</span>
-          <button id="featureTextModeBtn">off</button>
-        </div>
-        <div class="feature-item">
-          <span>🚫 ad blocker</span>
-          <button id="featureAdblockBtn">on</button>
-        </div>
-        <div class="feature-item">
-          <span>🔄 user agent</span>
-          <button id="featureUserAgentBtn">chrome</button>
-        </div>
-        <div class="feature-item">
-          <span>🔗 url shortener</span>
-          <button id="featureShortenBtn">shorten</button>
-        </div>
-        <div class="feature-item">
-          <span>💾 save for later</span>
-          <button id="featureSaveLaterBtn">save</button>
-        </div>
-        <div class="feature-item">
-          <span>🖥️ fullscreen</span>
-          <button id="featureFullscreenBtn">enter</button>
-        </div>
-        <div class="feature-item">
-          <span>🔄 refresh</span>
-          <button id="featureRefreshBtn">refresh</button>
-        </div>
-      </div>
-    </div>
-
     <!-- Right side buttons -->
     <div class="right-buttons" id="rightButtons">
       <div class="round-btn" id="quickLinksBtn">quick linx</div>
@@ -911,9 +835,7 @@
   </div>
 
   <script>
-    // ============================================================
-    // fanter search - working about:blank + settings button
-    // ============================================================
+   
     
     // background canvas
     const canvas = document.getElementById('bgCanvas');
@@ -1036,7 +958,6 @@
     
     // features panel elements
     const featuresPanel = document.getElementById('featuresPanel');
-    const featuresToggleBtn = document.getElementById('featuresToggleBtn');
     const featuresCloseBtn = document.getElementById('featuresCloseBtn');
     const featureAboutBlankBtn = document.getElementById('featureAboutBlankBtn');
     const featureTextModeBtn = document.getElementById('featureTextModeBtn');
@@ -1188,14 +1109,14 @@
       tabBar.appendChild(newTabEl);
     }
     
-    // about:blank - STAYS as about:blank FOREVER
-    function openRealAboutBlank(url) {
+    // about:blank - WORKS and STAYS as about:blank
+    function openAboutBlank(url) {
       const blankWindow = window.open('about:blank', '_blank');
       if (!blankWindow) {
         showToast('popup blocked - allow popups for this site');
         return;
       }
-      // Write HTML that STAYS as about:blank and loads the URL in an iframe
+      // Write HTML that KEEPS the address bar as about:blank
       blankWindow.document.write(`
         <!DOCTYPE html>
         <html>
@@ -1232,16 +1153,17 @@
         <body>
           <div class="loading" id="loading">
             <div class="spinner"></div>
-            <div>loading...</div>
+            <div>loading ${url}...</div>
           </div>
-          <iframe id="contentFrame" src="${url}" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals allow-top-navigation"></iframe>
+          <iframe id="contentFrame" src="${url}" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals allow-top-navigation allow-top-navigation-by-user-activation"></iframe>
           <script>
-            document.getElementById('contentFrame').onload = function() {
-              document.getElementById('loading').style.display = 'none';
+            var iframe = document.getElementById('contentFrame');
+            var loading = document.getElementById('loading');
+            iframe.onload = function() {
+              if (loading) loading.style.display = 'none';
             };
-            // Fallback: hide loading after 5 seconds
+            // Fallback
             setTimeout(function() {
-              var loading = document.getElementById('loading');
               if (loading) loading.style.display = 'none';
             }, 5000);
           <\/script>
@@ -1408,8 +1330,8 @@
     
     // Feature actions
     featureAboutBlankBtn.onclick = () => {
-      if (currentUrl) openRealAboutBlank(currentUrl);
-      else if (searchInput.value.trim()) openRealAboutBlank(formatUrl(searchInput.value));
+      if (currentUrl) openAboutBlank(currentUrl);
+      else if (searchInput.value.trim()) openAboutBlank(formatUrl(searchInput.value));
       else showToast('enter a url first');
       closeFeaturesPanel();
     };
@@ -1477,9 +1399,6 @@
     
     // Settings button in iframe header
     settingsBtn.onclick = toggleFeaturesPanel;
-    
-    // Features panel event listeners
-    featuresToggleBtn.onclick = toggleFeaturesPanel;
     featuresCloseBtn.onclick = closeFeaturesPanel;
     
     // dropdown functions
@@ -1564,8 +1483,7 @@
       if (!e.target.closest('#quickDropdown') && !e.target.closest('#quickLinksBtn') &&
           !e.target.closest('#helpPanel') && !e.target.closest('#helpBtn') &&
           !e.target.closest('#historyPanel') && !e.target.closest('#historyBtn') &&
-          !e.target.closest('#featuresPanel') && !e.target.closest('#featuresToggleBtn') &&
-          !e.target.closest('#settingsBtn') &&
+          !e.target.closest('#featuresPanel') && !e.target.closest('#settingsBtn') &&
           !e.target.closest('#notesPanel') && !e.target.closest('#notesBtn')) {
         closeAllMenus();
         closeFeaturesPanel();
@@ -1613,7 +1531,7 @@
     const lastUrl = localStorage.getItem('fanterLastUrl');
     if (lastUrl) searchInput.value = lastUrl;
     
-    console.log('fanter search ready - about:blank fixed, settings button added');
+    console.log('fanter search ready ');
   </script>
 </body>
 </html>
