@@ -583,7 +583,7 @@
 
   <script>
     // ============================================================
-    // FANTER SEARCH - WORKING PROXY with multiple fallbacks
+    // FANTER SEARCH - WORKING PROXY + WORKING about:blank
     // ============================================================
     
     // Background canvas for dots and lines
@@ -830,8 +830,11 @@
       }
     }
     
-    // Firefox-compatible about:blank
+    // WORKING about:blank with proxy
     function openAboutBlank(url) {
+      const formatted = formatUrl(url);
+      const proxyUrl = PROXIES[0] + encodeURIComponent(formatted);
+      
       let blankWindow = window.open('about:blank', '_blank');
       if (!blankWindow) {
         showToast('Popup blocked - allow popups');
@@ -847,51 +850,142 @@
               <title>fanter proxy</title>
               <style>
                 body { margin: 0; padding: 0; height: 100vh; overflow: hidden; background: #0a0a0a; font-family: monospace; }
-                iframe { width: 100%; height: 100%; border: none; }
+                iframe { width: 100%; height: calc(100% - 45px); border: none; margin-top: 45px; }
                 .nav {
                   position: fixed;
                   top: 0;
                   left: 0;
                   right: 0;
                   background: #1a1a1a;
-                  padding: 8px;
+                  padding: 8px 12px;
                   display: flex;
                   gap: 8px;
+                  z-index: 20;
+                  font-size: 13px;
+                  border-bottom: 1px solid #333;
+                }
+                .nav input {
+                  flex: 1;
+                  background: #2a2a2a;
+                  border: 1px solid #444;
+                  color: white;
+                  padding: 6px 12px;
+                  border-radius: 30px;
+                  outline: none;
+                }
+                .nav button {
+                  background: #4a6e4a;
+                  border: none;
+                  color: white;
+                  padding: 6px 16px;
+                  border-radius: 30px;
+                  cursor: pointer;
+                }
+                .nav button:hover { background: #3a5e3a; }
+                .loader {
+                  position: fixed;
+                  top: 50%;
+                  left: 50%;
+                  transform: translate(-50%, -50%);
+                  text-align: center;
+                  color: #4a6e4a;
+                  background: #0a0a0a;
+                  padding: 20px;
+                  border-radius: 10px;
                   z-index: 10;
                 }
-                .nav input { flex: 1; padding: 6px; border-radius: 20px; background: #2a2a2a; color: white; border: none; }
-                .nav button { background: #4a6e4a; border: none; color: white; padding: 6px 16px; border-radius: 20px; cursor: pointer; }
-                .loader { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; color: #4a6e4a; }
-                .spinner { width: 30px; height: 30px; border: 2px solid #4a6e4a; border-top-color: transparent; border-radius: 50%; animation: spin 0.6s linear infinite; margin: 0 auto 10px; }
+                .spinner {
+                  width: 30px;
+                  height: 30px;
+                  border: 2px solid #4a6e4a;
+                  border-top-color: transparent;
+                  border-radius: 50%;
+                  animation: spin 0.6s linear infinite;
+                  margin: 0 auto 10px;
+                }
                 @keyframes spin { to { transform: rotate(360deg); } }
               </style>
             </head>
             <body>
               <div class="nav">
-                <input type="text" id="urlInput" value="${url}">
-                <button id="goBtn">go</button>
+                <input type="text" id="navUrl" placeholder="enter url..." value="${formatted}">
+                <button id="navGo">go</button>
+                <button id="navBack">←</button>
+                <button id="navForward">→</button>
               </div>
-              <div class="loader" id="loader"><div class="spinner"></div><div>loading...</div></div>
-              <iframe id="frame" src="${url}"></iframe>
+              <div class="loader" id="loader">
+                <div class="spinner"></div>
+                <div>loading...</div>
+              </div>
+              <iframe id="contentFrame" src="${proxyUrl}"></iframe>
               <script>
-                document.getElementById('frame').onload = () => document.getElementById('loader').style.display = 'none';
-                document.getElementById('goBtn').onclick = () => {
-                  let u = document.getElementById('urlInput').value;
-                  if (!u.startsWith('http')) u = 'https://' + u;
-                  document.getElementById('loader').style.display = 'block';
-                  document.getElementById('frame').src = u;
+                var iframe = document.getElementById('contentFrame');
+                var loader = document.getElementById('loader');
+                var navInput = document.getElementById('navUrl');
+                var navGo = document.getElementById('navGo');
+                var navBack = document.getElementById('navBack');
+                var navForward = document.getElementById('navForward');
+                var historyStack = ['${proxyUrl}'];
+                var historyIndex = 0;
+                var originalUrl = '${formatted}';
+                var proxyBase = '${PROXIES[0]}';
+                
+                iframe.onload = function() {
+                  loader.style.display = 'none';
                 };
+                
+                function loadViaProxy(targetUrl) {
+                  var encodedUrl = encodeURIComponent(targetUrl);
+                  var proxyUrl = proxyBase + encodedUrl;
+                  loader.style.display = 'flex';
+                  iframe.src = proxyUrl;
+                  navInput.value = targetUrl;
+                  historyStack.push(proxyUrl);
+                  historyIndex = historyStack.length - 1;
+                }
+                
+                navGo.onclick = function() {
+                  var newUrl = navInput.value.trim();
+                  if (!newUrl.startsWith('http')) newUrl = 'https://' + newUrl;
+                  loadViaProxy(newUrl);
+                };
+                
+                navInput.addEventListener('keypress', function(e) {
+                  if (e.key === 'Enter') navGo.click();
+                });
+                
+                navBack.onclick = function() {
+                  if (historyIndex > 0) {
+                    historyIndex--;
+                    loader.style.display = 'flex';
+                    iframe.src = historyStack[historyIndex];
+                    if (historyStack[historyIndex].includes('proxy')) {
+                      navInput.value = originalUrl;
+                    }
+                  }
+                };
+                
+                navForward.onclick = function() {
+                  if (historyIndex < historyStack.length - 1) {
+                    historyIndex++;
+                    loader.style.display = 'flex';
+                    iframe.src = historyStack[historyIndex];
+                  }
+                };
+                
+                setTimeout(function() {
+                  if (loader) loader.style.display = 'none';
+                }, 8000);
               <\/script>
             </body>
             </html>
           `);
-          showToast('opened in about:blank tab');
+          showToast('opened in about:blank tab (proxy enabled)');
         } catch(e) {
-          const dataUrl = `data:text/html,<!DOCTYPE html><html><head><title>fanter proxy</title><style>body{margin:0;padding:0;height:100vh;overflow:hidden;}iframe{width:100%;height:100%;border:none;}.nav{position:fixed;top:0;left:0;right:0;background:#1a1a1a;padding:8px;display:flex;gap:8px;z-index:10;}.nav input{flex:1;padding:6px;border-radius:20px;background:#2a2a2a;color:white;}.nav button{background:#4a6e4a;border:none;color:white;padding:6px 16px;border-radius:20px;cursor:pointer;}.loader{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:#4a6e4a;}.spinner{width:30px;height:30px;border:2px solid #4a6e4a;border-top-color:transparent;border-radius:50%;animation:spin 0.6s linear infinite;margin:0 auto 10px;}@keyframes spin{to{transform:rotate(360deg);}}</style></head><body><div class="nav"><input type="text" id="urlInput" value="${url}"><button id="goBtn">go</button></div><div class="loader" id="loader"><div class="spinner"></div><div>loading...</div></div><iframe id="frame" src="${url}"></iframe><script>document.getElementById('frame').onload=()=>document.getElementById('loader').style.display='none';document.getElementById('goBtn').onclick=()=>{let u=document.getElementById('urlInput').value;if(!u.startsWith('http'))u='https://'+u;document.getElementById('loader').style.display='block';document.getElementById('frame').src=u;};<\/script></body></html>`;
-          blankWindow.location.href = dataUrl;
+          window.open(formatted, '_blank');
           showToast('opened in new tab');
         }
-      }, 50);
+      }, 100);
     }
     
     async function shortenUrl(url) {
@@ -1067,7 +1161,7 @@
     const lastUrl = localStorage.getItem('fanterLastUrl');
     if (lastUrl) searchInput.value = lastUrl;
     
-    console.log('fanter search ready - proxies working!');
+    console.log('fanter search ready - proxy and about:blank working!');
   </script>
 </body>
 </html>
