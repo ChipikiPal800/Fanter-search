@@ -78,7 +78,6 @@
     .slow { background: #fbbf24; }
     .offline { background: #ef4444; }
 
-    /* right side buttons - all start at top */
     .right-buttons {
       position: fixed;
       right: 20px;
@@ -88,11 +87,13 @@
       align-items: flex-end;
       gap: 10px;
       z-index: 100;
-      transition: transform 0.3s ease;
+      transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
     }
 
-    /* push effects */
-    .right-buttons.push { transform: translateY(180px); }
+    /* Different push amounts for each menu based on their actual height */
+    .right-buttons.push-quick { transform: translateY(210px); }
+    .right-buttons.push-help { transform: translateY(320px); }
+    .right-buttons.push-history { transform: translateY(280px); }
 
     .round-btn {
       width: 95px;
@@ -125,28 +126,22 @@
       color: white;
     }
 
-    /* all dropdowns start from top right corner */
-    .menu-container {
-      position: fixed;
-      right: 20px;
-      top: 20px;
-      z-index: 99;
-    }
-
+    /* All menus start from top right corner */
     .dropdown-menu {
       position: fixed;
       right: 20px;
       background: #1e1e1e;
       border-radius: 16px;
       padding: 8px;
-      min-width: 200px;
+      min-width: 220px;
       opacity: 0;
       visibility: hidden;
       transform: translateY(-10px);
-      transition: all 0.3s ease;
+      transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
       border: 1px solid rgba(255, 255, 255, 0.1);
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
       pointer-events: none;
+      z-index: 99;
     }
 
     body.light .dropdown-menu {
@@ -161,7 +156,7 @@
       pointer-events: auto;
     }
 
-    /* positions for each menu */
+    /* Menu positions */
     #quickDropdown { top: 60px; }
     #helpPanel { top: 60px; width: 280px; padding: 15px; }
     #historyPanel { top: 60px; width: 260px; padding: 12px; }
@@ -301,7 +296,55 @@
       background: rgba(74, 110, 74, 0.2);
     }
 
-    /* notes panel - left side */
+    /* Extra Features Panel */
+    .extra-panel {
+      position: fixed;
+      right: 20px;
+      top: 60px;
+      width: 260px;
+      background: #1e1e1e;
+      border-radius: 16px;
+      padding: 12px;
+      border: 1px solid #333;
+      z-index: 99;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      pointer-events: none;
+    }
+
+    body.light .extra-panel {
+      background: white;
+    }
+
+    .extra-panel.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .extra-feature {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 12px;
+    }
+
+    .extra-feature button {
+      background: #4a6e4a;
+      border: none;
+      padding: 4px 12px;
+      border-radius: 20px;
+      color: white;
+      cursor: pointer;
+      font-size: 10px;
+    }
+
+    /* Notes panel - left side */
     .notes-panel {
       position: fixed;
       bottom: 20px;
@@ -646,6 +689,7 @@
       <div class="round-btn" id="quickLinksBtn">quick linx</div>
       <div class="round-btn" id="helpBtn">help</div>
       <div class="round-btn" id="historyBtn">history</div>
+      <div class="round-btn" id="extraBtn">extra</div>
       <div class="round-btn" id="panicBtn">panic</div>
       <div class="round-btn" id="notesBtn">notes</div>
     </div>
@@ -713,6 +757,31 @@
       <div class="clear-history" id="clearHistory">clear history</div>
     </div>
 
+    <!-- extra features panel -->
+    <div class="extra-panel" id="extraPanel">
+      <div class="history-title">extra features</div>
+      <div class="extra-feature">
+        <span>📄 about:blank bypass</span>
+        <button id="extraAboutBlankBtn">open</button>
+      </div>
+      <div class="extra-feature">
+        <span>🔗 url shortener</span>
+        <button id="extraShortenBtn">shorten</button>
+      </div>
+      <div class="extra-feature">
+        <span>💾 save page for later</span>
+        <button id="extraSaveLaterBtn">save</button>
+      </div>
+      <div class="extra-feature">
+        <span>🔄 refresh page</span>
+        <button id="extraRefreshBtn">refresh</button>
+      </div>
+      <div class="extra-feature">
+        <span>🖥️ fullscreen mode</span>
+        <button id="extraFullscreenBtn">enter</button>
+      </div>
+    </div>
+
     <!-- notes panel (left side) -->
     <div class="notes-panel" id="notesPanel">
       <div class="history-title">quick notes</div>
@@ -733,7 +802,7 @@
       </div>
     </div>
 
-    <!-- iframe area with working tabs -->
+    <!-- iframe area -->
     <div class="iframe-area" id="iframeArea">
       <div class="tab-bar" id="tabBar"></div>
       <div class="iframe-header">
@@ -763,7 +832,7 @@
 
   <script>
     // ============================================================
-    // fanter search - fully fixed with working tabs
+    // fanter search - fixed push amounts + extra panel + about:blank
     // ============================================================
     
     // background canvas
@@ -883,6 +952,7 @@
     const historyList = document.getElementById('historyList');
     const quickDropdown = document.getElementById('quickDropdown');
     const helpPanel = document.getElementById('helpPanel');
+    const extraPanel = document.getElementById('extraPanel');
     const notesPanel = document.getElementById('notesPanel');
     const notesTextarea = document.getElementById('notesTextarea');
     const saveNotesBtn = document.getElementById('saveNotesBtn');
@@ -891,6 +961,13 @@
     const panicUrlInput = document.getElementById('panicUrlInput');
     const savePanicBtn = document.getElementById('savePanicBtn');
     const tabBar = document.getElementById('tabBar');
+    
+    // extra panel buttons
+    const extraAboutBlankBtn = document.getElementById('extraAboutBlankBtn');
+    const extraShortenBtn = document.getElementById('extraShortenBtn');
+    const extraSaveLaterBtn = document.getElementById('extraSaveLaterBtn');
+    const extraRefreshBtn = document.getElementById('extraRefreshBtn');
+    const extraFullscreenBtn = document.getElementById('extraFullscreenBtn');
     
     // load saved notes
     notesTextarea.value = savedNotes;
@@ -982,7 +1059,6 @@
         tabEl.className = `tab ${index === currentTab ? 'active' : ''}`;
         tabEl.innerHTML = `<span>${tab.title}</span><button class="tab-close" data-index="${index}">✕</button>`;
         
-        // switch tab
         tabEl.onclick = (e) => {
           if (!e.target.classList.contains('tab-close')) {
             currentTab = index;
@@ -997,7 +1073,6 @@
           }
         };
         
-        // close tab
         const closeBtn = tabEl.querySelector('.tab-close');
         closeBtn.onclick = (e) => {
           e.stopPropagation();
@@ -1020,7 +1095,6 @@
         tabBar.appendChild(tabEl);
       });
       
-      // add new tab button
       const newTabEl = document.createElement('div');
       newTabEl.className = 'new-tab';
       newTabEl.textContent = '+ new tab';
@@ -1036,31 +1110,15 @@
       tabBar.appendChild(newTabEl);
     }
     
-    function openAboutBlank(url) {
+   
+    function openRealAboutBlank(url) {
       const blankWindow = window.open('about:blank', '_blank');
       if (!blankWindow) {
         showToast('popup blocked - allow popups for this site');
         return;
       }
-      blankWindow.document.write(`
-        <!DOCTYPE html>
-        <html>
-        <head><title>fanter proxy</title>
-        <style>
-          body{margin:0;padding:0;height:100vh;overflow:hidden;}
-          iframe{width:100%;height:100%;border:none;}
-          .loading{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:#4a6e4a;}
-          .spinner{width:30px;height:30px;border:2px solid #4a6e4a;border-top-color:transparent;border-radius:50%;animation:spin 0.6s linear infinite;margin:0 auto 10px;}
-          @keyframes spin{to{transform:rotate(360deg);}}
-        </style>
-        </head>
-        <body>
-          <div class="loading"><div class="spinner"></div><div>loading...</div></div>
-          <iframe src="${url}" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals allow-top-navigation"></iframe>
-          <script>document.querySelector('iframe').onload=()=>{document.querySelector('.loading').style.display='none';};<\/script>
-        </body>
-        </html>
-      `);
+      // Navigate the about:blank window to the URL
+      blankWindow.location.href = url;
       showToast('opened in about:blank tab');
     }
     
@@ -1108,7 +1166,6 @@
             }
             iframeUrlSpan.textContent = url;
             
-            // update current tab with url
             if (tabs[currentTab]) {
               tabs[currentTab].url = url;
               let title = url.replace(/^https?:\/\//, '').substring(0, 20);
@@ -1202,28 +1259,59 @@
       });
     }
     
-    // dropdown functions - all menus open from top right
+    // dropdown functions - push based on menu height
     function closeAllMenus() {
       quickDropdown.classList.remove('show');
       helpPanel.classList.remove('show');
       historyPanel.classList.remove('show');
+      extraPanel.classList.remove('show');
       notesPanel.classList.remove('show');
-      rightButtons.classList.remove('push');
+      rightButtons.classList.remove('push-quick', 'push-help', 'push-history');
     }
     
-    function openMenu(menu) {
+    function openQuickMenu() {
       closeAllMenus();
-      menu.classList.add('show');
-      rightButtons.classList.add('push');
+      quickDropdown.classList.add('show');
+      rightButtons.classList.add('push-quick');
+    }
+    
+    function openHelpMenu() {
+      closeAllMenus();
+      helpPanel.classList.add('show');
+      rightButtons.classList.add('push-help');
+    }
+    
+    function openHistoryMenu() {
+      closeAllMenus();
+      updateHistoryList();
+      historyPanel.classList.add('show');
+      rightButtons.classList.add('push-history');
+    }
+    
+    function openExtraMenu() {
+      closeAllMenus();
+      extraPanel.classList.add('show');
+      rightButtons.classList.add('push-help');
+    }
+    
+    function openNotes() {
+      if (notesPanel.classList.contains('show')) {
+        notesPanel.classList.remove('show');
+        rightButtons.classList.remove('push-quick', 'push-help', 'push-history');
+      } else {
+        closeAllMenus();
+        notesPanel.classList.add('show');
+      }
     }
     
     // event listeners
     goBtn.onclick = () => { if (searchInput.value.trim()) loadUrl(searchInput.value); };
     searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') loadUrl(searchInput.value); });
     refreshBtn.onclick = () => { if (currentUrl) loadUrl(currentUrl); };
+    
     bypassBtn.onclick = () => { 
-      if (currentUrl) openAboutBlank(currentUrl); 
-      else if (searchInput.value.trim()) openAboutBlank(formatUrl(searchInput.value));
+      if (currentUrl) openRealAboutBlank(currentUrl); 
+      else if (searchInput.value.trim()) openRealAboutBlank(formatUrl(searchInput.value));
       else showToast('enter a url first');
     };
     
@@ -1277,36 +1365,75 @@
       }
     };
     
+    // extra panel buttons
+    extraAboutBlankBtn.onclick = () => {
+      if (currentUrl) openRealAboutBlank(currentUrl);
+      else if (searchInput.value.trim()) openRealAboutBlank(formatUrl(searchInput.value));
+      else showToast('enter a url first');
+      closeAllMenus();
+    };
+    
+    extraShortenBtn.onclick = () => {
+      if (currentUrl) shortenUrl(currentUrl);
+      else showToast('load a page first');
+      closeAllMenus();
+    };
+    
+    extraSaveLaterBtn.onclick = () => {
+      if (currentUrl) {
+        const title = currentUrl.length > 30 ? currentUrl.substring(0, 30) + '...' : currentUrl;
+        savedLinks.push({ url: currentUrl, title: title, date: Date.now() });
+        localStorage.setItem('fanterSavedLinks', JSON.stringify(savedLinks));
+        updateSavedLinksList();
+        showToast('saved for later');
+      } else {
+        showToast('load a page first');
+      }
+      closeAllMenus();
+    };
+    
+    extraRefreshBtn.onclick = () => {
+      if (currentUrl) loadUrl(currentUrl);
+      else showToast('load a page first');
+      closeAllMenus();
+    };
+    
+    extraFullscreenBtn.onclick = () => {
+      if (!document.fullscreenElement) {
+        iframeArea.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen();
+      }
+      closeAllMenus();
+    };
+    
     document.getElementById('quickLinksBtn').onclick = (e) => {
       e.stopPropagation();
       if (quickDropdown.classList.contains('show')) closeAllMenus();
-      else openMenu(quickDropdown);
+      else openQuickMenu();
     };
     
     document.getElementById('helpBtn').onclick = (e) => {
       e.stopPropagation();
       if (helpPanel.classList.contains('show')) closeAllMenus();
-      else openMenu(helpPanel);
+      else openHelpMenu();
     };
     
     document.getElementById('historyBtn').onclick = (e) => {
       e.stopPropagation();
       if (historyPanel.classList.contains('show')) closeAllMenus();
-      else {
-        updateHistoryList();
-        openMenu(historyPanel);
-      }
+      else openHistoryMenu();
+    };
+    
+    document.getElementById('extraBtn').onclick = (e) => {
+      e.stopPropagation();
+      if (extraPanel.classList.contains('show')) closeAllMenus();
+      else openExtraMenu();
     };
     
     document.getElementById('notesBtn').onclick = (e) => {
       e.stopPropagation();
-      if (notesPanel.classList.contains('show')) {
-        notesPanel.classList.remove('show');
-        rightButtons.classList.remove('push');
-      } else {
-        closeAllMenus();
-        notesPanel.classList.add('show');
-      }
+      openNotes();
     };
     
     document.getElementById('panicBtn').onclick = panic;
@@ -1326,6 +1453,7 @@
       if (!e.target.closest('#quickDropdown') && !e.target.closest('#quickLinksBtn') &&
           !e.target.closest('#helpPanel') && !e.target.closest('#helpBtn') &&
           !e.target.closest('#historyPanel') && !e.target.closest('#historyBtn') &&
+          !e.target.closest('#extraPanel') && !e.target.closest('#extraBtn') &&
           !e.target.closest('#notesPanel') && !e.target.closest('#notesBtn')) {
         closeAllMenus();
       }
@@ -1352,8 +1480,7 @@
       }
       if (e.ctrlKey && e.key === 'h') {
         e.preventDefault();
-        updateHistoryList();
-        openMenu(historyPanel);
+        openHistoryMenu();
       }
       if (e.key === '`') {
         e.preventDefault();
@@ -1372,7 +1499,7 @@
     const lastUrl = localStorage.getItem('fanterLastUrl');
     if (lastUrl) searchInput.value = lastUrl;
     
-    console.log('fanter search ready - tabs working, menus from top right');
+    console.log('fanter search ready - fixed push amounts, extra panel, real about:blank');
   </script>
 </body>
 </html>
