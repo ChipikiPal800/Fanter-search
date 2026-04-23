@@ -25,7 +25,7 @@
     body.dark-green { background: #0d1f0d; color: #c0e0c0; }
     body.purple { background: #1a0a2e; color: #d0c0e0; }
 
-    /* Background canvas for dots and lines */
+    /* Background canvas */
     #bgCanvas {
       position: fixed;
       top: 0;
@@ -35,6 +35,15 @@
       z-index: 0;
       pointer-events: none;
       display: block;
+    }
+
+    .container {
+      position: relative;
+      z-index: 10;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+      min-height: 100vh;
     }
 
     /* Status bar */
@@ -365,7 +374,7 @@
       transition: all 0.4s ease;
     }
 
-    .search-section.has-iframe {
+    .search-section.has-result {
       position: relative;
       top: 0;
       left: 0;
@@ -427,8 +436,8 @@
       background: #3a5e3a;
     }
 
-    /* Iframe area */
-    .iframe-area {
+    /* Result area - displays proxied content */
+    .result-area {
       max-width: 1200px;
       margin: 0 auto 30px;
       border-radius: 20px;
@@ -438,53 +447,11 @@
       display: none;
     }
 
-    .iframe-area.show {
+    .result-area.show {
       display: block;
     }
 
-    .tab-bar {
-      display: flex;
-      gap: 5px;
-      padding: 8px 12px;
-      background: #252525;
-      border-bottom: 1px solid #333;
-      overflow-x: auto;
-    }
-
-    .tab {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 20px;
-      padding: 4px 12px;
-      font-size: 11px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      white-space: nowrap;
-    }
-
-    .tab.active {
-      background: #4a6e4a;
-      color: white;
-    }
-
-    .tab-close {
-      background: none;
-      border: none;
-      color: inherit;
-      cursor: pointer;
-      font-size: 12px;
-    }
-
-    .new-tab {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 20px;
-      padding: 4px 12px;
-      font-size: 11px;
-      cursor: pointer;
-    }
-
-    .iframe-header {
+    .result-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -493,7 +460,7 @@
       border-bottom: 1px solid #333;
     }
 
-    .iframe-url {
+    .result-url {
       font-size: 11px;
       font-family: monospace;
       color: #888;
@@ -503,12 +470,12 @@
       white-space: nowrap;
     }
 
-    .iframe-buttons {
+    .result-buttons {
       display: flex;
       gap: 6px;
     }
 
-    .iframe-btn {
+    .result-btn {
       background: none;
       border: none;
       padding: 5px 12px;
@@ -518,16 +485,29 @@
       font-size: 11px;
     }
 
-    .iframe-btn:hover {
+    .result-btn:hover {
       background: #3a3a3a;
       color: white;
     }
 
-    iframe {
-      width: 100%;
-      height: 55vh;
-      border: none;
-      display: block;
+    .content-frame {
+      padding: 20px;
+      max-height: 60vh;
+      overflow-y: auto;
+      color: #e0e0e0;
+      line-height: 1.5;
+    }
+
+    .content-frame a {
+      color: #4a6e4a;
+    }
+
+    .content-frame img {
+      max-width: 100%;
+    }
+
+    body.light .content-frame {
+      color: #1a1a1a;
     }
 
     .theme-selector {
@@ -596,6 +576,11 @@
 
     @keyframes spin {
       to { transform: rotate(360deg); }
+    }
+
+    .loading-content {
+      text-align: center;
+      padding: 40px;
     }
   </style>
 </head>
@@ -683,7 +668,7 @@
       <div class="clear-history" id="clearHistory">clear history</div>
     </div>
 
-    <!-- Features panel (settings) -->
+    <!-- Features panel -->
     <div class="features-panel" id="featuresPanel">
       <div class="features-header">
         <div class="features-title">settings</div>
@@ -743,16 +728,21 @@
       </div>
     </div>
 
-    <!-- Iframe area -->
-    <div class="iframe-area" id="iframeArea">
-      <div class="tab-bar" id="tabBar"></div>
-      <div class="iframe-header">
-        <span class="iframe-url" id="iframeUrl">ready</span>
-        <div class="iframe-buttons">
-          <button class="iframe-btn" id="settingsBtn">⚙️ settings</button>
+    <!-- Result area (replaces iframe) -->
+    <div class="result-area" id="resultArea">
+      <div class="result-header">
+        <span class="result-url" id="resultUrl">ready</span>
+        <div class="result-buttons">
+          <button class="result-btn" id="openNewTabBtn">open in new tab</button>
+          <button class="result-btn" id="refreshResultBtn">refresh</button>
         </div>
       </div>
-      <iframe id="proxyFrame" src="about:blank"></iframe>
+      <div class="content-frame" id="contentFrame">
+        <div class="loading-content">
+          <div class="spinner"></div>
+          <p>loading...</p>
+        </div>
+      </div>
     </div>
 
     <!-- Theme selector -->
@@ -766,7 +756,7 @@
 
   <script>
     // ============================================================
-    // fanter search - COMPLETE with working iframe AND about:blank
+    // fanter search - COMPLETE REWRITE (no iframe, direct proxy)
     // ============================================================
     
     // Background canvas for dots and lines
@@ -842,7 +832,7 @@
     initPoints();
     drawBackground();
     
-    // Proxy URLs
+    // Proxy URL
     const PROXY_URL = 'https://fanter-search-proxy.onrender.com/proxy?url=';
     const FALLBACK_PROXIES = ['https://corsproxy.io/?url=', 'https://cors-anywhere.herokuapp.com/'];
     
@@ -858,18 +848,15 @@
     let savedLinks = JSON.parse(localStorage.getItem('fanterSavedLinks') || '[]');
     let currentTheme = localStorage.getItem('fanterTheme') || 'dark';
     
-    // Tabs
-    let tabs = [{ id: Date.now(), url: '', title: 'tab 1' }];
-    let currentTab = 0;
-    
     // DOM elements
     const searchInput = document.getElementById('searchInput');
     const goBtn = document.getElementById('goBtn');
-    const iframeArea = document.getElementById('iframeArea');
-    const proxyFrame = document.getElementById('proxyFrame');
-    const iframeUrlSpan = document.getElementById('iframeUrl');
-    const settingsBtn = document.getElementById('settingsBtn');
+    const resultArea = document.getElementById('resultArea');
+    const contentFrame = document.getElementById('contentFrame');
+    const resultUrlSpan = document.getElementById('resultUrl');
     const searchSection = document.getElementById('searchSection');
+    const statusDot = document.getElementById('statusDot');
+    const statusText = document.getElementById('statusText');
     const historyList = document.getElementById('historyList');
     const savedLinksList = document.getElementById('savedLinksList');
     const notesTextarea = document.getElementById('notesTextarea');
@@ -877,7 +864,8 @@
     const rightButtons = document.getElementById('rightButtons');
     const panicUrlInput = document.getElementById('panicUrlInput');
     const savePanicBtn = document.getElementById('savePanicBtn');
-    const tabBar = document.getElementById('tabBar');
+    const openNewTabBtn = document.getElementById('openNewTabBtn');
+    const refreshResultBtn = document.getElementById('refreshResultBtn');
     
     // Panels
     const quickDropdown = document.getElementById('quickDropdown');
@@ -900,7 +888,6 @@
     // Load saved notes
     notesTextarea.value = savedNotes;
     
-    // Helper functions
     function showToast(msg) {
       const toast = document.createElement('div');
       toast.className = 'toast';
@@ -967,8 +954,7 @@
       });
     }
     
-    // WORKING about:blank function - OPENS IN IFRAME WITHIN about:blank PAGE
-    // Also captures all links to open within the same about:blank iframe
+    // Open in about:blank with navigation
     function openAboutBlank(url) {
       const blank = window.open();
       if (!blank) {
@@ -1111,7 +1097,7 @@
         </html>
       `);
       
-      showToast('opened in about:blank tab (stays about:blank)');
+      showToast('opened in about:blank tab');
     }
     
     async function shortenUrl(url) {
@@ -1125,12 +1111,15 @@
       }
     }
     
-    // Direct fetch for iframe (bypasses CORS by using our proxy)
+    // Main proxy fetch - displays content directly in the result area
     async function loadViaProxy(url) {
       const encoded = encodeURIComponent(url);
       let userAgentString = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36';
       if (userAgent === 'firefox') userAgentString = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/119.0';
       if (userAgent === 'safari') userAgentString = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15';
+      
+      // Show loading
+      contentFrame.innerHTML = '<div class="loading-content"><div class="spinner"></div><p>loading...</p></div>';
       
       for (let proxy of [PROXY_URL, ...FALLBACK_PROXIES]) {
         try {
@@ -1143,28 +1132,28 @@
           clearTimeout(timeoutId);
           if (res && res.ok) {
             let content = await res.text();
+            
             if (textMode) {
-              content = content.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
-                .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
-              proxyFrame.srcdoc = `<html><body style="background:#1a1a1a;padding:20px;font-family:monospace;white-space:pre-wrap;">${escapeHtml(content.substring(0, 50000))}</body></html>`;
+              // Text mode - strip HTML
+              const textContent = content.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+                .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+                .replace(/<[^>]*>/g, ' ');
+              contentFrame.innerHTML = `<pre style="white-space:pre-wrap;font-family:monospace;font-size:12px;">${escapeHtml(textContent.substring(0, 50000))}</pre>`;
             } else {
               if (adBlockEnabled) {
                 content = content.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '');
               }
+              // Fix relative links
               const base = url.match(/^https?:\/\/[^\/]+/)[0];
-              content = content.replace('<head>', `<head><base href="${base}/">`);
-              proxyFrame.srcdoc = content;
+              content = content.replace(/(href|src)=["']\/(?!\/)/g, `$1="${base}/`);
+              contentFrame.innerHTML = content;
             }
-            iframeUrlSpan.textContent = url;
-            
-            if (tabs[currentTab]) {
-              tabs[currentTab].url = url;
-              tabs[currentTab].title = url.replace(/^https?:\/\//, '').substring(0, 20);
-              updateTabs();
-            }
+            resultUrlSpan.textContent = url;
             return true;
           }
-        } catch(e) {}
+        } catch(e) {
+          console.log('Proxy failed:', e);
+        }
       }
       return false;
     }
@@ -1179,25 +1168,45 @@
       const formatted = formatUrl(rawUrl);
       currentUrl = formatted;
       searchInput.value = rawUrl;
-      iframeUrlSpan.textContent = 'loading...';
-      proxyFrame.srcdoc = '<html><body style="background:#1a1a1a;display:flex;align-items:center;justify-content:center;padding:40px;"><div class="spinner"></div><div>loading...</div></body></html>';
-      iframeArea.classList.add('show');
-      searchSection.classList.add('has-iframe');
+      resultArea.classList.add('show');
+      searchSection.classList.add('has-result');
       addToHistory(formatted);
       
       const success = await loadViaProxy(formatted);
       if (!success) {
-        proxyFrame.srcdoc = `<html><body style="background:#1a1a1a;padding:40px;text-align:center;"><h3>❌ cannot load ${formatted}</h3><p>try the about:blank button in settings</p></body></html>`;
-        iframeUrlSpan.textContent = `failed: ${formatted}`;
+        contentFrame.innerHTML = `
+          <div style="text-align:center;padding:40px;">
+            <h3>❌ cannot load ${escapeHtml(formatted)}</h3>
+            <p>try the about:blank button in settings</p>
+            <button onclick="window.open('${formatted}', '_blank')" style="margin-top:20px;padding:8px 20px;background:#4a6e4a;border:none;border-radius:20px;color:white;cursor:pointer;">open directly</button>
+          </div>
+        `;
+        resultUrlSpan.textContent = `failed: ${formatted}`;
       }
       localStorage.setItem('fanterLastUrl', formatted);
     }
     
+    function openCurrentInNewTab() {
+      if (currentUrl) {
+        window.open(currentUrl, '_blank');
+      } else {
+        showToast('load a page first');
+      }
+    }
+    
+    function refreshCurrent() {
+      if (currentUrl) {
+        loadUrl(currentUrl);
+      } else {
+        showToast('load a page first');
+      }
+    }
+    
     function panic() {
       window.open(PANIC_URL, '_blank');
-      iframeArea.classList.remove('show');
-      searchSection.classList.remove('has-iframe');
-      proxyFrame.src = 'about:blank';
+      resultArea.classList.remove('show');
+      searchSection.classList.remove('has-result');
+      contentFrame.innerHTML = '';
       searchInput.value = '';
       currentUrl = '';
       showToast('panic button pressed');
@@ -1218,8 +1227,6 @@
     panicUrlInput.placeholder = PANIC_URL;
     
     async function checkProxyStatus() {
-      const statusDot = document.getElementById('statusDot');
-      const statusText = document.getElementById('statusText');
       statusText.textContent = 'checking...';
       statusDot.className = 'status-dot slow';
       try {
@@ -1248,59 +1255,6 @@
       });
     }
     
-    // Tabs
-    function updateTabs() {
-      tabBar.innerHTML = '';
-      tabs.forEach((tab, index) => {
-        const tabEl = document.createElement('div');
-        tabEl.className = `tab ${index === currentTab ? 'active' : ''}`;
-        tabEl.innerHTML = `<span>${tab.title}</span><button class="tab-close" data-index="${index}">✕</button>`;
-        tabEl.onclick = (e) => {
-          if (!e.target.classList.contains('tab-close')) {
-            currentTab = index;
-            updateTabs();
-            if (tab.url) loadUrl(tab.url);
-            else {
-              proxyFrame.srcdoc = '<html><body style="background:#1a1a1a;padding:40px;">new tab</body></html>';
-              iframeUrlSpan.textContent = 'ready';
-              currentUrl = '';
-            }
-          }
-        };
-        const closeBtn = tabEl.querySelector('.tab-close');
-        closeBtn.onclick = (e) => {
-          e.stopPropagation();
-          if (tabs.length === 1) {
-            showToast('cannot close last tab');
-            return;
-          }
-          tabs.splice(index, 1);
-          if (currentTab >= tabs.length) currentTab = tabs.length - 1;
-          if (currentTab === index && tabs[currentTab]?.url) loadUrl(tabs[currentTab].url);
-          else {
-            proxyFrame.srcdoc = '<html><body style="background:#1a1a1a;padding:40px;">new tab</body></html>';
-            iframeUrlSpan.textContent = 'ready';
-            currentUrl = '';
-          }
-          updateTabs();
-        };
-        tabBar.appendChild(tabEl);
-      });
-      const newTabEl = document.createElement('div');
-      newTabEl.className = 'new-tab';
-      newTabEl.textContent = '+ new tab';
-      newTabEl.onclick = () => {
-        tabs.push({ id: Date.now(), url: '', title: `tab ${tabs.length + 1}` });
-        currentTab = tabs.length - 1;
-        updateTabs();
-        proxyFrame.srcdoc = '<html><body style="background:#1a1a1a;padding:40px;">new tab</body></html>';
-        iframeUrlSpan.textContent = 'ready';
-        currentUrl = '';
-      };
-      tabBar.appendChild(newTabEl);
-    }
-    
-    // Feature updates
     function updateFeatureButtons() {
       featureTextModeBtn.textContent = textMode ? 'on' : 'off';
       featureTextModeBtn.style.background = textMode ? '#4a6e4a' : '#666';
@@ -1328,6 +1282,8 @@
     // Event listeners
     goBtn.onclick = () => { if (searchInput.value.trim()) loadUrl(searchInput.value); };
     searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') loadUrl(searchInput.value); });
+    openNewTabBtn.onclick = openCurrentInNewTab;
+    refreshResultBtn.onclick = refreshCurrent;
     
     document.getElementById('quickLinksBtn').onclick = (e) => {
       e.stopPropagation();
@@ -1374,10 +1330,15 @@
       showToast('notes saved');
     };
     
+    // Settings button in result header - reuse features panel
+    const settingsBtn = document.createElement('button');
+    settingsBtn.className = 'result-btn';
+    settingsBtn.textContent = '⚙️ settings';
     settingsBtn.onclick = () => {
       if (featuresPanel.classList.contains('show')) closeAllPanels();
       else openPanel(featuresPanel);
     };
+    document.querySelector('.result-buttons').appendChild(settingsBtn);
     
     featuresCloseBtn.onclick = closeAllPanels;
     
@@ -1433,7 +1394,8 @@
     };
     
     featureFullscreenBtn.onclick = () => {
-      if (!document.fullscreenElement) iframeArea.requestFullscreen();
+      const resultAreaElem = document.getElementById('resultArea');
+      if (!document.fullscreenElement) resultAreaElem.requestFullscreen();
       else document.exitFullscreen();
       closeAllPanels();
     };
@@ -1461,7 +1423,7 @@
       if (!e.target.closest('#quickDropdown') && !e.target.closest('#quickLinksBtn') &&
           !e.target.closest('#helpPanel') && !e.target.closest('#helpBtn') &&
           !e.target.closest('#historyPanel') && !e.target.closest('#historyBtn') &&
-          !e.target.closest('#featuresPanel') && !e.target.closest('#settingsBtn') &&
+          !e.target.closest('#featuresPanel') && !e.target.closest('.result-btn') &&
           !e.target.closest('#notesPanel') && !e.target.closest('#notesBtn')) {
         closeAllPanels();
       }
@@ -1500,7 +1462,6 @@
     // Init
     updateHistoryList();
     updateSavedLinksList();
-    updateTabs();
     updateFeatureButtons();
     checkProxyStatus();
     setInterval(checkProxyStatus, 30000);
@@ -1509,7 +1470,7 @@
     const lastUrl = localStorage.getItem('fanterLastUrl');
     if (lastUrl) searchInput.value = lastUrl;
     
-    console.log('fanter search ready - iframe works, about:blank works with navigation bar!');
+    console.log('fanter search ready - no iframe, direct proxy loading!');
   </script>
 </body>
 </html>
