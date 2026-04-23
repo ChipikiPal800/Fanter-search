@@ -78,6 +78,7 @@
     .slow { background: #fbbf24; }
     .offline { background: #ef4444; }
 
+    /* right side buttons - all start at top */
     .right-buttons {
       position: fixed;
       right: 20px;
@@ -87,13 +88,11 @@
       align-items: flex-end;
       gap: 10px;
       z-index: 100;
-      transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      transition: transform 0.3s ease;
     }
 
-    /* push effects - different amounts for each button's dropdown height */
-    .right-buttons.push-quick { transform: translateY(210px); }
-    .right-buttons.push-help { transform: translateY(280px); }
-    .right-buttons.push-history { transform: translateY(200px); }
+    /* push effects */
+    .right-buttons.push { transform: translateY(180px); }
 
     .round-btn {
       width: 95px;
@@ -126,71 +125,46 @@
       color: white;
     }
 
-    /* dropdown menus - positioned relative to each button */
-    .dropdown-container {
+    /* all dropdowns start from top right corner */
+    .menu-container {
       position: fixed;
       right: 20px;
+      top: 20px;
       z-index: 99;
     }
 
-    .dropdown {
+    .dropdown-menu {
+      position: fixed;
+      right: 20px;
       background: #1e1e1e;
       border-radius: 16px;
       padding: 8px;
       min-width: 200px;
       opacity: 0;
       visibility: hidden;
-      transform: translateY(-15px);
-      transition: all 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.2);
+      transform: translateY(-10px);
+      transition: all 0.3s ease;
       border: 1px solid rgba(255, 255, 255, 0.1);
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
       pointer-events: none;
     }
 
-    body.light .dropdown {
+    body.light .dropdown-menu {
       background: white;
       border-color: rgba(0, 0, 0, 0.1);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     }
 
-    .dropdown.show {
+    .dropdown-menu.show {
       opacity: 1;
       visibility: visible;
       transform: translateY(0);
       pointer-events: auto;
     }
 
-    /* each dropdown positioned below its button */
-    #quickDropdown {
-      position: fixed;
-      right: 20px;
-      top: 60px;
-    }
-    #helpPanel {
-      position: fixed;
-      right: 20px;
-      top: 108px;
-      width: 280px;
-      background: #1e1e1e;
-      border-radius: 16px;
-      padding: 15px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    #historyPanel {
-      position: fixed;
-      right: 20px;
-      top: 156px;
-      width: 260px;
-      background: #1e1e1e;
-      border-radius: 16px;
-      padding: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    body.light #helpPanel, body.light #historyPanel {
-      background: white;
-      border-color: rgba(0, 0, 0, 0.1);
-    }
+    /* positions for each menu */
+    #quickDropdown { top: 60px; }
+    #helpPanel { top: 60px; width: 280px; padding: 15px; }
+    #historyPanel { top: 60px; width: 260px; padding: 12px; }
 
     .dropdown-item {
       display: flex;
@@ -279,6 +253,101 @@
       cursor: pointer;
       font-size: 10px;
       width: 100%;
+    }
+
+    .history-list {
+      max-height: 250px;
+      overflow-y: auto;
+    }
+
+    .history-item {
+      padding: 6px 8px;
+      font-size: 11px;
+      cursor: pointer;
+      border-radius: 8px;
+      word-break: break-all;
+    }
+
+    .history-item:hover {
+      background: rgba(74, 110, 74, 0.2);
+    }
+
+    .clear-history {
+      margin-top: 8px;
+      text-align: center;
+      font-size: 10px;
+      color: #ef4444;
+      cursor: pointer;
+      padding-top: 5px;
+      border-top: 1px solid #333;
+    }
+
+    .saved-links-list {
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .saved-link-item {
+      padding: 5px 8px;
+      font-size: 10px;
+      cursor: pointer;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .saved-link-item:hover {
+      background: rgba(74, 110, 74, 0.2);
+    }
+
+    /* notes panel - left side */
+    .notes-panel {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      width: 260px;
+      background: #1e1e1e;
+      border-radius: 16px;
+      padding: 12px;
+      border: 1px solid #333;
+      z-index: 90;
+      display: none;
+    }
+
+    .notes-panel.show {
+      display: block;
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .notes-panel textarea {
+      width: 100%;
+      height: 120px;
+      background: #2a2a2a;
+      border: 1px solid #333;
+      border-radius: 8px;
+      color: white;
+      padding: 8px;
+      font-size: 11px;
+      resize: vertical;
+      margin-top: 5px;
+    }
+
+    body.light .notes-panel textarea {
+      background: #f0f0f0;
+      border-color: #ddd;
+      color: #1a1a1a;
     }
 
     .search-section {
@@ -418,6 +487,7 @@
       color: inherit;
       cursor: pointer;
       font-size: 12px;
+      padding: 0 4px;
     }
 
     .new-tab {
@@ -481,88 +551,6 @@
       height: 55vh;
       border: none;
       display: block;
-    }
-
-    .notes-panel {
-      position: fixed;
-      bottom: 80px;
-      left: 20px;
-      width: 260px;
-      background: #1e1e1e;
-      border-radius: 16px;
-      padding: 12px;
-      border: 1px solid #333;
-      z-index: 90;
-      display: none;
-    }
-
-    .notes-panel.show {
-      display: block;
-    }
-
-    .notes-panel textarea {
-      width: 100%;
-      height: 120px;
-      background: #2a2a2a;
-      border: 1px solid #333;
-      border-radius: 8px;
-      color: white;
-      padding: 8px;
-      font-size: 11px;
-      resize: vertical;
-      margin-top: 5px;
-    }
-
-    body.light .notes-panel textarea {
-      background: #f0f0f0;
-      border-color: #ddd;
-      color: #1a1a1a;
-    }
-
-    .history-list {
-      max-height: 250px;
-      overflow-y: auto;
-    }
-
-    .history-item {
-      padding: 6px 8px;
-      font-size: 11px;
-      cursor: pointer;
-      border-radius: 8px;
-      word-break: break-all;
-    }
-
-    .history-item:hover {
-      background: rgba(74, 110, 74, 0.2);
-    }
-
-    .clear-history {
-      margin-top: 8px;
-      text-align: center;
-      font-size: 10px;
-      color: #ef4444;
-      cursor: pointer;
-      padding-top: 5px;
-      border-top: 1px solid #333;
-    }
-
-    .saved-links-list {
-      max-height: 150px;
-      overflow-y: auto;
-    }
-
-    .saved-link-item {
-      padding: 5px 8px;
-      font-size: 10px;
-      cursor: pointer;
-      border-radius: 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .saved-link-item:hover {
-      background: rgba(74, 110, 74, 0.2);
     }
 
     .theme-selector {
@@ -640,7 +628,6 @@
       .search-box { max-width: 90%; }
       .round-btn { width: 80px; font-size: 11px; }
       .notes-panel { width: 220px; }
-      #quickDropdown, #helpPanel, #historyPanel { right: 10px; }
     }
   </style>
 </head>
@@ -664,7 +651,7 @@
     </div>
 
     <!-- quick links dropdown -->
-    <div class="dropdown" id="quickDropdown">
+    <div class="dropdown-menu" id="quickDropdown">
       <div class="dropdown-item" data-url="youtube.com">
         <img class="dropdown-icon" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdYYtpbk4xqsn2XvBocnTZjLJH2vsbPhYbRQ&s" onerror="this.style.display='none'">
         <span>youtube</span>
@@ -696,7 +683,7 @@
     </div>
 
     <!-- help panel -->
-    <div id="helpPanel">
+    <div class="dropdown-menu" id="helpPanel">
       <div class="help-section">
         <div class="help-title">keyboard shortcuts</div>
         <div class="help-item"><span>focus search</span><span class="help-key">ctrl + k</span></div>
@@ -720,13 +707,13 @@
     </div>
 
     <!-- history panel -->
-    <div id="historyPanel">
+    <div class="dropdown-menu" id="historyPanel">
       <div class="history-title">recently visited</div>
       <div class="history-list" id="historyList"></div>
       <div class="clear-history" id="clearHistory">clear history</div>
     </div>
 
-    <!-- notes panel -->
+    <!-- notes panel (left side) -->
     <div class="notes-panel" id="notesPanel">
       <div class="history-title">quick notes</div>
       <textarea id="notesTextarea" placeholder="write your notes here..."></textarea>
@@ -746,12 +733,9 @@
       </div>
     </div>
 
-    <!-- iframe area -->
+    <!-- iframe area with working tabs -->
     <div class="iframe-area" id="iframeArea">
-      <div class="tab-bar" id="tabBar">
-        <div class="tab active" data-tab="0">tab 1</div>
-        <div class="new-tab" id="newTabBtn">+ new tab</div>
-      </div>
+      <div class="tab-bar" id="tabBar"></div>
       <div class="iframe-header">
         <span class="iframe-url" id="iframeUrl">ready</span>
         <div class="iframe-buttons">
@@ -779,7 +763,7 @@
 
   <script>
     // ============================================================
-    // fanter search - fixed dropdown positioning
+    // fanter search - fully fixed with working tabs
     // ============================================================
     
     // background canvas
@@ -873,7 +857,9 @@
     let savedNotes = localStorage.getItem('fanterNotes') || '';
     let savedLinks = JSON.parse(localStorage.getItem('fanterSavedLinks') || '[]');
     let currentTheme = localStorage.getItem('fanterTheme') || 'dark';
-    let tabs = [{ id: 0, url: '', title: 'tab 1' }];
+    
+    // tabs array
+    let tabs = [{ id: Date.now(), url: '', title: 'tab 1' }];
     let currentTab = 0;
     
     // dom elements
@@ -905,12 +891,11 @@
     const panicUrlInput = document.getElementById('panicUrlInput');
     const savePanicBtn = document.getElementById('savePanicBtn');
     const tabBar = document.getElementById('tabBar');
-    const newTabBtn = document.getElementById('newTabBtn');
     
     // load saved notes
     notesTextarea.value = savedNotes;
     
-    // auto dark mode (6pm - 6am)
+    // auto dark mode
     function checkAutoDarkMode() {
       const hour = new Date().getHours();
       if (hour >= 18 || hour < 6) {
@@ -989,6 +974,68 @@
       });
     }
     
+    // tabs functions
+    function updateTabs() {
+      tabBar.innerHTML = '';
+      tabs.forEach((tab, index) => {
+        const tabEl = document.createElement('div');
+        tabEl.className = `tab ${index === currentTab ? 'active' : ''}`;
+        tabEl.innerHTML = `<span>${tab.title}</span><button class="tab-close" data-index="${index}">✕</button>`;
+        
+        // switch tab
+        tabEl.onclick = (e) => {
+          if (!e.target.classList.contains('tab-close')) {
+            currentTab = index;
+            updateTabs();
+            if (tab.url) {
+              loadUrl(tab.url);
+            } else {
+              proxyFrame.srcdoc = '<html><body style="background:#1a1a1a;display:flex;align-items:center;justify-content:center;padding:40px;">new tab</body></html>';
+              iframeUrlSpan.textContent = 'ready';
+              currentUrl = '';
+            }
+          }
+        };
+        
+        // close tab
+        const closeBtn = tabEl.querySelector('.tab-close');
+        closeBtn.onclick = (e) => {
+          e.stopPropagation();
+          if (tabs.length === 1) {
+            showToast('cannot close last tab');
+            return;
+          }
+          tabs.splice(index, 1);
+          if (currentTab >= tabs.length) currentTab = tabs.length - 1;
+          if (currentTab === index && tabs[currentTab] && tabs[currentTab].url) {
+            loadUrl(tabs[currentTab].url);
+          } else if (currentTab === index) {
+            proxyFrame.srcdoc = '<html><body style="background:#1a1a1a;display:flex;align-items:center;justify-content:center;padding:40px;">new tab</body></html>';
+            iframeUrlSpan.textContent = 'ready';
+            currentUrl = '';
+          }
+          updateTabs();
+        };
+        
+        tabBar.appendChild(tabEl);
+      });
+      
+      // add new tab button
+      const newTabEl = document.createElement('div');
+      newTabEl.className = 'new-tab';
+      newTabEl.textContent = '+ new tab';
+      newTabEl.onclick = () => {
+        const newId = Date.now();
+        tabs.push({ id: newId, url: '', title: `tab ${tabs.length + 1}` });
+        currentTab = tabs.length - 1;
+        updateTabs();
+        proxyFrame.srcdoc = '<html><body style="background:#1a1a1a;display:flex;align-items:center;justify-content:center;padding:40px;">new tab</body></html>';
+        iframeUrlSpan.textContent = 'ready';
+        currentUrl = '';
+      };
+      tabBar.appendChild(newTabEl);
+    }
+    
     function openAboutBlank(url) {
       const blankWindow = window.open('about:blank', '_blank');
       if (!blankWindow) {
@@ -1060,6 +1107,14 @@
               proxyFrame.srcdoc = content;
             }
             iframeUrlSpan.textContent = url;
+            
+            // update current tab with url
+            if (tabs[currentTab]) {
+              tabs[currentTab].url = url;
+              let title = url.replace(/^https?:\/\//, '').substring(0, 20);
+              tabs[currentTab].title = title;
+              updateTabs();
+            }
             return true;
           }
         } catch(e) {}
@@ -1147,83 +1202,19 @@
       });
     }
     
-    // tabs
-    function updateTabs() {
-      tabBar.innerHTML = '';
-      tabs.forEach((tab, index) => {
-        const tabEl = document.createElement('div');
-        tabEl.className = `tab ${index === currentTab ? 'active' : ''}`;
-        tabEl.innerHTML = `<span>${tab.title}</span><button class="tab-close" data-id="${tab.id}">✕</button>`;
-        tabEl.onclick = (e) => {
-          if (!e.target.classList.contains('tab-close')) {
-            currentTab = index;
-            updateTabs();
-            if (tab.url) loadUrl(tab.url);
-          }
-        };
-        tabBar.appendChild(tabEl);
-      });
-      const newTabEl = document.createElement('div');
-      newTabEl.className = 'new-tab';
-      newTabEl.textContent = '+ new tab';
-      newTabEl.onclick = () => {
-        const newId = Date.now();
-        tabs.push({ id: newId, url: '', title: `tab ${tabs.length + 1}` });
-        currentTab = tabs.length - 1;
-        updateTabs();
-        proxyFrame.srcdoc = '<html><body style="background:#1a1a1a;display:flex;align-items:center;justify-content:center;padding:40px;">new tab</body></html>';
-        iframeUrlSpan.textContent = 'ready';
-        currentUrl = '';
-      };
-      tabBar.appendChild(newTabEl);
-    }
-    
-    newTabBtn.onclick = () => {
-      const newId = Date.now();
-      tabs.push({ id: newId, url: '', title: `tab ${tabs.length + 1}` });
-      currentTab = tabs.length - 1;
-      updateTabs();
-      proxyFrame.srcdoc = '<html><body style="background:#1a1a1a;display:flex;align-items:center;justify-content:center;padding:40px;">new tab</body></html>';
-      iframeUrlSpan.textContent = 'ready';
-      currentUrl = '';
-    };
-    
-    // dropdown functions with proper push
-    function closeAllDropdowns() {
+    // dropdown functions - all menus open from top right
+    function closeAllMenus() {
       quickDropdown.classList.remove('show');
       helpPanel.classList.remove('show');
       historyPanel.classList.remove('show');
       notesPanel.classList.remove('show');
-      rightButtons.classList.remove('push-quick', 'push-help', 'push-history');
+      rightButtons.classList.remove('push');
     }
     
-    function openQuickDropdown() {
-      closeAllDropdowns();
-      quickDropdown.classList.add('show');
-      rightButtons.classList.add('push-quick');
-    }
-    
-    function openHelpPanel() {
-      closeAllDropdowns();
-      helpPanel.classList.add('show');
-      rightButtons.classList.add('push-help');
-    }
-    
-    function openHistoryPanel() {
-      closeAllDropdowns();
-      updateHistoryList();
-      historyPanel.classList.add('show');
-      rightButtons.classList.add('push-history');
-    }
-    
-    function openNotesPanel() {
-      if (notesPanel.classList.contains('show')) {
-        notesPanel.classList.remove('show');
-        rightButtons.classList.remove('push-quick', 'push-help', 'push-history');
-      } else {
-        closeAllDropdowns();
-        notesPanel.classList.add('show');
-      }
+    function openMenu(menu) {
+      closeAllMenus();
+      menu.classList.add('show');
+      rightButtons.classList.add('push');
     }
     
     // event listeners
@@ -1288,25 +1279,34 @@
     
     document.getElementById('quickLinksBtn').onclick = (e) => {
       e.stopPropagation();
-      if (quickDropdown.classList.contains('show')) closeAllDropdowns();
-      else openQuickDropdown();
+      if (quickDropdown.classList.contains('show')) closeAllMenus();
+      else openMenu(quickDropdown);
     };
     
     document.getElementById('helpBtn').onclick = (e) => {
       e.stopPropagation();
-      if (helpPanel.classList.contains('show')) closeAllDropdowns();
-      else openHelpPanel();
+      if (helpPanel.classList.contains('show')) closeAllMenus();
+      else openMenu(helpPanel);
     };
     
     document.getElementById('historyBtn').onclick = (e) => {
       e.stopPropagation();
-      if (historyPanel.classList.contains('show')) closeAllDropdowns();
-      else openHistoryPanel();
+      if (historyPanel.classList.contains('show')) closeAllMenus();
+      else {
+        updateHistoryList();
+        openMenu(historyPanel);
+      }
     };
     
     document.getElementById('notesBtn').onclick = (e) => {
       e.stopPropagation();
-      openNotesPanel();
+      if (notesPanel.classList.contains('show')) {
+        notesPanel.classList.remove('show');
+        rightButtons.classList.remove('push');
+      } else {
+        closeAllMenus();
+        notesPanel.classList.add('show');
+      }
     };
     
     document.getElementById('panicBtn').onclick = panic;
@@ -1327,7 +1327,7 @@
           !e.target.closest('#helpPanel') && !e.target.closest('#helpBtn') &&
           !e.target.closest('#historyPanel') && !e.target.closest('#historyBtn') &&
           !e.target.closest('#notesPanel') && !e.target.closest('#notesBtn')) {
-        closeAllDropdowns();
+        closeAllMenus();
       }
     });
     
@@ -1336,7 +1336,7 @@
         e.stopPropagation();
         const url = el.dataset.url;
         if (url) loadUrl(url);
-        closeAllDropdowns();
+        closeAllMenus();
       });
     });
     
@@ -1352,7 +1352,8 @@
       }
       if (e.ctrlKey && e.key === 'h') {
         e.preventDefault();
-        openHistoryPanel();
+        updateHistoryList();
+        openMenu(historyPanel);
       }
       if (e.key === '`') {
         e.preventDefault();
@@ -1371,7 +1372,7 @@
     const lastUrl = localStorage.getItem('fanterLastUrl');
     if (lastUrl) searchInput.value = lastUrl;
     
-    console.log('fanter search ready - dropdown positioning fixed');
+    console.log('fanter search ready - tabs working, menus from top right');
   </script>
 </body>
 </html>
