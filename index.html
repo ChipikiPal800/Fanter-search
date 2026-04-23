@@ -36,7 +36,7 @@
       color: #d0c0e0;
     }
 
-    /* background canvas - fixed full screen */
+    /* background canvas */
     #bgCanvas {
       position: fixed;
       top: 0;
@@ -90,7 +90,13 @@
       align-items: flex-end;
       gap: 10px;
       z-index: 100;
+      transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
     }
+
+    /* push effect - moves down based on which dropdown is open */
+    .right-buttons.push-quick { transform: translateY(180px); }
+    .right-buttons.push-help { transform: translateY(180px); }
+    .right-buttons.push-history { transform: translateY(180px); }
 
     .round-btn {
       width: 90px;
@@ -122,11 +128,10 @@
       color: white;
     }
 
-    /* dropdown menus with push animation */
+    /* dropdown menus */
     .dropdown {
-      position: absolute;
-      right: 0;
-      top: 42px;
+      position: fixed;
+      right: 20px;
       background: #1e1e1e;
       border-radius: 16px;
       padding: 8px;
@@ -134,16 +139,17 @@
       opacity: 0;
       visibility: hidden;
       transform: translateY(-10px);
-      transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
       border: 1px solid rgba(255, 255, 255, 0.1);
       z-index: 99;
       pointer-events: none;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     }
 
     body.light .dropdown {
       background: white;
       border-color: rgba(0, 0, 0, 0.1);
-      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     }
 
     .dropdown.show {
@@ -153,10 +159,16 @@
       pointer-events: auto;
     }
 
-    /* push effect - buttons move down when dropdown open */
-    .right-buttons.shifted {
-      transform: translateY(180px);
-      transition: transform 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    /* quick links dropdown position */
+    #quickDropdown { top: 60px; }
+    #helpPanel { top: 60px; right: 20px; width: 280px; background: #1e1e1e; border-radius: 16px; padding: 15px; opacity: 0; visibility: hidden; transform: translateY(-10px); transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1); border: 1px solid rgba(255, 255, 255, 0.1); position: fixed; z-index: 99; pointer-events: none; }
+    #helpPanel.show { opacity: 1; visibility: visible; transform: translateY(0); pointer-events: auto; }
+    #historyPanel { top: 60px; right: 20px; width: 260px; background: #1e1e1e; border-radius: 16px; padding: 12px; opacity: 0; visibility: hidden; transform: translateY(-10px); transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1); border: 1px solid rgba(255, 255, 255, 0.1); position: fixed; z-index: 99; pointer-events: none; }
+    #historyPanel.show { opacity: 1; visibility: visible; transform: translateY(0); pointer-events: auto; }
+
+    body.light #helpPanel, body.light #historyPanel {
+      background: white;
+      border-color: rgba(0, 0, 0, 0.1);
     }
 
     .dropdown-item {
@@ -179,37 +191,6 @@
       height: 22px;
       object-fit: contain;
       border-radius: 4px;
-    }
-
-    /* help panel */
-    .help-panel {
-      position: fixed;
-      right: 20px;
-      top: 180px;
-      width: 280px;
-      background: #1e1e1e;
-      border-radius: 20px;
-      padding: 18px;
-      opacity: 0;
-      visibility: hidden;
-      transform: translateX(20px);
-      transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-      z-index: 98;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      pointer-events: none;
-    }
-
-    body.light .help-panel {
-      background: white;
-      border-color: rgba(0, 0, 0, 0.1);
-    }
-
-    .help-panel.show {
-      opacity: 1;
-      visibility: visible;
-      transform: translateX(0);
-      pointer-events: auto;
     }
 
     .help-section {
@@ -242,6 +223,42 @@
 
     body.light .help-key {
       background: #e8e8e8;
+    }
+
+    /* panic settings */
+    .panic-settings {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .panic-settings input {
+      width: 100%;
+      padding: 6px 10px;
+      border-radius: 20px;
+      border: 1px solid #333;
+      background: #2a2a2a;
+      color: white;
+      font-size: 11px;
+      margin-top: 5px;
+    }
+
+    body.light .panic-settings input {
+      background: #f0f0f0;
+      border-color: #ddd;
+      color: #1a1a1a;
+    }
+
+    .save-panic {
+      margin-top: 8px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      border: none;
+      background: #4a6e4a;
+      color: white;
+      cursor: pointer;
+      font-size: 10px;
+      width: 100%;
     }
 
     /* search section */
@@ -406,47 +423,8 @@
       display: block;
     }
 
-    /* history panel */
-    .history-panel {
-      position: fixed;
-      left: 20px;
-      bottom: 20px;
-      background: #1e1e1e;
-      border-radius: 16px;
-      padding: 12px;
-      min-width: 240px;
-      max-width: 280px;
-      opacity: 0;
-      visibility: hidden;
-      transform: translateY(10px);
-      transition: all 0.25s ease;
-      border: 1px solid #333;
-      z-index: 100;
-      pointer-events: none;
-    }
-
-    body.light .history-panel {
-      background: white;
-      border-color: #ddd;
-    }
-
-    .history-panel.show {
-      opacity: 1;
-      visibility: visible;
-      transform: translateY(0);
-      pointer-events: auto;
-    }
-
-    .history-title {
-      font-size: 11px;
-      font-weight: 600;
-      margin-bottom: 8px;
-      padding-bottom: 5px;
-      border-bottom: 1px solid #333;
-    }
-
     .history-list {
-      max-height: 180px;
+      max-height: 250px;
       overflow-y: auto;
     }
 
@@ -530,14 +508,6 @@
       100% { opacity: 0; visibility: hidden; }
     }
 
-    /* loading */
-    .loading {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 40px;
-    }
-
     .spinner {
       width: 28px;
       height: 28px;
@@ -545,6 +515,7 @@
       border-top-color: transparent;
       border-radius: 50%;
       animation: spin 0.6s linear infinite;
+      margin: 0 auto 10px;
     }
 
     @keyframes spin {
@@ -553,9 +524,9 @@
 
     @media (max-width: 768px) {
       .title { font-size: 32px; }
-      .help-panel { width: 260px; right: 20px; top: 200px; }
       .search-box { max-width: 90%; }
       .round-btn { width: 75px; font-size: 11px; }
+      #helpPanel, #historyPanel, #quickDropdown { width: 260px; right: 10px; }
     }
   </style>
 </head>
@@ -563,7 +534,6 @@
   <canvas id="bgCanvas"></canvas>
 
   <div class="container">
-    <!-- status bar -->
     <div class="status-bar">
       <div class="proxy-status">
         <span class="status-dot" id="statusDot"></span>
@@ -571,7 +541,6 @@
       </div>
     </div>
 
-    <!-- right side buttons -->
     <div class="right-buttons" id="rightButtons">
       <div class="round-btn" id="quickLinksBtn">quick linx</div>
       <div class="round-btn" id="helpBtn">help</div>
@@ -612,7 +581,7 @@
     </div>
 
     <!-- help panel -->
-    <div class="help-panel" id="helpPanel">
+    <div id="helpPanel">
       <div class="help-section">
         <div class="help-title">keyboard shortcuts</div>
         <div class="help-item"><span>focus search</span><span class="help-key">ctrl + k</span></div>
@@ -627,14 +596,16 @@
         <div class="help-item"><span>about:blank</span><span>click bypass in iframe</span></div>
       </div>
       <div class="help-section">
-        <div class="help-title">tips</div>
-        <div class="help-item"><span>type any url or search term</span></div>
-        <div class="help-item"><span>green dot = proxy working</span></div>
+        <div class="help-title">custom panic url</div>
+        <div class="panic-settings">
+          <input type="text" id="panicUrlInput" placeholder="enter url...">
+          <button class="save-panic" id="savePanicBtn">save panic url</button>
+        </div>
       </div>
     </div>
 
     <!-- history panel -->
-    <div class="history-panel" id="historyPanel">
+    <div id="historyPanel">
       <div class="history-title">recently visited</div>
       <div class="history-list" id="historyList"></div>
       <div class="clear-history" id="clearHistory">clear history</div>
@@ -676,15 +647,14 @@
 
   <script>
     // ============================================================
-    // fanter search - fully fixed
+    // fanter search - fully fixed with push animations
     // ============================================================
     
-    // background canvas - fixed full screen
+    // background canvas
     const canvas = document.getElementById('bgCanvas');
     const ctx = canvas.getContext('2d');
     let points = [];
     let time = 0;
-    let animationId;
     
     function initPoints() {
       const width = window.innerWidth;
@@ -712,7 +682,7 @@
     
     function drawBackground() {
       if (!ctx) return;
-      const isDark = document.body.classList.contains('dark');
+      const isDark = document.body.classList.contains('dark') || document.body.classList.contains('dark-green') || document.body.classList.contains('purple');
       ctx.fillStyle = isDark ? '#0a0a0a' : '#f5f5f5';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
@@ -746,24 +716,22 @@
       }
       
       time++;
-      animationId = requestAnimationFrame(drawBackground);
+      requestAnimationFrame(drawBackground);
     }
     
-    window.addEventListener('resize', () => {
-      initPoints();
-    });
-    
+    window.addEventListener('resize', () => initPoints());
     initPoints();
     drawBackground();
     
-    // proxy urls with timeout
+    // proxy urls
     const PROXY_URL = 'https://fanter-search-proxy.onrender.com/proxy?url=';
     const FALLBACK_PROXIES = [
       'https://corsproxy.io/?url=',
       'https://cors-anywhere.herokuapp.com/'
     ];
     
-    const PANIC_URL = 'https://www.sciencekids.co.nz/sciencefacts/top10.html';
+    // default panic url
+    let PANIC_URL = localStorage.getItem('panicUrl') || 'https://www.sciencekids.co.nz/sciencefacts/top10.html';
     
     // state
     let currentUrl = '';
@@ -790,6 +758,8 @@
     const quickDropdown = document.getElementById('quickDropdown');
     const helpPanel = document.getElementById('helpPanel');
     const rightButtons = document.getElementById('rightButtons');
+    const panicUrlInput = document.getElementById('panicUrlInput');
+    const savePanicBtn = document.getElementById('savePanicBtn');
     
     // helpers
     function showToast(msg) {
@@ -871,7 +841,7 @@
         try {
           const res = await fetch(proxy + encoded, { signal: controller.signal });
           clearTimeout(timeoutId);
-          if (res.ok) {
+          if (res && res.ok) {
             let content = await res.text();
             if (textMode) {
               content = content.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
@@ -923,8 +893,28 @@
       proxyFrame.src = 'about:blank';
       searchInput.value = '';
       currentUrl = '';
-      showToast('📚 opened science facts');
+      showToast('📚 panic button pressed');
     }
+    
+    // save custom panic url
+    savePanicBtn.onclick = () => {
+      const newUrl = panicUrlInput.value.trim();
+      if (newUrl) {
+        let url = newUrl;
+        if (!url.startsWith('http://') && !url.startsWith('https://')) {
+          url = 'https://' + url;
+        }
+        PANIC_URL = url;
+        localStorage.setItem('panicUrl', PANIC_URL);
+        showToast('panic url saved');
+        panicUrlInput.value = '';
+      } else {
+        showToast('enter a valid url');
+      }
+    };
+    
+    // load saved panic url into input placeholder
+    panicUrlInput.placeholder = PANIC_URL;
     
     async function checkProxyStatus() {
       statusText.textContent = 'checking...';
@@ -934,7 +924,7 @@
         const timeoutId = setTimeout(() => controller.abort(), 5000);
         const res = await fetch(PROXY_URL + encodeURIComponent('https://example.com'), { signal: controller.signal });
         clearTimeout(timeoutId);
-        if (res.ok) {
+        if (res && res.ok) {
           statusDot.className = 'status-dot online';
           statusText.textContent = 'online';
         } else {
@@ -953,21 +943,23 @@
       document.querySelectorAll('.theme-dot').forEach(dot => {
         dot.classList.toggle('active', dot.dataset.theme === theme);
       });
+      // redraw background with new colors
+      initPoints();
     }
     
-    // dropdown with push effect
+    // dropdown with push effect - buttons below move down
     function closeAllDropdowns() {
       quickDropdown.classList.remove('show');
       helpPanel.classList.remove('show');
       historyPanel.classList.remove('show');
-      rightButtons.classList.remove('shifted');
+      rightButtons.classList.remove('push-quick', 'push-help', 'push-history');
       activeDropdown = null;
     }
     
-    function openDropdown(dropdown, button) {
+    function openDropdown(dropdown, pushClass) {
       closeAllDropdowns();
       dropdown.classList.add('show');
-      rightButtons.classList.add('shifted');
+      rightButtons.classList.add(pushClass);
       activeDropdown = dropdown;
     }
     
@@ -1002,7 +994,7 @@
       if (quickDropdown.classList.contains('show')) {
         closeAllDropdowns();
       } else {
-        openDropdown(quickDropdown, e.target);
+        openDropdown(quickDropdown, 'push-quick');
       }
     };
     
@@ -1011,7 +1003,7 @@
       if (helpPanel.classList.contains('show')) {
         closeAllDropdowns();
       } else {
-        openDropdown(helpPanel, e.target);
+        openDropdown(helpPanel, 'push-help');
       }
     };
     
@@ -1021,7 +1013,7 @@
         closeAllDropdowns();
       } else {
         updateHistoryList();
-        openDropdown(historyPanel, e.target);
+        openDropdown(historyPanel, 'push-history');
       }
     };
     
@@ -1034,9 +1026,9 @@
     };
     
     document.addEventListener('click', (e) => {
-      if (!e.target.closest('.dropdown') && !e.target.closest('#quickLinksBtn') &&
-          !e.target.closest('.help-panel') && !e.target.closest('#helpBtn') &&
-          !e.target.closest('.history-panel') && !e.target.closest('#historyBtn')) {
+      if (!e.target.closest('#quickDropdown') && !e.target.closest('#quickLinksBtn') &&
+          !e.target.closest('#helpPanel') && !e.target.closest('#helpBtn') &&
+          !e.target.closest('#historyPanel') && !e.target.closest('#historyBtn')) {
         closeAllDropdowns();
       }
     });
@@ -1066,7 +1058,7 @@
         if (historyPanel.classList.contains('show')) {
           closeAllDropdowns();
         } else {
-          openDropdown(historyPanel);
+          openDropdown(historyPanel, 'push-history');
         }
       }
       if (e.key === '`') {
