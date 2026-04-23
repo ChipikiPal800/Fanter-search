@@ -16,12 +16,49 @@
       background: #0a0a0a;
       color: #e0e0e0;
       min-height: 100vh;
+      transition: background 0.3s ease;
       overflow-x: hidden;
+      position: relative;
     }
 
     body.light { background: #f5f5f5; color: #1a1a1a; }
     body.dark-green { background: #0d1f0d; color: #c0e0c0; }
     body.purple { background: #1a0a2e; color: #d0c0e0; }
+
+    /* Background canvas for dots and lines */
+    #bgCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      display: block;
+    }
+
+    /* Status bar */
+    .status-bar {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      font-size: 11px;
+      z-index: 50;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 5px;
+    }
+    .online { background: #22c55e; box-shadow: 0 0 5px #22c55e; }
+    .slow { background: #fbbf24; }
+    .offline { background: #ef4444; }
 
     /* Right side buttons */
     .right-buttons {
@@ -70,7 +107,6 @@
     .dropdown-menu {
       position: fixed;
       right: 20px;
-      top: 60px;
       background: #1e1e1e;
       border-radius: 16px;
       padding: 8px;
@@ -94,10 +130,9 @@
       transform: translateY(0);
     }
 
-    #helpPanel, #historyPanel {
-      width: 280px;
-      padding: 15px;
-    }
+    #quickDropdown { top: 60px; }
+    #helpPanel { top: 60px; width: 280px; padding: 15px; }
+    #historyPanel { top: 60px; width: 260px; padding: 12px; }
 
     .dropdown-item {
       display: flex;
@@ -118,6 +153,7 @@
       width: 22px;
       height: 22px;
       object-fit: contain;
+      border-radius: 4px;
     }
 
     .help-section {
@@ -564,154 +600,247 @@
   </style>
 </head>
 <body class="dark">
-  <div class="right-buttons" id="rightButtons">
-    <div class="round-btn" id="quickLinksBtn">quick linx</div>
-    <div class="round-btn" id="helpBtn">help</div>
-    <div class="round-btn" id="historyBtn">history</div>
-    <div class="round-btn" id="panicBtn">panic</div>
-    <div class="round-btn" id="notesBtn">notes</div>
-  </div>
+  <canvas id="bgCanvas"></canvas>
 
-  <!-- quick links dropdown -->
-  <div class="dropdown-menu" id="quickDropdown">
-    <div class="dropdown-item" data-url="youtube.com">
-      <span>🎬 youtube</span>
-    </div>
-    <div class="dropdown-item" data-url="reddit.com">
-      <span>📱 reddit</span>
-    </div>
-    <div class="dropdown-item" data-url="cloudmoonapp.com">
-      <span>☁️ cloudmoon</span>
-    </div>
-    <div class="dropdown-item" data-url="spotify.com">
-      <span>🎵 spotify</span>
-    </div>
-    <div class="dropdown-item" data-url="now.gg">
-      <span>🎮 now.gg</span>
-    </div>
-    <div class="dropdown-item" data-url="xbox.com/play">
-      <span>🎮 xbox cloud</span>
-    </div>
-    <div class="dropdown-item" data-url="play.geforcenow.com">
-      <span>🎮 geforce now</span>
-    </div>
-  </div>
-
-  <!-- help panel -->
-  <div class="dropdown-menu" id="helpPanel">
-    <div class="help-section">
-      <div class="help-title">keyboard shortcuts</div>
-      <div class="help-item"><span>focus search</span><span class="help-key">ctrl + k</span></div>
-      <div class="help-item"><span>show history</span><span class="help-key">ctrl + h</span></div>
-      <div class="help-item"><span>panic mode</span><span class="help-key">`</span></div>
-    </div>
-    <div class="help-section">
-      <div class="help-title">features</div>
-      <div class="help-item"><span>about:blank</span><span>click settings</span></div>
-      <div class="help-item"><span>text mode</span><span>click settings</span></div>
-      <div class="help-item"><span>ad blocker</span><span>click settings</span></div>
-      <div class="help-item"><span>user agent</span><span>click settings</span></div>
-    </div>
-    <div class="help-section">
-      <div class="help-title">custom panic url</div>
-      <div class="panic-settings">
-        <input type="text" id="panicUrlInput" placeholder="enter url...">
-        <button class="save-panic" id="savePanicBtn">save</button>
+  <div class="container">
+    <!-- Status bar -->
+    <div class="status-bar">
+      <div class="proxy-status">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusText">checking...</span>
       </div>
     </div>
-  </div>
 
-  <!-- history panel -->
-  <div class="dropdown-menu" id="historyPanel">
-    <div class="history-title">recently visited</div>
-    <div class="history-list" id="historyList"></div>
-    <div class="clear-history" id="clearHistory">clear history</div>
-  </div>
+    <!-- Right side buttons -->
+    <div class="right-buttons" id="rightButtons">
+      <div class="round-btn" id="quickLinksBtn">quick linx</div>
+      <div class="round-btn" id="helpBtn">help</div>
+      <div class="round-btn" id="historyBtn">history</div>
+      <div class="round-btn" id="panicBtn">panic</div>
+      <div class="round-btn" id="notesBtn">notes</div>
+    </div>
 
-  <!-- features panel (settings) -->
-  <div class="features-panel" id="featuresPanel">
-    <div class="features-header">
-      <div class="features-title">settings</div>
-      <button class="features-close" id="featuresCloseBtn">✕</button>
-    </div>
-    <div class="feature-item">
-      <span>📄 about:blank bypass</span>
-      <button id="featureAboutBlankBtn">open</button>
-    </div>
-    <div class="feature-item">
-      <span>📝 text mode</span>
-      <button id="featureTextModeBtn">off</button>
-    </div>
-    <div class="feature-item">
-      <span>🚫 ad blocker</span>
-      <button id="featureAdblockBtn">on</button>
-    </div>
-    <div class="feature-item">
-      <span>🔄 user agent</span>
-      <button id="featureUserAgentBtn">chrome</button>
-    </div>
-    <div class="feature-item">
-      <span>🔗 url shortener</span>
-      <button id="featureShortenBtn">shorten</button>
-    </div>
-    <div class="feature-item">
-      <span>💾 save for later</span>
-      <button id="featureSaveLaterBtn">save</button>
-    </div>
-    <div class="feature-item">
-      <span>🖥️ fullscreen</span>
-      <button id="featureFullscreenBtn">enter</button>
-    </div>
-    <div class="feature-item">
-      <span>🔄 refresh</span>
-      <button id="featureRefreshBtn">refresh</button>
-    </div>
-  </div>
-
-  <!-- notes panel -->
-  <div class="notes-panel" id="notesPanel">
-    <div class="history-title">quick notes</div>
-    <textarea id="notesTextarea" placeholder="write your notes here..."></textarea>
-    <button id="saveNotesBtn" style="margin-top:8px;padding:4px 12px;border-radius:20px;border:none;background:#4a6e4a;color:white;cursor:pointer;font-size:10px;width:100%;">save notes</button>
-    <div class="history-title" style="margin-top:10px;">saved for later</div>
-    <div class="saved-links-list" id="savedLinksList"></div>
-  </div>
-
-  <!-- search section -->
-  <div class="search-section" id="searchSection">
-    <div class="title">fanter search</div>
-    <div class="search-box">
-      <div class="search-wrapper">
-        <input type="text" id="searchInput" placeholder="search or type a url...">
-        <button id="goBtn">go</button>
+    <!-- Quick links dropdown -->
+    <div class="dropdown-menu" id="quickDropdown">
+      <div class="dropdown-item" data-url="youtube.com">
+        <img class="dropdown-icon" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdYYtpbk4xqsn2XvBocnTZjLJH2vsbPhYbRQ&s" onerror="this.style.display='none'">
+        <span>youtube</span>
+      </div>
+      <div class="dropdown-item" data-url="reddit.com">
+        <img class="dropdown-icon" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRYw6dBUuV1YaVQ3oSdn0xDl4SwmtCn2dKKiA&s" onerror="this.style.display='none'">
+        <span>reddit</span>
+      </div>
+      <div class="dropdown-item" data-url="cloudmoonapp.com">
+        <img class="dropdown-icon" src="https://img.utdstc.com/icon/12d/349/12d349d1cd13cc225122ccd090b211e69c79a84c5216e55689f55f382235e423:200" onerror="this.style.display='none'">
+        <span>cloudmoon</span>
+      </div>
+      <div class="dropdown-item" data-url="spotify.com">
+        <img class="dropdown-icon" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQP-SeOb6iBTaeMUiL_lj3ac3LKNYP5foHCAg&s" onerror="this.style.display='none'">
+        <span>spotify</span>
+      </div>
+      <div class="dropdown-item" data-url="now.gg">
+        <img class="dropdown-icon" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRduQjU8n0k3kzifCT8BUXSGpg-hYRdxMUX5A&s" onerror="this.style.display='none'">
+        <span>now.gg</span>
+      </div>
+      <div class="dropdown-item" data-url="xbox.com/play">
+        <img class="dropdown-icon" src="https://assets.play.xbox.com/playxbox/static/media/CloudGaming_LetterBox.scale-200.ef909bf4.png" onerror="this.style.display='none'">
+        <span>xbox cloud</span>
+      </div>
+      <div class="dropdown-item" data-url="play.geforcenow.com">
+        <img class="dropdown-icon" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQjQnPCY_I0L4_-bLIdU0CcuVkYTAPICicosQ&s" onerror="this.style.display='none'">
+        <span>geforce now</span>
       </div>
     </div>
-  </div>
 
-  <!-- iframe area -->
-  <div class="iframe-area" id="iframeArea">
-    <div class="tab-bar" id="tabBar"></div>
-    <div class="iframe-header">
-      <span class="iframe-url" id="iframeUrl">ready</span>
-      <div class="iframe-buttons">
-        <button class="iframe-btn" id="settingsBtn">⚙️ settings</button>
+    <!-- Help panel -->
+    <div class="dropdown-menu" id="helpPanel">
+      <div class="help-section">
+        <div class="help-title">keyboard shortcuts</div>
+        <div class="help-item"><span>focus search</span><span class="help-key">ctrl + k</span></div>
+        <div class="help-item"><span>show history</span><span class="help-key">ctrl + h</span></div>
+        <div class="help-item"><span>panic mode</span><span class="help-key">`</span></div>
+      </div>
+      <div class="help-section">
+        <div class="help-title">features</div>
+        <div class="help-item"><span>about:blank</span><span>click settings</span></div>
+        <div class="help-item"><span>text mode</span><span>click settings</span></div>
+        <div class="help-item"><span>ad blocker</span><span>click settings</span></div>
+        <div class="help-item"><span>user agent</span><span>click settings</span></div>
+      </div>
+      <div class="help-section">
+        <div class="help-title">custom panic url</div>
+        <div class="panic-settings">
+          <input type="text" id="panicUrlInput" placeholder="enter url...">
+          <button class="save-panic" id="savePanicBtn">save</button>
+        </div>
       </div>
     </div>
-    <iframe id="proxyFrame" src="about:blank"></iframe>
-  </div>
 
-  <!-- theme selector -->
-  <div class="theme-selector">
-    <div class="theme-dot dot-dark" data-theme="dark"></div>
-    <div class="theme-dot dot-light" data-theme="light"></div>
-    <div class="theme-dot dot-green" data-theme="dark-green"></div>
-    <div class="theme-dot dot-purple" data-theme="purple"></div>
+    <!-- History panel -->
+    <div class="dropdown-menu" id="historyPanel">
+      <div class="history-title">recently visited</div>
+      <div class="history-list" id="historyList"></div>
+      <div class="clear-history" id="clearHistory">clear history</div>
+    </div>
+
+    <!-- Features panel (settings) -->
+    <div class="features-panel" id="featuresPanel">
+      <div class="features-header">
+        <div class="features-title">settings</div>
+        <button class="features-close" id="featuresCloseBtn">✕</button>
+      </div>
+      <div class="feature-item">
+        <span>📄 about:blank bypass</span>
+        <button id="featureAboutBlankBtn">open</button>
+      </div>
+      <div class="feature-item">
+        <span>📝 text mode</span>
+        <button id="featureTextModeBtn">off</button>
+      </div>
+      <div class="feature-item">
+        <span>🚫 ad blocker</span>
+        <button id="featureAdblockBtn">on</button>
+      </div>
+      <div class="feature-item">
+        <span>🔄 user agent</span>
+        <button id="featureUserAgentBtn">chrome</button>
+      </div>
+      <div class="feature-item">
+        <span>🔗 url shortener</span>
+        <button id="featureShortenBtn">shorten</button>
+      </div>
+      <div class="feature-item">
+        <span>💾 save for later</span>
+        <button id="featureSaveLaterBtn">save</button>
+      </div>
+      <div class="feature-item">
+        <span>🖥️ fullscreen</span>
+        <button id="featureFullscreenBtn">enter</button>
+      </div>
+      <div class="feature-item">
+        <span>🔄 refresh</span>
+        <button id="featureRefreshBtn">refresh</button>
+      </div>
+    </div>
+
+    <!-- Notes panel -->
+    <div class="notes-panel" id="notesPanel">
+      <div class="history-title">quick notes</div>
+      <textarea id="notesTextarea" placeholder="write your notes here..."></textarea>
+      <button id="saveNotesBtn" style="margin-top:8px;padding:4px 12px;border-radius:20px;border:none;background:#4a6e4a;color:white;cursor:pointer;font-size:10px;width:100%;">save notes</button>
+      <div class="history-title" style="margin-top:10px;">saved for later</div>
+      <div class="saved-links-list" id="savedLinksList"></div>
+    </div>
+
+    <!-- Search section -->
+    <div class="search-section" id="searchSection">
+      <div class="title">fanter search</div>
+      <div class="search-box">
+        <div class="search-wrapper">
+          <input type="text" id="searchInput" placeholder="search or type a url...">
+          <button id="goBtn">go</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Iframe area -->
+    <div class="iframe-area" id="iframeArea">
+      <div class="tab-bar" id="tabBar"></div>
+      <div class="iframe-header">
+        <span class="iframe-url" id="iframeUrl">ready</span>
+        <div class="iframe-buttons">
+          <button class="iframe-btn" id="settingsBtn">⚙️ settings</button>
+        </div>
+      </div>
+      <iframe id="proxyFrame" src="about:blank"></iframe>
+    </div>
+
+    <!-- Theme selector -->
+    <div class="theme-selector">
+      <div class="theme-dot dot-dark" data-theme="dark"></div>
+      <div class="theme-dot dot-light" data-theme="light"></div>
+      <div class="theme-dot dot-green" data-theme="dark-green"></div>
+      <div class="theme-dot dot-purple" data-theme="purple"></div>
+    </div>
   </div>
 
   <script>
     // ============================================================
-    // fanter search - clean working version
+    // fanter search - COMPLETE with working about:blank
     // ============================================================
+    
+    // Background canvas for dots and lines
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+    let points = [];
+    let time = 0;
+    
+    function initPoints() {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+      
+      const cols = Math.floor(width / 80);
+      const rows = Math.floor(height / 80);
+      points = [];
+      for (let i = 0; i <= cols; i++) {
+        for (let j = 0; j <= rows; j++) {
+          points.push({
+            baseX: i * 80,
+            baseY: j * 80,
+            offsetX: 0,
+            offsetY: 0,
+            phaseX: Math.random() * Math.PI * 2,
+            phaseY: Math.random() * Math.PI * 2,
+            speed: 0.3 + Math.random() * 0.6
+          });
+        }
+      }
+    }
+    
+    function drawBackground() {
+      if (!ctx) return;
+      const isDark = document.body.classList.contains('dark') || document.body.classList.contains('dark-green') || document.body.classList.contains('purple');
+      ctx.fillStyle = isDark ? '#0a0a0a' : '#f5f5f5';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      for (let p of points) {
+        p.offsetX = Math.sin(time * 0.0015 * p.speed + p.phaseX) * 10;
+        p.offsetY = Math.cos(time * 0.0015 * p.speed * 0.7 + p.phaseY) * 10;
+      }
+      
+      ctx.beginPath();
+      ctx.strokeStyle = isDark ? 'rgba(100, 100, 100, 0.2)' : 'rgba(80, 80, 80, 0.15)';
+      ctx.lineWidth = 1;
+      
+      for (let i = 0; i < points.length; i++) {
+        for (let j = i + 1; j < points.length; j++) {
+          const dx = (points[i].baseX + points[i].offsetX) - (points[j].baseX + points[j].offsetX);
+          const dy = (points[i].baseY + points[i].offsetY) - (points[j].baseY + points[j].offsetY);
+          if (Math.sqrt(dx * dx + dy * dy) < 100) {
+            ctx.beginPath();
+            ctx.moveTo(points[i].baseX + points[i].offsetX, points[i].baseY + points[i].offsetY);
+            ctx.lineTo(points[j].baseX + points[j].offsetX, points[j].baseY + points[j].offsetY);
+            ctx.stroke();
+          }
+        }
+      }
+      
+      ctx.fillStyle = isDark ? 'rgba(160, 160, 160, 0.25)' : 'rgba(80, 80, 80, 0.2)';
+      for (let p of points) {
+        ctx.beginPath();
+        ctx.arc(p.baseX + p.offsetX, p.baseY + p.offsetY, 3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      
+      time++;
+      requestAnimationFrame(drawBackground);
+    }
+    
+    window.addEventListener('resize', () => initPoints());
+    initPoints();
+    drawBackground();
     
     // Proxy URLs
     const PROXY_URL = 'https://fanter-search-proxy.onrender.com/proxy?url=';
@@ -823,8 +952,8 @@
         const item = document.createElement('div');
         item.className = 'saved-link-item';
         item.innerHTML = `
-          <span>${link.title || link.url}</span>
-          <button class="delete-saved" data-url="${link.url}" style="background:none;border:none;color:#ef4444;cursor:pointer;">✕</button>
+          <span style="flex:1;overflow:hidden;text-overflow:ellipsis;">${link.title || link.url}</span>
+          <button class="delete-saved" data-url="${link.url}" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:12px;">✕</button>
         `;
         item.querySelector('.delete-saved').onclick = (e) => {
           e.stopPropagation();
@@ -838,32 +967,63 @@
       });
     }
     
-    // About:blank - STAYS as about:blank
+    // WORKING about:blank function
     function openAboutBlank(url) {
-      const blankWindow = window.open('about:blank', '_blank');
-      if (!blankWindow) {
+      const blank = window.open();
+      if (!blank) {
         showToast('popup blocked - allow popups');
         return;
       }
-      blankWindow.document.write(`
+      
+      blank.document.write(`
         <!DOCTYPE html>
         <html>
-        <head><title>fanter proxy</title>
-        <style>
-          body{margin:0;padding:0;height:100vh;overflow:hidden;background:#0a0a0a;}
-          iframe{width:100%;height:100%;border:none;}
-          .loading{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:#4a6e4a;}
-          .spinner{width:30px;height:30px;border:2px solid #4a6e4a;border-top-color:transparent;border-radius:50%;animation:spin 0.6s linear infinite;margin:0 auto 10px;}
-          @keyframes spin{to{transform:rotate(360deg);}}
-        </style>
+        <head>
+          <title>fanter proxy</title>
+          <style>
+            body { margin: 0; padding: 0; height: 100vh; overflow: hidden; background: #0a0a0a; }
+            iframe { width: 100%; height: 100%; border: none; }
+            .loader {
+              position: fixed;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              text-align: center;
+              color: #4a6e4a;
+              font-family: monospace;
+              z-index: 10;
+            }
+            .spinner {
+              width: 30px;
+              height: 30px;
+              border: 2px solid #4a6e4a;
+              border-top-color: transparent;
+              border-radius: 50%;
+              animation: spin 0.6s linear infinite;
+              margin: 0 auto 10px;
+            }
+            @keyframes spin { to { transform: rotate(360deg); } }
+          </style>
         </head>
         <body>
-          <div class="loading"><div class="spinner"></div><div>loading...</div></div>
-          <iframe src="${url}"></iframe>
-          <script>document.querySelector('iframe').onload=()=>{document.querySelector('.loading').style.display='none';};<\/script>
+          <div class="loader" id="loader">
+            <div class="spinner"></div>
+            <div>loading ${url}...</div>
+          </div>
+          <iframe id="contentFrame" src="${url}"></iframe>
+          <script>
+            document.getElementById('contentFrame').onload = function() {
+              document.getElementById('loader').style.display = 'none';
+            };
+            setTimeout(function() {
+              var loader = document.getElementById('loader');
+              if (loader) loader.style.display = 'none';
+            }, 8000);
+          <\/script>
         </body>
         </html>
       `);
+      
       showToast('opened in about:blank tab');
     }
     
@@ -968,6 +1128,29 @@
     };
     
     panicUrlInput.placeholder = PANIC_URL;
+    
+    async function checkProxyStatus() {
+      const statusDot = document.getElementById('statusDot');
+      const statusText = document.getElementById('statusText');
+      statusText.textContent = 'checking...';
+      statusDot.className = 'status-dot slow';
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        const res = await fetch(PROXY_URL + encodeURIComponent('https://example.com'), { signal: controller.signal });
+        clearTimeout(timeoutId);
+        if (res && res.ok) {
+          statusDot.className = 'status-dot online';
+          statusText.textContent = 'online';
+        } else {
+          statusDot.className = 'status-dot slow';
+          statusText.textContent = 'slow';
+        }
+      } catch(e) {
+        statusDot.className = 'status-dot offline';
+        statusText.textContent = 'offline (fallbacks active)';
+      }
+    }
     
     function setTheme(theme) {
       document.body.className = theme;
@@ -1231,12 +1414,14 @@
     updateSavedLinksList();
     updateTabs();
     updateFeatureButtons();
+    checkProxyStatus();
+    setInterval(checkProxyStatus, 30000);
     setTheme(currentTheme);
     
     const lastUrl = localStorage.getItem('fanterLastUrl');
     if (lastUrl) searchInput.value = lastUrl;
     
-    console.log('fanter search ready');
+    console.log('fanter search ready - about:blank working!');
   </script>
 </body>
 </html>
