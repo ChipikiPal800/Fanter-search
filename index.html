@@ -91,8 +91,9 @@
       transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
     }
 
+    /* Push amounts based on actual menu heights */
     .right-buttons.push-quick { transform: translateY(210px); }
-    .right-buttons.push-help { transform: translateY(280px); }
+    .right-buttons.push-help { transform: translateY(330px); }
     .right-buttons.push-history { transform: translateY(280px); }
 
     .round-btn {
@@ -295,6 +296,55 @@
       background: rgba(74, 110, 74, 0.2);
     }
 
+    /* Notes panel */
+    .notes-panel {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      width: 260px;
+      background: #1e1e1e;
+      border-radius: 16px;
+      padding: 12px;
+      border: 1px solid #333;
+      z-index: 90;
+      display: none;
+    }
+
+    .notes-panel.show {
+      display: block;
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .notes-panel textarea {
+      width: 100%;
+      height: 120px;
+      background: #2a2a2a;
+      border: 1px solid #333;
+      border-radius: 8px;
+      color: white;
+      padding: 8px;
+      font-size: 11px;
+      resize: vertical;
+      margin-top: 5px;
+    }
+
+    body.light .notes-panel textarea {
+      background: #f0f0f0;
+      border-color: #ddd;
+      color: #1a1a1a;
+    }
+
     /* Features Panel - Left Side Menu */
     .features-panel {
       position: fixed;
@@ -377,134 +427,38 @@
       background: #3a5e3a;
     }
 
-    /* Notes panel */
-    .notes-panel {
+    /* Features toggle button */
+    .features-toggle {
       position: fixed;
-      bottom: 20px;
       left: 20px;
-      width: 260px;
-      background: #1e1e1e;
-      border-radius: 16px;
-      padding: 12px;
-      border: 1px solid #333;
-      z-index: 90;
-      display: none;
-    }
-
-    .notes-panel.show {
-      display: block;
-      animation: slideUp 0.3s ease;
-    }
-
-    @keyframes slideUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .notes-panel textarea {
-      width: 100%;
-      height: 120px;
-      background: #2a2a2a;
-      border: 1px solid #333;
-      border-radius: 8px;
-      color: white;
-      padding: 8px;
-      font-size: 11px;
-      resize: vertical;
-      margin-top: 5px;
-    }
-
-    body.light .notes-panel textarea {
-      background: #f0f0f0;
-      border-color: #ddd;
-      color: #1a1a1a;
-    }
-
-    .search-section {
-      text-align: center;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 100%;
-      transition: all 0.4s ease;
-    }
-
-    .search-section.has-iframe {
-      position: relative;
-      top: 0;
-      left: 0;
-      transform: none;
-      margin-top: 40px;
-      margin-bottom: 30px;
-    }
-
-    .title {
-      font-size: 42px;
-      font-weight: 700;
-      margin-bottom: 25px;
-      background: linear-gradient(135deg, #4a6e4a, #6a8e6a);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-
-    .search-box {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 0 20px;
-    }
-
-    .search-wrapper {
+      top: 20px;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: rgba(30, 30, 35, 0.95);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       display: flex;
-      background: #1e1e1e;
-      border-radius: 60px;
-      border: 1px solid #333;
-      overflow: hidden;
-      transition: all 0.2s;
-    }
-
-    body.light .search-wrapper {
-      background: white;
-      border-color: #ddd;
-    }
-
-    .search-wrapper:focus-within {
-      border-color: #4a6e4a;
-      box-shadow: 0 0 0 2px rgba(74, 110, 74, 0.2);
-    }
-
-    .search-wrapper input {
-      flex: 1;
-      padding: 16px 24px;
-      border: none;
-      background: transparent;
-      color: inherit;
-      font-size: 16px;
-      outline: none;
-    }
-
-    .search-wrapper button {
-      background: #4a6e4a;
-      border: none;
-      padding: 0 28px;
-      color: white;
-      font-weight: 500;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
-      font-size: 14px;
-      transition: background 0.2s;
+      font-size: 20px;
+      transition: all 0.2s ease;
+      color: #e0e0e0;
+      z-index: 101;
     }
 
-    .search-wrapper button:hover {
-      background: #3a5e3a;
+    body.light .features-toggle {
+      background: rgba(220, 220, 220, 0.95);
     }
 
+    .features-toggle:hover {
+      background: #4a6e4a;
+      color: white;
+      transform: scale(1.05);
+    }
+
+    /* Iframe area - with settings buttons */
     .iframe-area {
       max-width: 1200px;
       margin: 0 auto 30px;
@@ -600,9 +554,26 @@
       white-space: nowrap;
     }
 
-    /* Removed iframe-buttons - features now in left panel */
     .iframe-buttons {
-      display: none;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .iframe-btn {
+      background: none;
+      border: none;
+      padding: 5px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      color: #888;
+      font-size: 11px;
+      transition: all 0.2s;
+    }
+
+    .iframe-btn:hover {
+      background: #3a3a3a;
+      color: white;
     }
 
     iframe {
@@ -612,35 +583,83 @@
       display: block;
     }
 
-    /* Features toggle button */
-    .features-toggle {
-      position: fixed;
-      left: 20px;
-      top: 20px;
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      background: rgba(30, 30, 35, 0.95);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+    .search-section {
+      text-align: center;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      transition: all 0.4s ease;
+    }
+
+    .search-section.has-iframe {
+      position: relative;
+      top: 0;
+      left: 0;
+      transform: none;
+      margin-top: 40px;
+      margin-bottom: 30px;
+    }
+
+    .title {
+      font-size: 42px;
+      font-weight: 700;
+      margin-bottom: 25px;
+      background: linear-gradient(135deg, #4a6e4a, #6a8e6a);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .search-box {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .search-wrapper {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 20px;
-      transition: all 0.2s ease;
-      color: #e0e0e0;
-      z-index: 101;
+      background: #1e1e1e;
+      border-radius: 60px;
+      border: 1px solid #333;
+      overflow: hidden;
+      transition: all 0.2s;
     }
 
-    body.light .features-toggle {
-      background: rgba(220, 220, 220, 0.95);
+    body.light .search-wrapper {
+      background: white;
+      border-color: #ddd;
     }
 
-    .features-toggle:hover {
+    .search-wrapper:focus-within {
+      border-color: #4a6e4a;
+      box-shadow: 0 0 0 2px rgba(74, 110, 74, 0.2);
+    }
+
+    .search-wrapper input {
+      flex: 1;
+      padding: 16px 24px;
+      border: none;
+      background: transparent;
+      color: inherit;
+      font-size: 16px;
+      outline: none;
+    }
+
+    .search-wrapper button {
       background: #4a6e4a;
+      border: none;
+      padding: 0 28px;
       color: white;
-      transform: scale(1.05);
+      font-weight: 500;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+
+    .search-wrapper button:hover {
+      background: #3a5e3a;
     }
 
     .theme-selector {
@@ -739,7 +758,7 @@
     <!-- Features Panel (Left Side Menu) -->
     <div class="features-panel" id="featuresPanel">
       <div class="features-header">
-        <div class="features-title">features</div>
+        <div class="features-title">settings</div>
         <button class="features-close" id="featuresCloseBtn">✕</button>
       </div>
       <div class="features-list">
@@ -749,7 +768,7 @@
         </div>
         <div class="feature-item">
           <span>📝 text mode</span>
-          <button id="featureTextModeBtn">toggle</button>
+          <button id="featureTextModeBtn">off</button>
         </div>
         <div class="feature-item">
           <span>🚫 ad blocker</span>
@@ -829,10 +848,10 @@
       </div>
       <div class="help-section">
         <div class="help-title">features</div>
-        <div class="help-item"><span>ad blocker</span><span>click in iframe</span></div>
-        <div class="help-item"><span>user agent</span><span>click in iframe</span></div>
+        <div class="help-item"><span>ad blocker</span><span>click settings</span></div>
+        <div class="help-item"><span>user agent</span><span>click settings</span></div>
         <div class="help-item"><span>auto dark mode</span><span>6pm-6am</span></div>
-        <div class="help-item"><span>save later</span><span>bookmark pages</span></div>
+        <div class="help-item"><span>save later</span><span>click settings</span></div>
       </div>
       <div class="help-section">
         <div class="help-title">custom panic url</div>
@@ -870,11 +889,14 @@
       </div>
     </div>
 
-    <!-- iframe area (features buttons removed) -->
+    <!-- iframe area -->
     <div class="iframe-area" id="iframeArea">
       <div class="tab-bar" id="tabBar"></div>
       <div class="iframe-header">
         <span class="iframe-url" id="iframeUrl">ready</span>
+        <div class="iframe-buttons">
+          <button class="iframe-btn" id="settingsBtn">⚙️ settings</button>
+        </div>
       </div>
       <iframe id="proxyFrame" src="about:blank" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals allow-top-navigation"></iframe>
     </div>
@@ -890,7 +912,7 @@
 
   <script>
     // ============================================================
-    // fanter search - features in left panel, fixed about:blank
+    // fanter search - working about:blank + settings button
     // ============================================================
     
     // background canvas
@@ -995,6 +1017,7 @@
     const iframeArea = document.getElementById('iframeArea');
     const proxyFrame = document.getElementById('proxyFrame');
     const iframeUrlSpan = document.getElementById('iframeUrl');
+    const settingsBtn = document.getElementById('settingsBtn');
     const searchSection = document.getElementById('searchSection');
     const statusDot = document.getElementById('statusDot');
     const statusText = document.getElementById('statusText');
@@ -1165,22 +1188,21 @@
       tabBar.appendChild(newTabEl);
     }
     
-    // about:blank - STAYS as about:blank (loads site IN the about:blank page)
+    // about:blank - STAYS as about:blank FOREVER
     function openRealAboutBlank(url) {
       const blankWindow = window.open('about:blank', '_blank');
       if (!blankWindow) {
         showToast('popup blocked - allow popups for this site');
         return;
       }
-      // Write an iframe into the about:blank page that loads the URL
-      // This keeps the address bar as about:blank
+      // Write HTML that STAYS as about:blank and loads the URL in an iframe
       blankWindow.document.write(`
         <!DOCTYPE html>
         <html>
         <head>
           <title>fanter proxy</title>
           <style>
-            body { margin: 0; padding: 0; height: 100vh; overflow: hidden; }
+            body { margin: 0; padding: 0; height: 100vh; overflow: hidden; background: #0a0a0a; }
             iframe { width: 100%; height: 100%; border: none; }
             .loading {
               position: fixed;
@@ -1190,6 +1212,10 @@
               text-align: center;
               font-family: monospace;
               color: #4a6e4a;
+              background: #0a0a0a;
+              padding: 20px;
+              border-radius: 10px;
+              z-index: 10;
             }
             .spinner {
               width: 30px;
@@ -1204,17 +1230,25 @@
           </style>
         </head>
         <body>
-          <div class="loading"><div class="spinner"></div><div>loading ${url}...</div></div>
-          <iframe src="${url}" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals allow-top-navigation"></iframe>
+          <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <div>loading...</div>
+          </div>
+          <iframe id="contentFrame" src="${url}" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals allow-top-navigation"></iframe>
           <script>
-            document.querySelector('iframe').onload = () => {
-              document.querySelector('.loading').style.display = 'none';
+            document.getElementById('contentFrame').onload = function() {
+              document.getElementById('loading').style.display = 'none';
             };
+            // Fallback: hide loading after 5 seconds
+            setTimeout(function() {
+              var loading = document.getElementById('loading');
+              if (loading) loading.style.display = 'none';
+            }, 5000);
           <\/script>
         </body>
         </html>
       `);
-      showToast('opened in about:blank tab (address bar stays about:blank)');
+      showToast('opened in about:blank tab (stays about:blank)');
     }
     
     async function shortenUrl(url) {
@@ -1293,7 +1327,7 @@
       
       const success = await loadViaProxy(formatted);
       if (!success) {
-        proxyFrame.srcdoc = `<html><body style="background:#1a1a1a;padding:40px;text-align:center;"><h3>❌ cannot load ${formatted}</h3><p>try using the about:blank button</p></body></html>`;
+        proxyFrame.srcdoc = `<html><body style="background:#1a1a1a;padding:40px;text-align:center;"><h3>❌ cannot load ${formatted}</h3><p>try using the about:blank button in settings</p></body></html>`;
         iframeUrlSpan.textContent = `failed: ${formatted}`;
       }
       localStorage.setItem('fanterLastUrl', formatted);
@@ -1441,6 +1475,9 @@
       closeFeaturesPanel();
     };
     
+    // Settings button in iframe header
+    settingsBtn.onclick = toggleFeaturesPanel;
+    
     // Features panel event listeners
     featuresToggleBtn.onclick = toggleFeaturesPanel;
     featuresCloseBtn.onclick = closeFeaturesPanel;
@@ -1528,6 +1565,7 @@
           !e.target.closest('#helpPanel') && !e.target.closest('#helpBtn') &&
           !e.target.closest('#historyPanel') && !e.target.closest('#historyBtn') &&
           !e.target.closest('#featuresPanel') && !e.target.closest('#featuresToggleBtn') &&
+          !e.target.closest('#settingsBtn') &&
           !e.target.closest('#notesPanel') && !e.target.closest('#notesBtn')) {
         closeAllMenus();
         closeFeaturesPanel();
@@ -1575,7 +1613,7 @@
     const lastUrl = localStorage.getItem('fanterLastUrl');
     if (lastUrl) searchInput.value = lastUrl;
     
-    console.log('fanter search ready - features in left panel, about:blank stays as about:blank');
+    console.log('fanter search ready - about:blank fixed, settings button added');
   </script>
 </body>
 </html>
