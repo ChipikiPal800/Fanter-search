@@ -766,7 +766,7 @@
 
   <script>
     // ============================================================
-    // fanter search - COMPLETE with working about:blank
+    // fanter search - COMPLETE with working iframe AND about:blank
     // ============================================================
     
     // Background canvas for dots and lines
@@ -967,7 +967,7 @@
       });
     }
     
-    // WORKING about:blank function
+    // WORKING about:blank function - OPENS IN IFRAME WITHIN about:blank PAGE
     function openAboutBlank(url) {
       const blank = window.open();
       if (!blank) {
@@ -1010,7 +1010,7 @@
             <div class="spinner"></div>
             <div>loading ${url}...</div>
           </div>
-          <iframe id="contentFrame" src="${url}"></iframe>
+          <iframe id="contentFrame" src="${url}" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals allow-top-navigation"></iframe>
           <script>
             document.getElementById('contentFrame').onload = function() {
               document.getElementById('loader').style.display = 'none';
@@ -1024,7 +1024,7 @@
         </html>
       `);
       
-      showToast('opened in about:blank tab');
+      showToast('opened in about:blank tab (stays about:blank)');
     }
     
     async function shortenUrl(url) {
@@ -1421,7 +1421,7 @@
     const lastUrl = localStorage.getItem('fanterLastUrl');
     if (lastUrl) searchInput.value = lastUrl;
     
-    console.log('fanter search ready - about:blank working!');
+    console.log('fanter search ready - iframe works, about:blank works!');
   </script>
 </body>
 </html>
