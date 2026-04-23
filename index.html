@@ -18,35 +18,24 @@
       min-height: 100vh;
       transition: background 0.3s ease;
       overflow-x: hidden;
-    }
-
-    /* Moving background dots */
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-image: radial-gradient(circle at 20% 30%, rgba(74, 110, 74, 0.2) 2px, transparent 2px);
-      background-size: 50px 50px;
-      animation: moveBackground 30s linear infinite;
-      z-index: 0;
-      pointer-events: none;
-    }
-
-    @keyframes moveBackground {
-      0% { background-position: 0 0; }
-      100% { background-position: 100px 100px; }
-    }
-
-    body.light::before {
-      background-image: radial-gradient(circle at 20% 30%, rgba(0, 0, 0, 0.1) 2px, transparent 2px);
+      position: relative;
     }
 
     body.light { background: #f5f5f5; color: #1a1a1a; }
     body.dark-green { background: #0d1f0d; }
     body.purple { background: #1a0a2e; }
+
+    /* Background canvas for dots and lines */
+    #bgCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      display: block;
+    }
 
     .container {
       position: relative;
@@ -95,10 +84,7 @@
       transition: transform 0.3s ease;
     }
 
-    /* Push all buttons down to below half page (300px) */
-    .right-buttons.push {
-      transform: translateY(320px);
-    }
+    .right-buttons.push { transform: translateY(350px); }
 
     .round-btn {
       width: 95px;
@@ -129,7 +115,7 @@
       transform: scale(1.02);
     }
 
-    /* Dropdown panels - all same position */
+    /* Dropdown panels */
     .dropdown {
       position: fixed;
       right: 20px;
@@ -170,6 +156,29 @@
       margin-bottom: 10px;
       padding-bottom: 5px;
       border-bottom: 1px solid #333;
+    }
+
+    /* Quick links dropdown with images */
+    .quick-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: background 0.2s;
+    }
+
+    .quick-item:hover {
+      background: rgba(74, 110, 74, 0.2);
+    }
+
+    .quick-icon {
+      width: 24px;
+      height: 24px;
+      object-fit: contain;
+      border-radius: 4px;
     }
 
     .history-list, .saved-list {
@@ -290,7 +299,7 @@
       cursor: pointer;
     }
 
-    /* Quick links row */
+    /* Quick links row (horizontal) */
     .quick-row {
       display: flex;
       justify-content: center;
@@ -299,7 +308,7 @@
       margin-bottom: 30px;
     }
 
-    .quick-item {
+    .quick-row-item {
       background: #1e1e1e;
       border: 1px solid #333;
       border-radius: 40px;
@@ -309,12 +318,12 @@
       transition: all 0.2s;
     }
 
-    body.light .quick-item {
+    body.light .quick-row-item {
       background: white;
       border-color: #ddd;
     }
 
-    .quick-item:hover {
+    .quick-row-item:hover {
       background: #4a6e4a;
       color: white;
     }
@@ -434,15 +443,14 @@
   </style>
 </head>
 <body class="dark">
+  <canvas id="bgCanvas"></canvas>
+
   <div class="container">
     <!-- Top bar -->
     <div class="top-bar">
       <div class="status">
         <span class="status-dot" id="statusDot"></span>
         <span id="statusText">checking...</span>
-      </div>
-      <div class="btn-group">
-        <!-- Empty, buttons are on the right side -->
       </div>
     </div>
 
@@ -456,17 +464,39 @@
       <div class="round-btn" id="settingsBtn">settings</div>
     </div>
 
-    <!-- Dropdowns -->
+    <!-- Quick links dropdown with images -->
     <div class="dropdown" id="quickDropdown">
-      <div class="quick-item" data-url="youtube.com">🎬 youtube</div>
-      <div class="quick-item" data-url="reddit.com">📱 reddit</div>
-      <div class="quick-item" data-url="cloudmoonapp.com">☁️ cloudmoon</div>
-      <div class="quick-item" data-url="spotify.com">🎵 spotify</div>
-      <div class="quick-item" data-url="now.gg">🎮 now.gg</div>
-      <div class="quick-item" data-url="xbox.com/play">🎮 xbox cloud</div>
-      <div class="quick-item" data-url="play.geforcenow.com">🎮 geforce now</div>
+      <div class="quick-item" data-url="youtube.com">
+        <img class="quick-icon" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdYYtpbk4xqsn2XvBocnTZjLJH2vsbPhYbRQ&s" onerror="this.style.display='none'">
+        <span>youtube</span>
+      </div>
+      <div class="quick-item" data-url="reddit.com">
+        <img class="quick-icon" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRYw6dBUuV1YaVQ3oSdn0xDl4SwmtCn2dKKiA&s" onerror="this.style.display='none'">
+        <span>reddit</span>
+      </div>
+      <div class="quick-item" data-url="cloudmoonapp.com">
+        <img class="quick-icon" src="https://img.utdstc.com/icon/12d/349/12d349d1cd13cc225122ccd090b211e69c79a84c5216e55689f55f382235e423:200" onerror="this.style.display='none'">
+        <span>cloudmoon</span>
+      </div>
+      <div class="quick-item" data-url="spotify.com">
+        <img class="quick-icon" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQP-SeOb6iBTaeMUiL_lj3ac3LKNYP5foHCAg&s" onerror="this.style.display='none'">
+        <span>spotify</span>
+      </div>
+      <div class="quick-item" data-url="now.gg">
+        <img class="quick-icon" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRduQjU8n0k3kzifCT8BUXSGpg-hYRdxMUX5A&s" onerror="this.style.display='none'">
+        <span>now.gg</span>
+      </div>
+      <div class="quick-item" data-url="xbox.com/play">
+        <img class="quick-icon" src="https://assets.play.xbox.com/playxbox/static/media/CloudGaming_LetterBox.scale-200.ef909bf4.png" onerror="this.style.display='none'">
+        <span>xbox cloud</span>
+      </div>
+      <div class="quick-item" data-url="play.geforcenow.com">
+        <img class="quick-icon" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQjQnPCY_I0L4_-bLIdU0CcuVkYTAPICicosQ&s" onerror="this.style.display='none'">
+        <span>geforce now</span>
+      </div>
     </div>
 
+    <!-- Help dropdown -->
     <div class="dropdown" id="helpDropdown">
       <h4>keyboard shortcuts</h4>
       <div style="font-size:11px; margin-bottom:10px;">ctrl + k → focus search</div>
@@ -477,12 +507,14 @@
       <button class="save-btn" id="savePanicBtn">save panic url</button>
     </div>
 
+    <!-- History dropdown -->
     <div class="dropdown" id="historyDropdown">
       <h4>recently visited</h4>
       <div class="history-list" id="historyList"></div>
       <button class="save-btn" id="clearHistoryBtn" style="margin-top:10px;background:#ef4444;">clear history</button>
     </div>
 
+    <!-- Notes dropdown -->
     <div class="dropdown" id="notesDropdown">
       <h4>quick notes</h4>
       <textarea id="notesTextarea" class="notes-textarea" placeholder="write your notes here..."></textarea>
@@ -491,19 +523,12 @@
       <div class="saved-list" id="savedList"></div>
     </div>
 
+    <!-- Settings dropdown -->
     <div class="dropdown" id="settingsDropdown">
       <h4>features</h4>
       <div class="feature-row">
-        <span>📝 text mode</span>
-        <button id="textModeBtn">off</button>
-      </div>
-      <div class="feature-row">
-        <span>🚫 ad blocker</span>
-        <button id="adblockBtn">on</button>
-      </div>
-      <div class="feature-row">
-        <span>🔄 user agent</span>
-        <button id="userAgentBtn">chrome</button>
+        <span>📄 about:blank bypass</span>
+        <button id="aboutBlankBtn">open</button>
       </div>
       <div class="feature-row">
         <span>🔗 url shortener</span>
@@ -524,15 +549,15 @@
       <button id="goBtn">go</button>
     </div>
 
-    <!-- Quick links row -->
+    <!-- Quick links row (horizontal) -->
     <div class="quick-row" id="quickRow">
-      <div class="quick-item" data-url="youtube.com">youtube</div>
-      <div class="quick-item" data-url="reddit.com">reddit</div>
-      <div class="quick-item" data-url="spotify.com">spotify</div>
-      <div class="quick-item" data-url="twitch.tv">twitch</div>
-      <div class="quick-item" data-url="now.gg">now.gg</div>
-      <div class="quick-item" data-url="xbox.com/play">xbox cloud</div>
-      <div class="quick-item" data-url="play.geforcenow.com">geforce now</div>
+      <div class="quick-row-item" data-url="youtube.com">youtube</div>
+      <div class="quick-row-item" data-url="reddit.com">reddit</div>
+      <div class="quick-row-item" data-url="spotify.com">spotify</div>
+      <div class="quick-row-item" data-url="twitch.tv">twitch</div>
+      <div class="quick-row-item" data-url="now.gg">now.gg</div>
+      <div class="quick-row-item" data-url="xbox.com/play">xbox cloud</div>
+      <div class="quick-row-item" data-url="play.geforcenow.com">geforce now</div>
     </div>
 
     <!-- Iframe container -->
@@ -542,7 +567,6 @@
         <div class="iframe-buttons">
           <button class="iframe-btn" id="newTabBtn">new tab</button>
           <button class="iframe-btn" id="refreshIframeBtn">refresh</button>
-          <button class="iframe-btn" id="aboutBlankBtn">about:blank</button>
         </div>
       </div>
       <iframe id="proxyFrame" src="about:blank" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals allow-top-navigation allow-top-navigation-by-user-activation"></iframe>
@@ -559,14 +583,91 @@
 
   <script>
     // ============================================================
-    // FANTER SEARCH - WORKING VERSION with Firefox about:blank
+    // FANTER SEARCH - WORKING PROXY with multiple fallbacks
     // ============================================================
+    
+    // Background canvas for dots and lines
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+    let points = [];
+    let time = 0;
+    
+    function initPoints() {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+      
+      const cols = Math.floor(width / 70);
+      const rows = Math.floor(height / 70);
+      points = [];
+      for (let i = 0; i <= cols; i++) {
+        for (let j = 0; j <= rows; j++) {
+          points.push({
+            baseX: i * 70,
+            baseY: j * 70,
+            offsetX: 0,
+            offsetY: 0,
+            phaseX: Math.random() * Math.PI * 2,
+            phaseY: Math.random() * Math.PI * 2,
+            speed: 0.3 + Math.random() * 0.6
+          });
+        }
+      }
+    }
+    
+    function drawBackground() {
+      if (!ctx) return;
+      const isDark = document.body.classList.contains('dark') || document.body.classList.contains('dark-green') || document.body.classList.contains('purple');
+      ctx.fillStyle = isDark ? '#0a0a0a' : '#f5f5f5';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      for (let p of points) {
+        p.offsetX = Math.sin(time * 0.002 * p.speed + p.phaseX) * 10;
+        p.offsetY = Math.cos(time * 0.002 * p.speed * 0.7 + p.phaseY) * 10;
+      }
+      
+      ctx.beginPath();
+      ctx.strokeStyle = isDark ? 'rgba(100, 100, 100, 0.25)' : 'rgba(80, 80, 80, 0.2)';
+      ctx.lineWidth = 1;
+      
+      for (let i = 0; i < points.length; i++) {
+        for (let j = i + 1; j < points.length; j++) {
+          const dx = (points[i].baseX + points[i].offsetX) - (points[j].baseX + points[j].offsetX);
+          const dy = (points[i].baseY + points[i].offsetY) - (points[j].baseY + points[j].offsetY);
+          if (Math.sqrt(dx * dx + dy * dy) < 100) {
+            ctx.beginPath();
+            ctx.moveTo(points[i].baseX + points[i].offsetX, points[i].baseY + points[i].offsetY);
+            ctx.lineTo(points[j].baseX + points[j].offsetX, points[j].baseY + points[j].offsetY);
+            ctx.stroke();
+          }
+        }
+      }
+      
+      ctx.fillStyle = isDark ? 'rgba(160, 160, 160, 0.35)' : 'rgba(80, 80, 80, 0.25)';
+      for (let p of points) {
+        ctx.beginPath();
+        ctx.arc(p.baseX + p.offsetX, p.baseY + p.offsetY, 3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      
+      time++;
+      requestAnimationFrame(drawBackground);
+    }
+    
+    window.addEventListener('resize', () => initPoints());
+    initPoints();
+    drawBackground();
+    
+    // Multiple working proxies
+    const PROXIES = [
+      'https://corsproxy.io/?url=',
+      'https://api.allorigins.win/raw?url=',
+      'https://cors-anywhere.herokuapp.com/'
+    ];
     
     let PANIC_URL = localStorage.getItem('panicUrl') || 'https://www.sciencekids.co.nz/sciencefacts/top10.html';
     let currentUrl = '';
-    let textMode = false;
-    let adBlockEnabled = true;
-    let userAgent = 'chrome';
     let history = JSON.parse(localStorage.getItem('fanterHistory') || '[]');
     let savedNotes = localStorage.getItem('fanterNotes') || '';
     let savedLinks = JSON.parse(localStorage.getItem('fanterSavedLinks') || '[]');
@@ -585,14 +686,11 @@
     const notesTextarea = document.getElementById('notesTextarea');
     const newTabBtn = document.getElementById('newTabBtn');
     const refreshIframeBtn = document.getElementById('refreshIframeBtn');
-    const aboutBlankBtn = document.getElementById('aboutBlankBtn');
     const panicUrlInput = document.getElementById('panicUrlInput');
     const savePanicBtn = document.getElementById('savePanicBtn');
     const clearHistoryBtn = document.getElementById('clearHistoryBtn');
     const saveNotesBtn = document.getElementById('saveNotesBtn');
-    const textModeBtn = document.getElementById('textModeBtn');
-    const adblockBtn = document.getElementById('adblockBtn');
-    const userAgentBtn = document.getElementById('userAgentBtn');
+    const aboutBlankBtn = document.getElementById('aboutBlankBtn');
     const shortenBtn = document.getElementById('shortenBtn');
     const fullscreenBtn = document.getElementById('fullscreenBtn');
     const rightButtons = document.getElementById('rightButtons');
@@ -675,15 +773,42 @@
       });
     }
     
-    // Simple iframe load
-    function loadUrl(url) {
+    // Load URL using proxy
+    async function loadUrl(url) {
       const formatted = formatUrl(url);
       currentUrl = formatted;
       searchInput.value = url;
       iframeUrlSpan.textContent = formatted;
-      proxyFrame.src = formatted;
       iframeContainer.classList.add('show');
       addToHistory(formatted);
+      
+      // Show loading
+      proxyFrame.srcdoc = '<html><body style="background:#1a1a1a;display:flex;align-items:center;justify-content:center;height:100vh;"><div style="text-align:center"><div style="width:30px;height:30px;border:2px solid #4a6e4a;border-top-color:transparent;border-radius:50%;animation:spin 0.6s linear infinite;margin:0 auto 10px;"></div><p>loading...</p></div></body></html>';
+      
+      // Try each proxy
+      let loaded = false;
+      for (let proxy of PROXIES) {
+        try {
+          const proxyUrl = proxy + encodeURIComponent(formatted);
+          const response = await fetch(proxyUrl);
+          if (response.ok) {
+            let content = await response.text();
+            // Fix relative links
+            const base = formatted.match(/^https?:\/\/[^\/]+/)[0];
+            content = content.replace(/(href|src)=["']\/(?!\/)/g, `$1="${base}/`);
+            proxyFrame.srcdoc = content;
+            loaded = true;
+            break;
+          }
+        } catch(e) {
+          console.log('Proxy failed:', e);
+        }
+      }
+      
+      if (!loaded) {
+        proxyFrame.srcdoc = `<html><body style="background:#1a1a1a;display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;text-align:center;padding:20px;"><h3>❌ cannot load ${formatted}</h3><p>try opening in a new tab instead</p><button onclick="window.open('${formatted}', '_blank')" style="margin-top:20px;padding:8px 20px;background:#4a6e4a;border:none;border-radius:20px;color:white;cursor:pointer;">open in new tab</button></body></html>`;
+      }
+      
       localStorage.setItem('fanterLastUrl', formatted);
     }
     
@@ -699,23 +824,20 @@
     
     function refreshIframe() {
       if (currentUrl) {
-        proxyFrame.src = currentUrl;
+        loadUrl(currentUrl);
       } else {
         showToast('load a page first');
       }
     }
     
-    // FIREFOX-COMPATIBLE about:blank method
+    // Firefox-compatible about:blank
     function openAboutBlank(url) {
-      // Try about:blank first
       let blankWindow = window.open('about:blank', '_blank');
-      
       if (!blankWindow) {
         showToast('Popup blocked - allow popups');
         return;
       }
       
-      // Small delay helps Firefox
       setTimeout(() => {
         try {
           blankWindow.document.write(`
@@ -737,39 +859,10 @@
                   gap: 8px;
                   z-index: 10;
                 }
-                .nav input {
-                  flex: 1;
-                  padding: 6px;
-                  border-radius: 20px;
-                  border: none;
-                  background: #2a2a2a;
-                  color: white;
-                }
-                .nav button {
-                  background: #4a6e4a;
-                  border: none;
-                  color: white;
-                  padding: 6px 16px;
-                  border-radius: 20px;
-                  cursor: pointer;
-                }
-                .loader {
-                  position: fixed;
-                  top: 50%;
-                  left: 50%;
-                  transform: translate(-50%,-50%);
-                  text-align: center;
-                  color: #4a6e4a;
-                }
-                .spinner {
-                  width: 30px;
-                  height: 30px;
-                  border: 2px solid #4a6e4a;
-                  border-top-color: transparent;
-                  border-radius: 50%;
-                  animation: spin 0.6s linear infinite;
-                  margin: 0 auto 10px;
-                }
+                .nav input { flex: 1; padding: 6px; border-radius: 20px; background: #2a2a2a; color: white; border: none; }
+                .nav button { background: #4a6e4a; border: none; color: white; padding: 6px 16px; border-radius: 20px; cursor: pointer; }
+                .loader { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; color: #4a6e4a; }
+                .spinner { width: 30px; height: 30px; border: 2px solid #4a6e4a; border-top-color: transparent; border-radius: 50%; animation: spin 0.6s linear infinite; margin: 0 auto 10px; }
                 @keyframes spin { to { transform: rotate(360deg); } }
               </style>
             </head>
@@ -794,49 +887,9 @@
           `);
           showToast('opened in about:blank tab');
         } catch(e) {
-          // Fallback for Firefox - use data URL
-          const dataUrl = `data:text/html,<!DOCTYPE html>
-            <html>
-            <head>
-              <title>fanter proxy</title>
-              <style>
-                body { margin: 0; padding: 0; height: 100vh; overflow: hidden; background: #0a0a0a; font-family: monospace; }
-                iframe { width: 100%; height: 100%; border: none; }
-                .nav {
-                  position: fixed;
-                  top: 0;
-                  left: 0;
-                  right: 0;
-                  background: #1a1a1a;
-                  padding: 8px;
-                  display: flex;
-                  gap: 8px;
-                  z-index: 10;
-                }
-                .nav input { flex: 1; padding: 6px; border-radius: 20px; background: #2a2a2a; color: white; }
-                .nav button { background: #4a6e4a; border: none; color: white; padding: 6px 16px; border-radius: 20px; cursor: pointer; }
-                .loader { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; color: #4a6e4a; }
-                .spinner { width: 30px; height: 30px; border: 2px solid #4a6e4a; border-top-color: transparent; border-radius: 50%; animation: spin 0.6s linear infinite; margin: 0 auto 10px; }
-                @keyframes spin { to { transform: rotate(360deg); } }
-              </style>
-            </head>
-            <body>
-              <div class="nav"><input type="text" id="urlInput" value="${url}"><button id="goBtn">go</button></div>
-              <div class="loader" id="loader"><div class="spinner"></div><div>loading...</div></div>
-              <iframe id="frame" src="${url}"></iframe>
-              <script>
-                document.getElementById('frame').onload = () => document.getElementById('loader').style.display = 'none';
-                document.getElementById('goBtn').onclick = () => {
-                  let u = document.getElementById('urlInput').value;
-                  if (!u.startsWith('http')) u = 'https://' + u;
-                  document.getElementById('loader').style.display = 'block';
-                  document.getElementById('frame').src = u;
-                };
-              <\/script>
-            </body>
-            </html>`;
+          const dataUrl = `data:text/html,<!DOCTYPE html><html><head><title>fanter proxy</title><style>body{margin:0;padding:0;height:100vh;overflow:hidden;}iframe{width:100%;height:100%;border:none;}.nav{position:fixed;top:0;left:0;right:0;background:#1a1a1a;padding:8px;display:flex;gap:8px;z-index:10;}.nav input{flex:1;padding:6px;border-radius:20px;background:#2a2a2a;color:white;}.nav button{background:#4a6e4a;border:none;color:white;padding:6px 16px;border-radius:20px;cursor:pointer;}.loader{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:#4a6e4a;}.spinner{width:30px;height:30px;border:2px solid #4a6e4a;border-top-color:transparent;border-radius:50%;animation:spin 0.6s linear infinite;margin:0 auto 10px;}@keyframes spin{to{transform:rotate(360deg);}}</style></head><body><div class="nav"><input type="text" id="urlInput" value="${url}"><button id="goBtn">go</button></div><div class="loader" id="loader"><div class="spinner"></div><div>loading...</div></div><iframe id="frame" src="${url}"></iframe><script>document.getElementById('frame').onload=()=>document.getElementById('loader').style.display='none';document.getElementById('goBtn').onclick=()=>{let u=document.getElementById('urlInput').value;if(!u.startsWith('http'))u='https://'+u;document.getElementById('loader').style.display='block';document.getElementById('frame').src=u;};<\/script></body></html>`;
           blankWindow.location.href = dataUrl;
-          showToast('opened in new tab (Firefox compatible)');
+          showToast('opened in new tab');
         }
       }, 50);
     }
@@ -868,15 +921,6 @@
       });
     }
     
-    function updateFeatureButtons() {
-      textModeBtn.textContent = textMode ? 'on' : 'off';
-      textModeBtn.style.background = textMode ? '#4a6e4a' : '#666';
-      adblockBtn.textContent = adBlockEnabled ? 'on' : 'off';
-      adblockBtn.style.background = adBlockEnabled ? '#4a6e4a' : '#666';
-      userAgentBtn.textContent = userAgent;
-    }
-    
-    // Close all dropdowns and reset button position
     function closeAllDropdowns() {
       quickDropdown.classList.remove('show');
       helpDropdown.classList.remove('show');
@@ -886,19 +930,18 @@
       rightButtons.classList.remove('push');
     }
     
-    // Open a specific dropdown and push buttons down
     function openDropdown(dropdown) {
       closeAllDropdowns();
       dropdown.classList.add('show');
       rightButtons.classList.add('push');
     }
     
-    // Check internet status
+    // Check proxy status
     async function checkStatus() {
       statusText.textContent = 'checking...';
       statusDot.className = 'status-dot slow';
       try {
-        const res = await fetch('https://www.google.com/favicon.ico');
+        const res = await fetch('https://corsproxy.io/?url=' + encodeURIComponent('https://example.com'));
         if (res.ok) {
           statusDot.className = 'status-dot online';
           statusText.textContent = 'online';
@@ -921,6 +964,16 @@
       if (currentUrl) openAboutBlank(currentUrl);
       else if (searchInput.value.trim()) openAboutBlank(formatUrl(searchInput.value));
       else showToast('enter a url first');
+    };
+    shortenBtn.onclick = () => {
+      if (currentUrl) shortenUrl(currentUrl);
+      else if (searchInput.value.trim()) shortenUrl(formatUrl(searchInput.value));
+      else showToast('enter a url first');
+    };
+    fullscreenBtn.onclick = () => {
+      const container = document.getElementById('iframeContainer');
+      if (!document.fullscreenElement) container.requestFullscreen();
+      else document.exitFullscreen();
     };
     
     document.getElementById('quickBtn').onclick = () => openDropdown(quickDropdown);
@@ -953,40 +1006,8 @@
       }
     };
     
-    textModeBtn.onclick = () => {
-      textMode = !textMode;
-      updateFeatureButtons();
-      showToast(textMode ? 'text mode on' : 'text mode off');
-    };
-    
-    adblockBtn.onclick = () => {
-      adBlockEnabled = !adBlockEnabled;
-      updateFeatureButtons();
-      showToast(adBlockEnabled ? 'adblock on' : 'adblock off');
-    };
-    
-    userAgentBtn.onclick = () => {
-      const agents = ['chrome', 'firefox'];
-      const idx = (agents.indexOf(userAgent) + 1) % agents.length;
-      userAgent = agents[idx];
-      updateFeatureButtons();
-      showToast(`user agent: ${userAgent}`);
-    };
-    
-    shortenBtn.onclick = () => {
-      if (currentUrl) shortenUrl(currentUrl);
-      else if (searchInput.value.trim()) shortenUrl(formatUrl(searchInput.value));
-      else showToast('enter a url first');
-    };
-    
-    fullscreenBtn.onclick = () => {
-      const container = document.getElementById('iframeContainer');
-      if (!document.fullscreenElement) container.requestFullscreen();
-      else document.exitFullscreen();
-    };
-    
     // Quick links
-    document.querySelectorAll('.quick-item').forEach(el => {
+    document.querySelectorAll('.quick-item, .quick-row-item').forEach(el => {
       el.addEventListener('click', () => {
         const url = el.dataset.url;
         if (url) loadUrl(url);
@@ -1039,7 +1060,6 @@
     // Initialize
     updateHistoryList();
     updateSavedList();
-    updateFeatureButtons();
     checkStatus();
     setInterval(checkStatus, 30000);
     setTheme(currentTheme);
@@ -1047,7 +1067,7 @@
     const lastUrl = localStorage.getItem('fanterLastUrl');
     if (lastUrl) searchInput.value = lastUrl;
     
-    console.log('fanter search ready - Firefox compatible!');
+    console.log('fanter search ready - proxies working!');
   </script>
 </body>
 </html>
