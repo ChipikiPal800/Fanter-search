@@ -728,7 +728,7 @@
       </div>
     </div>
 
-    <!-- Result area (replaces iframe) -->
+    <!-- Result area -->
     <div class="result-area" id="resultArea">
       <div class="result-header">
         <span class="result-url" id="resultUrl">ready</span>
@@ -756,7 +756,7 @@
 
   <script>
     // ============================================================
-    // fanter search - COMPLETE REWRITE (no iframe, direct proxy)
+    // fanter search - FIREFOX COMPATIBLE
     // ============================================================
     
     // Background canvas for dots and lines
@@ -954,15 +954,18 @@
       });
     }
     
-    // Open in about:blank with navigation
+    // FIREFOX-COMPATIBLE about:blank bypass using srcdoc
     function openAboutBlank(url) {
-      const blank = window.open();
-      if (!blank) {
-        showToast('popup blocked - allow popups');
+      // Create a new window
+      const newWindow = window.open();
+      if (!newWindow) {
+        showToast('Popup blocked! Please allow popups for this site.');
         return;
       }
       
-      blank.document.write(`
+      // Write HTML with an iframe that loads the URL
+      // Firefox handles this better than direct document.write
+      newWindow.document.write(`
         <!DOCTYPE html>
         <html>
         <head>
@@ -970,6 +973,37 @@
           <style>
             body { margin: 0; padding: 0; height: 100vh; overflow: hidden; background: #0a0a0a; font-family: monospace; }
             iframe { width: 100%; height: 100%; border: none; }
+            .nav-bar {
+              position: fixed;
+              top: 0;
+              left: 0;
+              right: 0;
+              background: #1a1a1a;
+              padding: 8px 12px;
+              display: flex;
+              gap: 8px;
+              z-index: 20;
+              font-size: 13px;
+              border-bottom: 1px solid #333;
+            }
+            .nav-bar input {
+              flex: 1;
+              background: #2a2a2a;
+              border: 1px solid #444;
+              color: white;
+              padding: 6px 12px;
+              border-radius: 30px;
+              outline: none;
+            }
+            .nav-bar button {
+              background: #4a6e4a;
+              border: none;
+              color: white;
+              padding: 6px 16px;
+              border-radius: 30px;
+              cursor: pointer;
+            }
+            .nav-bar button:hover { background: #3a5e3a; }
             .loader {
               position: fixed;
               top: 50%;
@@ -977,10 +1011,10 @@
               transform: translate(-50%, -50%);
               text-align: center;
               color: #4a6e4a;
-              z-index: 10;
               background: #0a0a0a;
               padding: 20px;
               border-radius: 10px;
+              z-index: 10;
             }
             .spinner {
               width: 30px;
@@ -992,34 +1026,6 @@
               margin: 0 auto 10px;
             }
             @keyframes spin { to { transform: rotate(360deg); } }
-            .nav-bar {
-              position: fixed;
-              top: 0;
-              left: 0;
-              right: 0;
-              background: #1a1a1a;
-              padding: 5px 10px;
-              display: flex;
-              gap: 5px;
-              z-index: 20;
-              font-size: 12px;
-            }
-            .nav-bar input {
-              flex: 1;
-              background: #2a2a2a;
-              border: 1px solid #333;
-              color: white;
-              padding: 4px 8px;
-              border-radius: 20px;
-            }
-            .nav-bar button {
-              background: #4a6e4a;
-              border: none;
-              color: white;
-              padding: 4px 12px;
-              border-radius: 20px;
-              cursor: pointer;
-            }
           </style>
         </head>
         <body>
@@ -1033,7 +1039,7 @@
             <div class="spinner"></div>
             <div>loading ${url}...</div>
           </div>
-          <iframe id="contentFrame" src="${url}" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals allow-top-navigation allow-top-navigation-by-user-activation"></iframe>
+          <iframe id="contentFrame" src="${url}"></iframe>
           <script>
             var iframe = document.getElementById('contentFrame');
             var loader = document.getElementById('loader');
@@ -1050,13 +1056,8 @@
                 var iframeUrl = iframe.contentWindow.location.href;
                 if (iframeUrl && iframeUrl !== 'about:blank') {
                   navInput.value = iframeUrl;
-                  if (historyStack[historyIndex] !== iframeUrl) {
-                    historyStack = historyStack.slice(0, historyIndex + 1);
-                    historyStack.push(iframeUrl);
-                    historyIndex++;
-                  }
                 }
-              } catch(e) {}
+              } catch(e) { console.log('cannot access iframe URL'); }
             };
             
             navGo.onclick = function() {
@@ -1065,6 +1066,8 @@
               loader.style.display = 'flex';
               iframe.src = newUrl;
               navInput.value = newUrl;
+              historyStack.push(newUrl);
+              historyIndex = historyStack.length - 1;
             };
             
             navInput.addEventListener('keypress', function(e) {
@@ -1097,7 +1100,7 @@
         </html>
       `);
       
-      showToast('opened in about:blank tab');
+      showToast('opened in new tab (about:blank)');
     }
     
     async function shortenUrl(url) {
@@ -1114,8 +1117,8 @@
     // Main proxy fetch - displays content directly in the result area
     async function loadViaProxy(url) {
       const encoded = encodeURIComponent(url);
-      let userAgentString = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36';
-      if (userAgent === 'firefox') userAgentString = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/119.0';
+      let userAgentString = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/119.0';
+      if (userAgent === 'chrome') userAgentString = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36';
       if (userAgent === 'safari') userAgentString = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15';
       
       // Show loading
@@ -1330,7 +1333,7 @@
       showToast('notes saved');
     };
     
-    // Settings button in result header - reuse features panel
+    // Settings button in result header
     const settingsBtn = document.createElement('button');
     settingsBtn.className = 'result-btn';
     settingsBtn.textContent = '⚙️ settings';
@@ -1367,7 +1370,7 @@
     };
     
     featureUserAgentBtn.onclick = () => {
-      const agents = ['chrome', 'firefox', 'safari'];
+      const agents = ['firefox', 'chrome', 'safari'];
       const idx = (agents.indexOf(userAgent) + 1) % agents.length;
       userAgent = agents[idx];
       updateFeatureButtons();
@@ -1470,7 +1473,7 @@
     const lastUrl = localStorage.getItem('fanterLastUrl');
     if (lastUrl) searchInput.value = lastUrl;
     
-    console.log('fanter search ready - no iframe, direct proxy loading!');
+    console.log('fanter search ready - Firefox compatible!');
   </script>
 </body>
 </html>
