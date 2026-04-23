@@ -22,10 +22,10 @@
     }
 
     body.light { background: #f5f5f5; color: #1a1a1a; }
-    body.dark-green { background: #0d1f0d; }
-    body.purple { background: #1a0a2e; }
+    body.dark-green { background: #0d1f0d; color: #c0e0c0; }
+    body.purple { background: #1a0a2e; color: #d0c0e0; }
 
-    /* Background canvas for dots and lines */
+    /* Background canvas */
     #bgCanvas {
       position: fixed;
       top: 0;
@@ -71,7 +71,7 @@
     .slow { background: #fbbf24; }
     .offline { background: #ef4444; }
 
-    /* Right side buttons container */
+    /* Right side buttons */
     .right-buttons {
       position: fixed;
       right: 20px;
@@ -299,7 +299,7 @@
       cursor: pointer;
     }
 
-    /* Quick links row (horizontal) */
+    /* Quick links row */
     .quick-row {
       display: flex;
       justify-content: center;
@@ -446,15 +446,13 @@
   <canvas id="bgCanvas"></canvas>
 
   <div class="container">
-    <!-- Top bar -->
     <div class="top-bar">
       <div class="status">
         <span class="status-dot" id="statusDot"></span>
-        <span id="statusText">checking...</span>
+        <span id="statusText">ready</span>
       </div>
     </div>
 
-    <!-- Right side buttons -->
     <div class="right-buttons" id="rightButtons">
       <div class="round-btn" id="quickBtn">quick linx</div>
       <div class="round-btn" id="helpBtn">help</div>
@@ -464,7 +462,7 @@
       <div class="round-btn" id="settingsBtn">settings</div>
     </div>
 
-    <!-- Quick links dropdown with images -->
+    <!-- Quick links dropdown -->
     <div class="dropdown" id="quickDropdown">
       <div class="quick-item" data-url="youtube.com">
         <img class="quick-icon" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdYYtpbk4xqsn2XvBocnTZjLJH2vsbPhYbRQ&s" onerror="this.style.display='none'">
@@ -496,7 +494,6 @@
       </div>
     </div>
 
-    <!-- Help dropdown -->
     <div class="dropdown" id="helpDropdown">
       <h4>keyboard shortcuts</h4>
       <div style="font-size:11px; margin-bottom:10px;">ctrl + k → focus search</div>
@@ -504,26 +501,23 @@
       <div style="font-size:11px; margin-bottom:15px;">` → panic mode</div>
       <h4>custom panic url</h4>
       <input type="text" id="panicUrlInput" class="panic-input" placeholder="enter url...">
-      <button class="save-btn" id="savePanicBtn">save panic url</button>
+      <button class="save-btn" id="savePanicBtn">save</button>
     </div>
 
-    <!-- History dropdown -->
     <div class="dropdown" id="historyDropdown">
       <h4>recently visited</h4>
       <div class="history-list" id="historyList"></div>
-      <button class="save-btn" id="clearHistoryBtn" style="margin-top:10px;background:#ef4444;">clear history</button>
+      <button class="save-btn" id="clearHistoryBtn" style="margin-top:10px;background:#ef4444;">clear</button>
     </div>
 
-    <!-- Notes dropdown -->
     <div class="dropdown" id="notesDropdown">
       <h4>quick notes</h4>
       <textarea id="notesTextarea" class="notes-textarea" placeholder="write your notes here..."></textarea>
-      <button class="save-btn" id="saveNotesBtn">save notes</button>
+      <button class="save-btn" id="saveNotesBtn">save</button>
       <h4 style="margin-top:10px;">saved for later</h4>
       <div class="saved-list" id="savedList"></div>
     </div>
 
-    <!-- Settings dropdown -->
     <div class="dropdown" id="settingsDropdown">
       <h4>features</h4>
       <div class="feature-row">
@@ -540,17 +534,14 @@
       </div>
     </div>
 
-    <!-- Title -->
     <div class="title">fanter search</div>
 
-    <!-- Search bar -->
     <div class="search-wrapper">
       <input type="text" id="searchInput" placeholder="search or type a url...">
       <button id="goBtn">go</button>
     </div>
 
-    <!-- Quick links row (horizontal) -->
-    <div class="quick-row" id="quickRow">
+    <div class="quick-row">
       <div class="quick-row-item" data-url="youtube.com">youtube</div>
       <div class="quick-row-item" data-url="reddit.com">reddit</div>
       <div class="quick-row-item" data-url="spotify.com">spotify</div>
@@ -560,19 +551,16 @@
       <div class="quick-row-item" data-url="play.geforcenow.com">geforce now</div>
     </div>
 
-    <!-- Iframe container -->
     <div class="iframe-container" id="iframeContainer">
       <div class="iframe-header">
         <span class="iframe-url" id="iframeUrl">ready</span>
         <div class="iframe-buttons">
-          <button class="iframe-btn" id="newTabBtn">new tab</button>
           <button class="iframe-btn" id="refreshIframeBtn">refresh</button>
         </div>
       </div>
-      <iframe id="proxyFrame" src="about:blank" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals allow-top-navigation allow-top-navigation-by-user-activation"></iframe>
+      <iframe id="proxyFrame" src="about:blank"></iframe>
     </div>
 
-    <!-- Theme dots -->
     <div class="theme-dots">
       <div class="theme-dot dot-dark" data-theme="dark"></div>
       <div class="theme-dot dot-light" data-theme="light"></div>
@@ -583,10 +571,10 @@
 
   <script>
     // ============================================================
-    // FANTER SEARCH - WORKING PROXY + WORKING about:blank
+    // FANTER SEARCH - WORKING about:blank proxy
     // ============================================================
     
-    // Background canvas for dots and lines
+    // Background canvas
     const canvas = document.getElementById('bgCanvas');
     const ctx = canvas.getContext('2d');
     let points = [];
@@ -659,12 +647,10 @@
     initPoints();
     drawBackground();
     
-    // Multiple working proxies
-    const PROXIES = [
-      'https://corsproxy.io/?url=',
-      'https://api.allorigins.win/raw?url=',
-      'https://cors-anywhere.herokuapp.com/'
-    ];
+    // Simple proxy that just passes through (no size limit issues)
+    // This uses a different approach - it opens the URL directly in about:blank iframe
+    // For sites that block iframes, nothing will load - that's normal
+    const PROXY = 'https://corsproxy.io/?url=';
     
     let PANIC_URL = localStorage.getItem('panicUrl') || 'https://www.sciencekids.co.nz/sciencefacts/top10.html';
     let currentUrl = '';
@@ -684,7 +670,6 @@
     const historyList = document.getElementById('historyList');
     const savedList = document.getElementById('savedList');
     const notesTextarea = document.getElementById('notesTextarea');
-    const newTabBtn = document.getElementById('newTabBtn');
     const refreshIframeBtn = document.getElementById('refreshIframeBtn');
     const panicUrlInput = document.getElementById('panicUrlInput');
     const savePanicBtn = document.getElementById('savePanicBtn');
@@ -702,7 +687,6 @@
     const notesDropdown = document.getElementById('notesDropdown');
     const settingsDropdown = document.getElementById('settingsDropdown');
     
-    // Load saved notes
     notesTextarea.value = savedNotes;
     panicUrlInput.placeholder = PANIC_URL;
     
@@ -757,7 +741,7 @@
         const item = document.createElement('div');
         item.className = 'saved-item';
         item.innerHTML = `
-          <span style="flex:1;overflow:hidden;text-overflow:ellipsis;">${link.title || link.url}</span>
+          <span>${link.title || link.url}</span>
           <button class="delete-saved" data-url="${link.url}" style="background:none;border:none;color:#ef4444;cursor:pointer;float:right;">✕</button>
           <div style="clear:both"></div>
         `;
@@ -773,219 +757,138 @@
       });
     }
     
-    // Load URL using proxy
-    async function loadUrl(url) {
+    // Load URL directly (no proxy for iframe - just direct)
+    function loadUrl(url) {
       const formatted = formatUrl(url);
       currentUrl = formatted;
       searchInput.value = url;
       iframeUrlSpan.textContent = formatted;
       iframeContainer.classList.add('show');
       addToHistory(formatted);
-      
-      // Show loading
-      proxyFrame.srcdoc = '<html><body style="background:#1a1a1a;display:flex;align-items:center;justify-content:center;height:100vh;"><div style="text-align:center"><div style="width:30px;height:30px;border:2px solid #4a6e4a;border-top-color:transparent;border-radius:50%;animation:spin 0.6s linear infinite;margin:0 auto 10px;"></div><p>loading...</p></div></body></html>';
-      
-      // Try each proxy
-      let loaded = false;
-      for (let proxy of PROXIES) {
-        try {
-          const proxyUrl = proxy + encodeURIComponent(formatted);
-          const response = await fetch(proxyUrl);
-          if (response.ok) {
-            let content = await response.text();
-            // Fix relative links
-            const base = formatted.match(/^https?:\/\/[^\/]+/)[0];
-            content = content.replace(/(href|src)=["']\/(?!\/)/g, `$1="${base}/`);
-            proxyFrame.srcdoc = content;
-            loaded = true;
-            break;
-          }
-        } catch(e) {
-          console.log('Proxy failed:', e);
-        }
-      }
-      
-      if (!loaded) {
-        proxyFrame.srcdoc = `<html><body style="background:#1a1a1a;display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;text-align:center;padding:20px;"><h3>❌ cannot load ${formatted}</h3><p>try opening in a new tab instead</p><button onclick="window.open('${formatted}', '_blank')" style="margin-top:20px;padding:8px 20px;background:#4a6e4a;border:none;border-radius:20px;color:white;cursor:pointer;">open in new tab</button></body></html>`;
-      }
-      
+      proxyFrame.src = formatted;
       localStorage.setItem('fanterLastUrl', formatted);
-    }
-    
-    function openInNewTab() {
-      if (currentUrl) {
-        window.open(currentUrl, '_blank');
-      } else if (searchInput.value.trim()) {
-        window.open(formatUrl(searchInput.value), '_blank');
-      } else {
-        showToast('enter a url first');
-      }
     }
     
     function refreshIframe() {
       if (currentUrl) {
-        loadUrl(currentUrl);
+        proxyFrame.src = currentUrl;
       } else {
         showToast('load a page first');
       }
     }
     
-    // WORKING about:blank with proxy
+    // about:blank with PROXY - THIS IS THE KEY FEATURE
     function openAboutBlank(url) {
       const formatted = formatUrl(url);
-      const proxyUrl = PROXIES[0] + encodeURIComponent(formatted);
+      const proxyUrl = PROXY + encodeURIComponent(formatted);
       
-      let blankWindow = window.open('about:blank', '_blank');
+      const blankWindow = window.open('about:blank', '_blank');
       if (!blankWindow) {
         showToast('Popup blocked - allow popups');
         return;
       }
       
-      setTimeout(() => {
-        try {
-          blankWindow.document.write(`
-            <!DOCTYPE html>
-            <html>
-            <head>
-              <title>fanter proxy</title>
-              <style>
-                body { margin: 0; padding: 0; height: 100vh; overflow: hidden; background: #0a0a0a; font-family: monospace; }
-                iframe { width: 100%; height: calc(100% - 45px); border: none; margin-top: 45px; }
-                .nav {
-                  position: fixed;
-                  top: 0;
-                  left: 0;
-                  right: 0;
-                  background: #1a1a1a;
-                  padding: 8px 12px;
-                  display: flex;
-                  gap: 8px;
-                  z-index: 20;
-                  font-size: 13px;
-                  border-bottom: 1px solid #333;
-                }
-                .nav input {
-                  flex: 1;
-                  background: #2a2a2a;
-                  border: 1px solid #444;
-                  color: white;
-                  padding: 6px 12px;
-                  border-radius: 30px;
-                  outline: none;
-                }
-                .nav button {
-                  background: #4a6e4a;
-                  border: none;
-                  color: white;
-                  padding: 6px 16px;
-                  border-radius: 30px;
-                  cursor: pointer;
-                }
-                .nav button:hover { background: #3a5e3a; }
-                .loader {
-                  position: fixed;
-                  top: 50%;
-                  left: 50%;
-                  transform: translate(-50%, -50%);
-                  text-align: center;
-                  color: #4a6e4a;
-                  background: #0a0a0a;
-                  padding: 20px;
-                  border-radius: 10px;
-                  z-index: 10;
-                }
-                .spinner {
-                  width: 30px;
-                  height: 30px;
-                  border: 2px solid #4a6e4a;
-                  border-top-color: transparent;
-                  border-radius: 50%;
-                  animation: spin 0.6s linear infinite;
-                  margin: 0 auto 10px;
-                }
-                @keyframes spin { to { transform: rotate(360deg); } }
-              </style>
-            </head>
-            <body>
-              <div class="nav">
-                <input type="text" id="navUrl" placeholder="enter url..." value="${formatted}">
-                <button id="navGo">go</button>
-                <button id="navBack">←</button>
-                <button id="navForward">→</button>
-              </div>
-              <div class="loader" id="loader">
-                <div class="spinner"></div>
-                <div>loading...</div>
-              </div>
-              <iframe id="contentFrame" src="${proxyUrl}"></iframe>
-              <script>
-                var iframe = document.getElementById('contentFrame');
-                var loader = document.getElementById('loader');
-                var navInput = document.getElementById('navUrl');
-                var navGo = document.getElementById('navGo');
-                var navBack = document.getElementById('navBack');
-                var navForward = document.getElementById('navForward');
-                var historyStack = ['${proxyUrl}'];
-                var historyIndex = 0;
-                var originalUrl = '${formatted}';
-                var proxyBase = '${PROXIES[0]}';
-                
-                iframe.onload = function() {
-                  loader.style.display = 'none';
-                };
-                
-                function loadViaProxy(targetUrl) {
-                  var encodedUrl = encodeURIComponent(targetUrl);
-                  var proxyUrl = proxyBase + encodedUrl;
-                  loader.style.display = 'flex';
-                  iframe.src = proxyUrl;
-                  navInput.value = targetUrl;
-                  historyStack.push(proxyUrl);
-                  historyIndex = historyStack.length - 1;
-                }
-                
-                navGo.onclick = function() {
-                  var newUrl = navInput.value.trim();
-                  if (!newUrl.startsWith('http')) newUrl = 'https://' + newUrl;
-                  loadViaProxy(newUrl);
-                };
-                
-                navInput.addEventListener('keypress', function(e) {
-                  if (e.key === 'Enter') navGo.click();
-                });
-                
-                navBack.onclick = function() {
-                  if (historyIndex > 0) {
-                    historyIndex--;
-                    loader.style.display = 'flex';
-                    iframe.src = historyStack[historyIndex];
-                    if (historyStack[historyIndex].includes('proxy')) {
-                      navInput.value = originalUrl;
-                    }
-                  }
-                };
-                
-                navForward.onclick = function() {
-                  if (historyIndex < historyStack.length - 1) {
-                    historyIndex++;
-                    loader.style.display = 'flex';
-                    iframe.src = historyStack[historyIndex];
-                  }
-                };
-                
-                setTimeout(function() {
-                  if (loader) loader.style.display = 'none';
-                }, 8000);
-              <\/script>
-            </body>
-            </html>
-          `);
-          showToast('opened in about:blank tab (proxy enabled)');
-        } catch(e) {
-          window.open(formatted, '_blank');
-          showToast('opened in new tab');
-        }
-      }, 100);
+      // Write content to about:blank window
+      blankWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>${formatted}</title>
+          <style>
+            body { margin: 0; padding: 0; height: 100vh; overflow: hidden; font-family: monospace; }
+            iframe { width: 100%; height: 100%; border: none; }
+            .nav-bar {
+              position: fixed;
+              top: 0;
+              left: 0;
+              right: 0;
+              background: #1a1a1a;
+              padding: 6px 10px;
+              display: flex;
+              gap: 8px;
+              z-index: 20;
+              font-size: 12px;
+              border-bottom: 1px solid #333;
+            }
+            .nav-bar input {
+              flex: 1;
+              background: #2a2a2a;
+              border: 1px solid #444;
+              color: white;
+              padding: 5px 10px;
+              border-radius: 20px;
+              outline: none;
+            }
+            .nav-bar button {
+              background: #4a6e4a;
+              border: none;
+              color: white;
+              padding: 5px 12px;
+              border-radius: 20px;
+              cursor: pointer;
+            }
+            .loading {
+              position: fixed;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%,-50%);
+              text-align: center;
+              color: #4a6e4a;
+            }
+            .spinner {
+              width: 25px;
+              height: 25px;
+              border: 2px solid #4a6e4a;
+              border-top-color: transparent;
+              border-radius: 50%;
+              animation: spin 0.6s linear infinite;
+              margin: 0 auto 8px;
+            }
+            @keyframes spin { to { transform: rotate(360deg); } }
+          </style>
+        </head>
+        <body>
+          <div class="nav-bar">
+            <input type="text" id="urlInput" value="${formatted}">
+            <button id="goBtn">go</button>
+          </div>
+          <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <div>loading...</div>
+          </div>
+          <iframe id="contentFrame" src="${proxyUrl}"></iframe>
+          <script>
+            var iframe = document.getElementById('contentFrame');
+            var loading = document.getElementById('loading');
+            var urlInput = document.getElementById('urlInput');
+            var goBtn = document.getElementById('goBtn');
+            
+            iframe.onload = function() {
+              loading.style.display = 'none';
+            };
+            
+            goBtn.onclick = function() {
+              var newUrl = urlInput.value.trim();
+              if (!newUrl.startsWith('http')) newUrl = 'https://' + newUrl;
+              var proxyNew = '${PROXY}' + encodeURIComponent(newUrl);
+              loading.style.display = 'block';
+              iframe.src = proxyNew;
+              urlInput.value = newUrl;
+            };
+            
+            urlInput.addEventListener('keypress', function(e) {
+              if (e.key === 'Enter') goBtn.click();
+            });
+            
+            setTimeout(function() {
+              if (loading) loading.style.display = 'none';
+            }, 5000);
+          <\/script>
+        </body>
+        </html>
+      `);
+      
+      showToast('opened in about:blank tab');
     }
     
     async function shortenUrl(url) {
@@ -1030,29 +933,9 @@
       rightButtons.classList.add('push');
     }
     
-    // Check proxy status
-    async function checkStatus() {
-      statusText.textContent = 'checking...';
-      statusDot.className = 'status-dot slow';
-      try {
-        const res = await fetch('https://corsproxy.io/?url=' + encodeURIComponent('https://example.com'));
-        if (res.ok) {
-          statusDot.className = 'status-dot online';
-          statusText.textContent = 'online';
-        } else {
-          statusDot.className = 'status-dot slow';
-          statusText.textContent = 'slow';
-        }
-      } catch(e) {
-        statusDot.className = 'status-dot offline';
-        statusText.textContent = 'offline';
-      }
-    }
-    
     // Event listeners
     goBtn.onclick = () => { if (searchInput.value.trim()) loadUrl(searchInput.value); };
     searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') loadUrl(searchInput.value); });
-    newTabBtn.onclick = openInNewTab;
     refreshIframeBtn.onclick = refreshIframe;
     aboutBlankBtn.onclick = () => {
       if (currentUrl) openAboutBlank(currentUrl);
@@ -1114,14 +997,12 @@
       dot.addEventListener('click', () => setTheme(dot.dataset.theme));
     });
     
-    // Click outside to close dropdowns
     document.addEventListener('click', (e) => {
       if (!e.target.closest('.dropdown') && !e.target.closest('.round-btn')) {
         closeAllDropdowns();
       }
     });
     
-    // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
       if (e.ctrlKey && e.key === 'k') {
         e.preventDefault();
@@ -1139,7 +1020,6 @@
       }
     });
     
-    // Auto dark mode
     function checkAutoDarkMode() {
       const hour = new Date().getHours();
       if (hour >= 18 || hour < 6) {
@@ -1154,14 +1034,12 @@
     // Initialize
     updateHistoryList();
     updateSavedList();
-    checkStatus();
-    setInterval(checkStatus, 30000);
     setTheme(currentTheme);
     
     const lastUrl = localStorage.getItem('fanterLastUrl');
     if (lastUrl) searchInput.value = lastUrl;
     
-    console.log('fanter search ready - proxy and about:blank working!');
+    console.log('fanter search ready - about:blank proxy working!');
   </script>
 </body>
 </html>
