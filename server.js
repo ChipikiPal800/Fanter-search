@@ -5,106 +5,130 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Helper: Check if URL is absolute
-function isAbsoluteUrl(url) {
-  return url.startsWith('http://') || url.startsWith('https://') || url.startsWith('//');
-}
-
-// Helper: Make URL absolute from base
+// Helper: Convert relative URLs to absolute
 function toAbsoluteUrl(url, baseUrl) {
   if (!url) return '';
   if (url.startsWith('http://') || url.startsWith('https://')) return url;
   if (url.startsWith('//')) return `https:${url}`;
+  if (url.startsWith('data:') || url.startsWith('blob:')) return url;
   
-  const baseObj = new URL(baseUrl);
-  if (url.startsWith('/')) {
-    return `${baseObj.origin}${url}`;
+  try {
+    const base = new URL(baseUrl);
+    if (url.startsWith('/')) {
+      return `${base.origin}${url}`;
+    }
+    // Handle relative paths
+    const basePath = base.pathname.endsWith('/') ? base.pathname : base.pathname.substring(0, base.pathname.lastIndexOf('/') + 1);
+    return `${base.origin}${basePath}${url}`;
+  } catch(e) {
+    return url;
   }
-  // Relative path
-  const basePath = baseObj.pathname.endsWith('/') ? baseObj.pathname : baseObj.pathname.substring(0, baseObj.pathname.lastIndexOf('/') + 1);
-  return `${baseObj.origin}${basePath}${url}`;
 }
 
-// Helper: Rewrite HTML content
+// Rewrite HTML content completely
 function rewriteHtml(html, targetUrl, proxyBaseUrl) {
-  // Rewrite href attributes in <a> tags
-  html = html.replace(/(href)=["']([^"']+)["']/gi, (match, attr, url) => {
-    if (url.startsWith('#') || url.startsWith('javascript:') || url.startsWith('data:') || url.startsWith('mailto:')) {
-      return match;
-    }
+  // 1. Rewrite <link href>
+  html = html.replace(/<link([^>]*?)href=["']([^"']+)["']([^>]*)>/gi, (match, before, url, after) => {
+    if (url.includes('data:') || url.includes('blob:')) return match;
     const absoluteUrl = toAbsoluteUrl(url, targetUrl);
-    return `${attr}="${proxyBaseUrl}?url=${encodeURIComponent(absoluteUrl)}"`;
+    return `<link${before}href="${proxyBaseUrl}?url=${encodeURIComponent(absoluteUrl)}"${after}>`;
   });
   
-  // Rewrite src attributes in <img>, <script>, <iframe>
-  html = html.replace(/(src)=["']([^"']+)["']/gi, (match, attr, url) => {
-    if (url.startsWith('data:') || url.startsWith('blob:') || url.startsWith('javascript:')) {
-      return match;
-    }
+  // 2. Rewrite <script src>
+  html = html.replace(/<script([^>]*?)src=["']([^"']+)["']([^>]*)>/gi, (match, before, url, after) => {
     const absoluteUrl = toAbsoluteUrl(url, targetUrl);
-    return `${attr}="${proxyBaseUrl}?url=${encodeURIComponent(absoluteUrl)}"`;
+    return `<script${before}src="${proxyBaseUrl}?url=${encodeURIComponent(absoluteUrl)}"${after}>`;
   });
   
-  // Rewrite action attributes in <form>
-  html = html.replace(/(action)=["']([^"']+)["']/gi, (match, attr, url) => {
+  // 3. Rewrite <img src>
+  html = html.replace(/<img([^>]*?)src=["']([^"']+)["']([^>]*)>/gi, (match, before, url, after) => {
     const absoluteUrl = toAbsoluteUrl(url, targetUrl);
-    return `${attr}="${proxyBaseUrl}?url=${encodeURIComponent(absoluteUrl)}"`;
+    return `<img${before}src="${proxyBaseUrl}?url=${encodeURIComponent(absoluteUrl)}"${after}>`;
   });
   
-  // Rewrite CSS url() references
-  html = html.replace(/url\(["']?([^"')]+)["']?\)/gi, (match, url) => {
+  // 4. Rewrite <a href>
+  html = html.replace(/<a([^>]*?)href=["']([^"']+)["']([^>]*)>/gi, (match, before, url, after) => {
+    if (url.startsWith('#') || url.startsWith('javascript:')) return match;
     const absoluteUrl = toAbsoluteUrl(url, targetUrl);
-    return `url("${proxyBaseUrl}?url=${encodeURIComponent(absoluteUrl)}")`;
+    return `<a${before}href="${proxyBaseUrl}?url=${encodeURIComponent(absoluteUrl)}"${after}>`;
   });
   
-  // Inject a base tag to help relative paths (clever trick!)
-  const baseTag = `<base href="${targetUrl}">`;
+  // 5. Rewrite <form action>
+  html = html.replace(/<form([^>]*?)action=["']([^"']+)["']([^>]*)>/gi, (match, before, url, after) => {
+    const absoluteUrl = toAbsoluteUrl(url, targetUrl);
+    return `<form${before}action="${proxyBaseUrl}?url=${encodeURIComponent(absoluteUrl)}"${after}>`;
+  });
+  
+  // 6. Rewrite CSS background-image: url(...)
+  html = html.replace(/background(?:-image)?\s*:\s*url\(["']?([^"')]+)["']?\)/gi, (match, url) => {
+    if (url.startsWith('data:')) return match;
+    const absoluteUrl = toAbsoluteUrl(url, targetUrl);
+    return `background: url("${proxyBaseUrl}?url=${encodeURIComponent(absoluteUrl)}")`;
+  });
+  
+  // 7. Rewrite CSS @import url(...)
+  html = html.replace(/@import\s*url\(["']?([^"')]+)["']?\)/gi, (match, url) => {
+    const absoluteUrl = toAbsoluteUrl(url, targetUrl);
+    return `@import url("${proxyBaseUrl}?url=${encodeURIComponent(absoluteUrl)}")`;
+  });
+  
+  // 8. Rewrite srcset attributes
+  html = html.replace(/srcset=["']([^"']+)["']/gi, (match, urls) => {
+    const newUrls = urls.split(',').map(part => {
+      const [url, size] = part.trim().split(/\s+/);
+      const absoluteUrl = toAbsoluteUrl(url, targetUrl);
+      return `${proxyBaseUrl}?url=${encodeURIComponent(absoluteUrl)}${size ? ' ' + size : ''}`;
+    }).join(', ');
+    return `srcset="${newUrls}"`;
+  });
+  
+  // 9. Add base tag for relative URLs (fallback)
+  const baseTag = `<base href="${proxyBaseUrl}?url=${encodeURIComponent(targetUrl)}/">`;
   html = html.replace(/<head([^>]*)>/i, `<head$1>${baseTag}`);
   
-  // Add a small script to handle dynamic content loading
+  // 10. Inject client-side fixer for dynamically added elements
   const injectScript = `
   <script>
     (function() {
-      // Override fetch and XMLHttpRequest to route through proxy
       const proxyBase = "${proxyBaseUrl}";
-      const originalFetch = window.fetch;
-      window.fetch = function(url, options) {
-        if (typeof url === 'string' && (url.startsWith('http://') || url.startsWith('https://'))) {
-          return originalFetch(proxyBase + '?url=' + encodeURIComponent(url), options);
-        }
-        return originalFetch(url, options);
-      };
+      const targetOrigin = "${targetUrl}";
       
-      // Handle dynamically created elements
-      const observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-          mutation.addedNodes.forEach(function(node) {
-            if (node.nodeType === 1) { // Element node
-              if (node.tagName === 'IMG' && node.src && node.src.startsWith('http')) {
-                if (!node.src.includes(proxyBase)) {
-                  node.src = proxyBase + '?url=' + encodeURIComponent(node.src);
-                }
-              }
-              if (node.tagName === 'IFRAME' && node.src && node.src.startsWith('http')) {
-                if (!node.src.includes(proxyBase)) {
-                  node.src = proxyBase + '?url=' + encodeURIComponent(node.src);
-                }
-              }
-              if (node.tagName === 'SCRIPT' && node.src && node.src.startsWith('http')) {
-                if (!node.src.includes(proxyBase)) {
-                  node.src = proxyBase + '?url=' + encodeURIComponent(node.src);
-                }
-              }
-              if (node.tagName === 'LINK' && node.href && node.href.startsWith('http')) {
-                if (!node.href.includes(proxyBase)) {
-                  node.href = proxyBase + '?url=' + encodeURIComponent(node.href);
-                }
-              }
+      function fixUrl(url) {
+        if (!url || url.startsWith('data:') || url.startsWith('blob:') || url.startsWith('javascript:')) return url;
+        if (url.startsWith(proxyBase)) return url;
+        return proxyBase + '?url=' + encodeURIComponent(url);
+      }
+      
+      // Fix existing elements
+      document.querySelectorAll('link[href]').forEach(el => {
+        if (el.href && !el.href.includes(proxyBase)) {
+          el.href = fixUrl(el.href);
+        }
+      });
+      document.querySelectorAll('script[src]').forEach(el => {
+        if (el.src && !el.src.includes(proxyBase)) {
+          el.src = fixUrl(el.src);
+        }
+      });
+      document.querySelectorAll('img[src]').forEach(el => {
+        if (el.src && !el.src.includes(proxyBase)) {
+          el.src = fixUrl(el.src);
+        }
+      });
+      
+      // Watch for new elements
+      const observer = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+          mutation.addedNodes.forEach(node => {
+            if (node.nodeType === 1) {
+              if (node.tagName === 'LINK' && node.href) node.href = fixUrl(node.href);
+              if (node.tagName === 'SCRIPT' && node.src) node.src = fixUrl(node.src);
+              if (node.tagName === 'IMG' && node.src) node.src = fixUrl(node.src);
             }
           });
         });
       });
-      observer.observe(document.body, { childList: true, subtree: true });
+      observer.observe(document.documentElement, { childList: true, subtree: true });
     })();
   </script>
   `;
@@ -125,96 +149,51 @@ app.get('/proxy', async (req, res) => {
   console.log(`🔄 Proxying: ${targetUrl}`);
   
   try {
-    // Fetch the target URL
     const response = await fetch(targetUrl, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.5',
-        'Accept-Encoding': 'gzip, deflate, br',
-        'Referer': targetUrl
+        'Accept-Language': 'en-US,en;q=0.5'
       }
     });
     
-    // Get content type
     const contentType = response.headers.get('content-type') || '';
     
-    // If it's HTML, rewrite it
+    // Handle HTML - rewrite URLs
     if (contentType.includes('text/html')) {
       let html = await response.text();
       const proxyBaseUrl = `${req.protocol}://${req.get('host')}/proxy`;
       html = rewriteHtml(html, targetUrl, proxyBaseUrl);
       
-      // Set permissive headers (THIS IS KEY for iframe bypass!)
+      // Remove iframe-blocking headers
       res.setHeader('X-Frame-Options', 'ALLOWALL');
       res.setHeader('Content-Security-Policy', "frame-ancestors *; default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;");
       res.setHeader('Access-Control-Allow-Origin', '*');
-      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       
       return res.send(html);
     }
     
-    // For non-HTML content (images, CSS, JS), just pass through but add CORS headers
+    // Handle CSS, JS, images - just pass through with correct headers
     const buffer = await response.arrayBuffer();
     
-    // Remove restrictive headers
     res.setHeader('X-Frame-Options', 'ALLOWALL');
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    
-    // Forward the content type
-    if (contentType) {
-      res.setHeader('Content-Type', contentType);
-    }
-    
+    res.setHeader('Content-Type', contentType || 'application/octet-stream');
     res.send(Buffer.from(buffer));
     
   } catch (error) {
     console.error('❌ Proxy error:', error.message);
-    res.status(500).json({ 
-      error: 'Failed to fetch URL', 
-      details: error.message,
-      url: targetUrl
-    });
+    res.status(500).json({ error: 'Failed to fetch URL: ' + error.message });
   }
-});
-
-// Handle OPTIONS requests for CORS
-app.options('/proxy', (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.sendStatus(200);
 });
 
 // Health check
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'ok', 
-    message: 'Fanter Search Recursive Proxy is running!',
-    features: ['URL rewriting', 'Header stripping', 'Iframe bypass', 'Dynamic content handling']
-  });
-});
-
-// Root endpoint
-app.get('/', (req, res) => {
-  res.json({ 
-    status: 'online', 
-    service: 'Fanter Search Recursive Proxy',
-    version: '2.0',
-    endpoints: {
-      proxy: '/proxy?url=YOUR_URL',
-      health: '/health'
-    },
-    usage: 'Use the /proxy endpoint to fetch any website and have it embedded in your iframe'
-  });
+  res.json({ status: 'ok', message: 'Fanter Search Proxy with CSS rewriting!' });
 });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`✅ Fanter Search Recursive Proxy running on port ${PORT}`);
-  console.log(`📍 Proxy endpoint: http://localhost:${PORT}/proxy?url=https://example.com`);
+  console.log(`✅ Fanter Search Proxy running on port ${PORT}`);
 });
