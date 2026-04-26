@@ -521,7 +521,7 @@
     <div class="dropdown" id="settingsDropdown">
       <h4>features</h4>
       <div class="feature-row">
-        <span>📄 about:blank bypass</span>
+        <span> unblock / bypass </span>
         <button id="aboutBlankBtn">open</button>
       </div>
       <div class="feature-row">
@@ -570,9 +570,9 @@
   </div>
 
   <script>
-    // ============================================================
-    // FANTER SEARCH - WORKING about:blank proxy
-    // ============================================================
+
+
+    
     
     // Background canvas
     const canvas = document.getElementById('bgCanvas');
@@ -647,10 +647,9 @@
     initPoints();
     drawBackground();
     
-    // Simple proxy that just passes through (no size limit issues)
-    // This uses a different approach - it opens the URL directly in about:blank iframe
-    // For sites that block iframes, nothing will load - that's normal
-    const PROXY = 'https://corsproxy.io/?url=';
+   
+    
+const PROXY = 'https://fanter-search-proxy.onrender.com/proxy?url=';
     
     let PANIC_URL = localStorage.getItem('panicUrl') || 'https://www.sciencekids.co.nz/sciencefacts/top10.html';
     let currentUrl = '';
@@ -777,7 +776,7 @@
       }
     }
     
-    // about:blank with PROXY - THIS IS THE KEY FEATURE
+    // about:blank with PROXY - bypasser plus :D
     function openAboutBlank(url) {
       const formatted = formatUrl(url);
       const proxyUrl = PROXY + encodeURIComponent(formatted);
