@@ -776,130 +776,180 @@ const PROXY = 'https://fanter-search-proxy.onrender.com/proxy?url=';
       }
     }
     
-    // about:blank with PROXY - bypasser plus :D
-    function openAboutBlank(url) {
-      const formatted = formatUrl(url);
-      const proxyUrl = PROXY + encodeURIComponent(formatted);
+    // about blank with sutff
+function openAboutBlank(url) {
+  const formatted = formatUrl(url);
+  const proxyUrl = PROXY + encodeURIComponent(formatted);
+  
+  const blankWindow = window.open('about:blank', '_blank');
+  if (!blankWindow) {
+    showToast('Popup blocked - allow popups');
+    return;
+  }
+  
+  // Show loading spinner
+  blankWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Loading...</title>
+      <style>
+        body {
+          margin: 0;
+          padding: 0;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+          font-family: monospace;
+          background: #1a1a1a;
+          color: #4a6e4a;
+        }
+        .loader { text-align: center; }
+        .spinner {
+          width: 40px;
+          height: 40px;
+          border: 3px solid #4a6e4a;
+          border-top-color: transparent;
+          border-radius: 50%;
+          animation: spin 0.8s linear infinite;
+          margin: 0 auto 15px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+      </style>
+    </head>
+    <body>
+      <div class="loader">
+        <div class="spinner"></div>
+        <div>Loading proxy content...</div>
+      </div>
+    </body>
+    </html>
+  `);
+  
+  // Fetch the content through your proxy
+  fetch(proxyUrl)
+    .then(response => response.text())
+    .then(html => {
+      const proxyBase = PROXY;
+      const targetOrigin = formatted;
       
-      const blankWindow = window.open('about:blank', '_blank');
-      if (!blankWindow) {
-        showToast('Popup blocked - allow popups');
-        return;
-      }
+      let fixedHtml = html;
       
-      // Write content to about:blank window
+      // Rewrite <link href> (CSS files)
+      fixedHtml = fixedHtml.replace(/<link([^>]*?)href=["']([^"']+)["']([^>]*)>/gi, (match, before, hrefUrl, after) => {
+        if (hrefUrl.startsWith('data:') || hrefUrl.startsWith('blob:')) return match;
+        const absoluteUrl = toAbsoluteUrl(hrefUrl, targetOrigin);
+        return `<link${before}href="${proxyBase}${encodeURIComponent(absoluteUrl)}"${after}>`;
+      });
+      
+      // Rewrite <script src> (JS files)
+      fixedHtml = fixedHtml.replace(/<script([^>]*?)src=["']([^"']+)["']([^>]*)>/gi, (match, before, srcUrl, after) => {
+        const absoluteUrl = toAbsoluteUrl(srcUrl, targetOrigin);
+        return `<script${before}src="${proxyBase}${encodeURIComponent(absoluteUrl)}"${after}>`;
+      });
+      
+      // Rewrite <img src>
+      fixedHtml = fixedHtml.replace(/<img([^>]*?)src=["']([^"']+)["']([^>]*)>/gi, (match, before, imgUrl, after) => {
+        const absoluteUrl = toAbsoluteUrl(imgUrl, targetOrigin);
+        return `<img${before}src="${proxyBase}${encodeURIComponent(absoluteUrl)}"${after}>`;
+      });
+      
+      // Rewrite background-image: url(...)
+      fixedHtml = fixedHtml.replace(/url\(["']?([^"')]+)["']?\)/gi, (match, cssUrl) => {
+        if (cssUrl.startsWith('data:')) return match;
+        const absoluteUrl = toAbsoluteUrl(cssUrl, targetOrigin);
+        return `url("${proxyBase}${encodeURIComponent(absoluteUrl)}")`;
+      });
+      
+      // Rewrite @import url(...)
+      fixedHtml = fixedHtml.replace(/@import\s+url\(["']?([^"')]+)["']?\)/gi, (match, importUrl) => {
+        const absoluteUrl = toAbsoluteUrl(importUrl, targetOrigin);
+        return `@import url("${proxyBase}${encodeURIComponent(absoluteUrl)}")`;
+      });
+      
+      // Add <base> tag
+      const baseTag = `<base href="${proxyBase}${encodeURIComponent(targetOrigin)}/">`;
+      fixedHtml = fixedHtml.replace(/<head([^>]*)>/i, `<head$1>${baseTag}`);
+      
+      // Inject mutation observer
+      const injectScript = `
+      <script>
+        (function() {
+          const proxyBase = "${proxyBase}";
+          function fixUrl(url) {
+            if (!url) return url;
+            if (url.startsWith('data:') || url.startsWith('blob:')) return url;
+            if (url.startsWith(proxyBase)) return url;
+            return proxyBase + encodeURIComponent(url);
+          }
+          document.querySelectorAll('link[href]').forEach(el => {
+            if (el.href && !el.href.includes(proxyBase)) el.href = fixUrl(el.href);
+          });
+          document.querySelectorAll('script[src]').forEach(el => {
+            if (el.src && !el.src.includes(proxyBase)) el.src = fixUrl(el.src);
+          });
+          document.querySelectorAll('img[src]').forEach(el => {
+            if (el.src && !el.src.includes(proxyBase)) el.src = fixUrl(el.src);
+          });
+          const observer = new MutationObserver(mutations => {
+            mutations.forEach(mutation => {
+              mutation.addedNodes.forEach(node => {
+                if (node.nodeType === 1) {
+                  if (node.tagName === 'LINK' && node.href) node.href = fixUrl(node.href);
+                  if (node.tagName === 'SCRIPT' && node.src) node.src = fixUrl(node.src);
+                  if (node.tagName === 'IMG' && node.src) node.src = fixUrl(node.src);
+                }
+              });
+            });
+          });
+          observer.observe(document.documentElement, { childList: true, subtree: true });
+        })();
+      <\/script>
+      `;
+      
+      fixedHtml = fixedHtml.replace(/<\/body>/i, `${injectScript}</body>`);
+      
+      // Write the rewritten HTML to the about:blank window
+      blankWindow.document.open();
+      blankWindow.document.write(fixedHtml);
+      blankWindow.document.close();
+      
+      showToast('Loaded in about:blank window');
+    })
+    .catch(err => {
       blankWindow.document.write(`
         <!DOCTYPE html>
         <html>
-        <head>
-          <title>${formatted}</title>
-          <style>
-            body { margin: 0; padding: 0; height: 100vh; overflow: hidden; font-family: monospace; }
-            iframe { width: 100%; height: 100%; border: none; }
-            .nav-bar {
-              position: fixed;
-              top: 0;
-              left: 0;
-              right: 0;
-              background: #1a1a1a;
-              padding: 6px 10px;
-              display: flex;
-              gap: 8px;
-              z-index: 20;
-              font-size: 12px;
-              border-bottom: 1px solid #333;
-            }
-            .nav-bar input {
-              flex: 1;
-              background: #2a2a2a;
-              border: 1px solid #444;
-              color: white;
-              padding: 5px 10px;
-              border-radius: 20px;
-              outline: none;
-            }
-            .nav-bar button {
-              background: #4a6e4a;
-              border: none;
-              color: white;
-              padding: 5px 12px;
-              border-radius: 20px;
-              cursor: pointer;
-            }
-            .loading {
-              position: fixed;
-              top: 50%;
-              left: 50%;
-              transform: translate(-50%,-50%);
-              text-align: center;
-              color: #4a6e4a;
-            }
-            .spinner {
-              width: 25px;
-              height: 25px;
-              border: 2px solid #4a6e4a;
-              border-top-color: transparent;
-              border-radius: 50%;
-              animation: spin 0.6s linear infinite;
-              margin: 0 auto 8px;
-            }
-            @keyframes spin { to { transform: rotate(360deg); } }
-          </style>
-        </head>
-        <body>
-          <div class="nav-bar">
-            <input type="text" id="urlInput" value="${formatted}">
-            <button id="goBtn">go</button>
-          </div>
-          <div class="loading" id="loading">
-            <div class="spinner"></div>
-            <div>loading...</div>
-          </div>
-          <iframe id="contentFrame" src="${proxyUrl}"></iframe>
-          <script>
-            var iframe = document.getElementById('contentFrame');
-            var loading = document.getElementById('loading');
-            var urlInput = document.getElementById('urlInput');
-            var goBtn = document.getElementById('goBtn');
-            
-            iframe.onload = function() {
-              loading.style.display = 'none';
-            };
-            
-            goBtn.onclick = function() {
-              var newUrl = urlInput.value.trim();
-              if (!newUrl.startsWith('http')) newUrl = 'https://' + newUrl;
-              var proxyNew = '${PROXY}' + encodeURIComponent(newUrl);
-              loading.style.display = 'block';
-              iframe.src = proxyNew;
-              urlInput.value = newUrl;
-            };
-            
-            urlInput.addEventListener('keypress', function(e) {
-              if (e.key === 'Enter') goBtn.click();
-            });
-            
-            setTimeout(function() {
-              if (loading) loading.style.display = 'none';
-            }, 5000);
-          <\/script>
+        <head><title>Error</title></head>
+        <body style="background:#1a1a1a;color:#ff6666;display:flex;align-items:center;justify-content:center;height:100vh;font-family:monospace;">
+          <div>Failed to load: ${err.message}</div>
         </body>
         </html>
       `);
-      
-      showToast('opened in about:blank tab');
+      showToast('Failed to load content');
+    });
+}
+
+// Helper function to convert relative URLs to absolute
+function toAbsoluteUrl(url, baseUrl) {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://')) return url;
+  if (url.startsWith('//')) return `https:${url}`;
+  if (url.startsWith('data:') || url.startsWith('blob:')) return url;
+  if (url.startsWith('#')) return url;
+  
+  try {
+    const base = new URL(baseUrl);
+    if (url.startsWith('/')) {
+      return `${base.origin}${url}`;
     }
-    
-    async function shortenUrl(url) {
-      try {
-        const res = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(url)}`);
-        const shortUrl = await res.text();
-        navigator.clipboard.writeText(shortUrl);
-        showToast(`shortened: ${shortUrl}`);
-      } catch(e) {
-        showToast('failed to shorten');
-      }
-    }
+    const basePath = base.pathname.endsWith('/') ? base.pathname : base.pathname.substring(0, base.pathname.lastIndexOf('/') + 1);
+    return `${base.origin}${basePath}${url}`;
+  } catch(e) {
+    return url;
+  }
+}
     
     function panic() {
       window.open(PANIC_URL, '_blank');
