@@ -1,5 +1,15 @@
-if its blocked just fork it and deploy to github pages.
+Hmmmm
 
-fantor proksy
+you site blocked??
 
-i used truffled.lol for the idea of background ty
+you want site unblocked??
+
+use fanter search mmhm?
+
+it unblock all?
+
+yes yes!
+
+everything unblocked, by rewriting the whole sites code in an iframe hehe
+
+
